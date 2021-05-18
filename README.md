@@ -1,7 +1,8 @@
 # Serilog.Sinks.MFilesObject
 
 A Serilog structured logging sink that emits LogEvents to an M-Files Vault Object.
-This is a personal proof of concept project by Victor Vogelpoel.
+
+This is a **proof of concept** project by Victor Vogelpoel. See the disclaimer.
 
 ## Use Case
 

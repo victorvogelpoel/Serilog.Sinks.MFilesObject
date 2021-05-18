@@ -51,63 +51,169 @@ Another sample is `SANDBOX` that logs on to the sample vault, ensures Log struct
 
 The demo vault application has one configuration item to set the minimal event level to log. If set to "ERROR", the sink will only emit log messages of level ERROR.
 
+## Vault Example code
+
+A Vault Application CANNOT USE THE Serilog.Sinks.MFilesObject sink, unfortunately. We don't control the lifetime of vault that is referenced at logger construction. This will yield a "COM object that has been separated from its underlying RCW cannot be used." error, should the logger be used.
+Instead of the Serilog.Sinks.MFilesObject sink, the example code shows using a DelegatingTextSink that drives an Action to buffer log messages. A background task is used in the vault application to flush these buffered messages every 5 seconds to an M-Files object. The PermanentVault is used as a vault reference.
+
+```csharp
+    /// <summary>
+    /// Initialize the Vault Application, including logging structure in the vault.
+    /// </summary>
+    /// <param name="vault"></param>
+    protected override void InitializeApplication(Vault vault)
+    {
+        base.InitializeApplication(vault);
+
+        // Configure logging
+        ConfigureApplication(vault);
+    }
+
+    /// <summary>
+    /// Configure logging in the vault application, even create structure if necessary.
+    /// </summary>
+    /// <param name="vault"></param>
+    public void ConfigureApplication(Vault vault)
+    {
+        // Configure logging
+        // As this method is called from InitializeApplication, we can alter the vault structure, eg add ObjectType for Logging
+
+        // Ensure that the structure for the logging-to-object is present in the vault, create if necessary.
+        vault.EnsureLogSinkVaultStructure(_loggingStructureConfig);
+
+        // ------------------------------------------------------------------------------------------------------------------------------------
+        // Build a Serilog logger with MFilesObjectLogSink.
+        // Note to Log.CloseAndFlush() in the UninitializeApplication()!
+        Log.Logger = new LoggerConfiguration()
+            .Enrich.FromLogContext()
+            .MinimumLevel.ControlledBy(_loggingLevelSwitch)
+            // Log to an 'rolling' object in the vault, eg objectType "Log" with a multiline text property.
+            .WriteTo.DelegatingTextSink(w => WriteToVaultApplicationBuffer(w), outputTemplate:"[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}", levelSwitch:_loggingLevelSwitch)
+            .WriteTo.MFilesSysUtilsEventLogSink(restrictedToMinimumLevel: LogEventLevel.Error)   // Only write errors to the EventLog.
+            .CreateLogger();
+
+
+        // UNFORTUNATELY, the MFilesObjectlogSink CANNOT be created in a VaultApplication like below; we don't control the vault lifecycle (as we do in the SANDBOX console application)
+        // and it will invalidate soon after starting the vault application, yielding a "COM object that has been separated from its underlying RCW cannot be used."
+        // when we should try and emit a LogEvent.
+        // Hence using a DelegatingTextSink that collects the log messages and a background job that flushes the collected messages after 5 seconds.
+        //
+        //  .WriteTo.MFilesObject(vaultPersistent, mfilesLogObjectNamePrefix:     $"VaultApp-{ApplicationDefinition.Name}-Log-",
+        //                                         mfilesLogObjectTypeAlias:      _loggingStructureConfig.LogObjectTypeAlias,
+        //                                         mfilesLogClassAlias:           _loggingStructureConfig.LogClassAlias,
+        //                                         mfilesLogMessagePropDefAlias:  _loggingStructureConfig.LogMessagePropDefAlias,
+        //                                         controlLevelSwitch:            _loggingLevelSwitch)
+
+
+        Log.Information("VaultApplication {ApplicationName} has configured logging to an M-Files rolling Log object.", ApplicationDefinition.Name);   // NOTE, structured logging with curly braces, NOT C# string intrapolation $"" with curly braces!
+
+        Log.Error("Sample error");
+    }
+
+    private void WriteToVaultApplicationBuffer(string formattedLogMessage)
+    {
+        _logEventBuffer.AppendLine(formattedLogMessage.TrimEnd(new char[]{ '\r', '\n'}));
+
+        // Note that the backgroundoperation will flush these messages to a Log object, as the PermanentVault is a valid reference.
+    }
+
+
+    protected override void StartApplication()
+    {
+        _flushLogAction = new Action(() =>
+        {
+            if (_logEventBuffer.Length > 0)
+            {
+                var batchedLogMessage = _logEventBuffer.ToString();
+                _logEventBuffer.Clear();
+
+                var controlledSwitch    = new ControlledLevelSwitch(_loggingLevelSwitch);
+                var sink                = new MFilesObjectLogSink(this.PermanentVault, mfilesLogObjectNamePrefix: $"VaultApp-{ApplicationDefinition.Name}-Log-",
+                                                                        mfilesLogObjectTypeAlias:      _loggingStructureConfig.LogObjectTypeAlias,
+                                                                        mfilesLogClassAlias:           _loggingStructureConfig.LogClassAlias,
+                                                                        mfilesLogMessagePropDefAlias:  _loggingStructureConfig.LogMessagePropDefAlias,
+                                                                        controlledSwitch:               controlledSwitch,
+                                                                        formatProvider:                 null);
+                sink.EmitToMFilesLogObject(batchedLogMessage);
+            }
+        });
+
+        this.BackgroundOperations.StartRecurringBackgroundOperation("Periodic Log-to-MFilesObject operation", TimeSpan.FromSeconds(5), _flushLogAction);
+
+        base.StartApplication();
+    }
+
+    /// <summary>
+    /// Power down the vault application. At least, flush the logging sinks.
+    /// </summary>
+    /// <param name="vault"></param>
+    protected override void UninitializeApplication(Vault vault)
+    {
+        // IMPORTANT to flush any sink
+        if (_flushLogAction != null) { _flushLogAction(); }
+        Log.CloseAndFlush();
+
+        base.UninitializeApplication(vault);
+    }
+```
+
 ## Sandbox Example code
 
 The `Sandbox.csproj` project is simply a console application that logs on to the vault using MFAuthTypeLoggedOnWindowsUser, ensures vault structure for the logging, initializes the Serilog engine and logs some events. Make sure the current user has administrative vault access, because of creating vault structure.
 
 ```csharp
-var serverApp           = new MFilesAPI.MFilesServerApplication();
-serverApp.Connect(MFilesAPI.MFAuthType.MFAuthTypeLoggedOnWindowsUser);
-var vault               = serverApp.LogInAsUserToVault("{D449E438-89EE-42BB-9769-B862E9B1B140}");  // The "Serilog.Sinks.MFilesObject" demo vault
+    var serverApp           = new MFilesAPI.MFilesServerApplication();
+    serverApp.Connect(MFilesAPI.MFAuthType.MFAuthTypeLoggedOnWindowsUser);
+    var vault               = serverApp.LogInAsUserToVault("{D449E438-89EE-42BB-9769-B862E9B1B140}");  // The "Serilog.Sinks.MFilesObject" demo vault
 
 
-// Add Vault structure for logging if it isn't there: OT "Log", CL "Log" and PD "LogMessage"
-var structureConfig = new MFilesObjectLogSinkVaultStructureConfiguration
-{
-    LogObjectTypeNameSingular   = "Log",
-    LogObjectTypeNamePlural     = "Logs",
-    LogMessagePropDefName       = "LogMessage",
+    // Add Vault structure for logging if it isn't there: OT "Log", CL "Log" and PD "LogMessage"
+    var structureConfig = new MFilesObjectLogSinkVaultStructureConfiguration
+    {
+        LogObjectTypeNameSingular   = "Log",
+        LogObjectTypeNamePlural     = "Logs",
+        LogMessagePropDefName       = "LogMessage",
 
-    LogObjectTypeAlias          = "OT.Serilog.MFilesObjectLogSink.Log",
-    LogClassAlias               = "CL.Serilog.MFilesObjectLogSink.Log",
-    LogMessagePropDefAlias      = "PD.Serilog.MFilesObjectLogSink.LogMessage"
-};
+        LogObjectTypeAlias          = "OT.Serilog.MFilesObjectLogSink.Log",
+        LogClassAlias               = "CL.Serilog.MFilesObjectLogSink.Log",
+        LogMessagePropDefAlias      = "PD.Serilog.MFilesObjectLogSink.LogMessage"
+    };
 
-// Ensure that the structure for Logging object and class is present in the vault
-vault.EnsureLogSinkVaultStructure(structureConfig);
-
-
-// -------------------------------------------------------------------------------------------------------
-// Now the fun starts!
-var loggingLevelSwitch = new LoggingLevelSwitch(LogEventLevel.Information);
-
-// Build a Serilog logger with MFilesObjectLogSink and Console
-Log.Logger = new LoggerConfiguration()
-    .Enrich.FromLogContext()
-    .MinimumLevel.ControlledBy(loggingLevelSwitch)
-    .WriteTo.MFilesObject(vault, mfilesLogObjectNamePrefix:"LoggingFromSandboxDemo-Log-")       // Log to an 'rolling' object in the vault, eg objectType "Log" with a multiline text property.
-    .WriteTo.Console()                                                                          // Write to the console with the same Log.xx statements to see them in the console terminal :-)
-    .CreateLogger();
+    // Ensure that the structure for Logging object and class is present in the vault
+    vault.EnsureLogSinkVaultStructure(structureConfig);
 
 
-// -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// Now log messages
-// NOTE that these messages are BATCHED and stored in an new or existing M-Files object with the name "Log-yyyy-MM-dd" every 5 seconds.
-// Log messages do NOT appear immediately in the vault as a Log object, but are collected and pushed every 5 secs.
-Log.Information("This adds this log message to a Log object in the vault with the name \"DemoSandbox-Log-{Today}\"", DateTime.Today.ToString("yyyy-MM-dd"));
+    // -------------------------------------------------------------------------------------------------------
+    // Now the fun starts!
+    var loggingLevelSwitch = new LoggingLevelSwitch(LogEventLevel.Information);
 
-Log.Information("This adds another info message to the {LogOT} object", structureConfig.LogObjectTypeNameSingular); // NOTE, structured logging, NOT C# string intrapolation!
+    // Build a Serilog logger with MFilesObjectLogSink and Console
+    Log.Logger = new LoggerConfiguration()
+        .Enrich.FromLogContext()
+        .MinimumLevel.ControlledBy(loggingLevelSwitch)
+        .WriteTo.MFilesObject(vault, mfilesLogObjectNamePrefix:"LoggingFromSandboxDemo-Log-")       // Log to an 'rolling' object in the vault, eg objectType "Log" with a multiline text property.
+        .WriteTo.Console()                                                                          // Write to the console with the same Log.xx statements to see them in the console terminal :-)
+        .CreateLogger();
 
-Log.Warning("And now a warning");
 
-Log.Error("And an ERROR!");
+    // -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    // Now log messages
+    // NOTE that these messages are BATCHED and stored in an new or existing M-Files object with the name "Log-yyyy-MM-dd" every 5 seconds.
+    // Log messages do NOT appear immediately in the vault as a Log object, but are collected and pushed every 5 secs.
+    Log.Information("This adds this log message to a Log object in the vault with the name \"DemoSandbox-Log-{Today}\"", DateTime.Today.ToString("yyyy-MM-dd"));
 
-// NOTE: in M-Files vault desktop application, explicitly search for Class = "Log"
+    Log.Information("This adds another info message to the {LogOT} object", structureConfig.LogObjectTypeNameSingular); // NOTE, structured logging, NOT C# string intrapolation!
 
-Thread.Sleep(6000);
+    Log.Warning("And now a warning");
 
-// IMPORTANT to flush out the batched messages to the vault, at the end of the application, otherwise messages within the last 5 seconds would not end up in the vault!
-Log.CloseAndFlush();
+    Log.Error("And an ERROR!");
+
+    // NOTE: in M-Files vault desktop application, explicitly search for Class = "Log"
+
+    Thread.Sleep(6000);
+
+    // IMPORTANT to flush out the batched messages to the vault, at the end of the application, otherwise messages within the last 5 seconds would not end up in the vault!
+    Log.CloseAndFlush();
 ```
 
 ## Technical details

@@ -55,6 +55,7 @@ namespace SANDBOX
                 Log.Logger = new LoggerConfiguration()
                     .Enrich.FromLogContext()
                     .MinimumLevel.ControlledBy(loggingLevelSwitch)
+                    .WriteTo.DelegatingTextSink(w => WriteToBuffer(w), outputTemplate:"[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}", levelSwitch:loggingLevelSwitch)
                     .WriteTo.MFilesObject(vault, mfilesLogObjectNamePrefix:"LoggingFromSandboxDemo-Log-")       // Log to an 'rolling' object in the vault, eg objectType "Log" with a multiline text property.
                     .WriteTo.Console()                                                                          // Write to the console with the same Log.xx statements to see them in the console terminal :-)
                     .CreateLogger();
@@ -97,6 +98,12 @@ namespace SANDBOX
 
             Console.WriteLine("Hit enter to exit");
             Console.ReadLine();
+        }
+
+        private static StringBuilder _logEventBuffer = new StringBuilder();
+        private static void WriteToBuffer(string formattedLogMessage)
+        {
+            _logEventBuffer.AppendLine(formattedLogMessage);
         }
 
 

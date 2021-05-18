@@ -30,7 +30,6 @@ namespace Serilog.Sinks.MFilesObject
         public static readonly TimeSpan DefaultPeriod                           = TimeSpan.FromSeconds(5);
         static readonly TimeSpan RequiredLevelCheckInterval                     = TimeSpan.FromMinutes(2);
         private DateTime _nextRequiredLevelCheckUtc                             = DateTime.UtcNow.Add(RequiredLevelCheckInterval);
-        private readonly Random _rnd                                            = new Random();
         private readonly ControlledLevelSwitch _controlledSwitch;
 
 
@@ -46,6 +45,7 @@ namespace Serilog.Sinks.MFilesObject
         private readonly int _mfilesLogClassID;
         private readonly int _mfilesLogMessagePropDefID;
 
+        private readonly Random _rnd = new Random();
 
         /// <summary>
         ///
@@ -119,16 +119,18 @@ namespace Serilog.Sinks.MFilesObject
             return Task.FromResult(0);
         }
 
+
+
         /// <summary>
         /// Emit the batched log messages to the M-Files Log object.
         /// If there is no Log object for today, it will be created.
         /// If there is an existing Log object for today, then the batched messsages will be appended to the LogMessage property
         /// </summary>
-        /// <param name="batchedMessage"></param>
-        private void EmitToMFilesLogObject(string batchedMessage)
+        /// <param name="batchedLogMessage"></param>
+        public void EmitToMFilesLogObject(string batchedLogMessage)
         {
             // If nothing to in the message, then don't bother emitting the message to the M-Files object
-            if (String.IsNullOrWhiteSpace(batchedMessage)) return;
+            if (String.IsNullOrWhiteSpace(batchedLogMessage)) return;
 
             var excludeDeletedItemSearchCondition = new SearchCondition();
             excludeDeletedItemSearchCondition.Expression.SetStatusValueExpression(MFStatusType.MFStatusTypeDeleted);
@@ -189,7 +191,7 @@ namespace Serilog.Sinks.MFilesObject
 
                     // Get the LogMessage property of the existing Log object and update it with the batched log messages
                     var logMessagePV = _vault.ObjectPropertyOperations.GetProperty(checkedOutObjectVersion.ObjVer, _mfilesLogMessagePropDefID );  // 1159 = "LogMessage" multiline text
-                    logMessagePV.TypedValue.SetValue(MFDataType.MFDatatypeMultiLineText, $"{logMessagePV.TypedValue.DisplayValue}{batchedMessage}");
+                    logMessagePV.TypedValue.SetValue(MFDataType.MFDatatypeMultiLineText, $"{logMessagePV.TypedValue.DisplayValue}{batchedLogMessage}");
                     _vault.ObjectPropertyOperations.SetProperty(checkedOutObjectVersion.ObjVer, logMessagePV);
 
                     _vault.ObjectOperations.CheckIn(checkedOutObjectVersion.ObjVer);
@@ -217,7 +219,7 @@ namespace Serilog.Sinks.MFilesObject
                 titlePV.Value.SetValue(MFDataType.MFDatatypeText, $"{_mfilesLogObjectNamePrefix}{DateTime.Now:yyyy-MM-dd}");     // eg "Log-2021-05-12"
 
                 var logMessagePV = new PropertyValue { PropertyDef = _mfilesLogMessagePropDefID };  // 1159 = "LogMessage" multiline text
-                logMessagePV.Value.SetValue(MFDataType.MFDatatypeMultiLineText, batchedMessage);
+                logMessagePV.Value.SetValue(MFDataType.MFDatatypeMultiLineText, batchedLogMessage);
 
                 var propertyValues = new PropertyValues();
                 propertyValues.Add(-1, classPV);
@@ -225,7 +227,7 @@ namespace Serilog.Sinks.MFilesObject
                 propertyValues.Add(-1, logMessagePV);
 
                 // Create the new Log object for today, with name, eg "Log-2021-05-12", with automatic checkin after
-                var objectVersion = _vault.ObjectOperations.CreateNewObjectEx(_mfilesLogObjectTypeID, propertyValues, SourceFiles: null, SFD:false, CheckIn:true);
+                var newLogObjectVersion = _vault.ObjectOperations.CreateNewObjectEx(_mfilesLogObjectTypeID, propertyValues, SourceFiles: null, SFD:false, CheckIn:true);
             }
         }
     }

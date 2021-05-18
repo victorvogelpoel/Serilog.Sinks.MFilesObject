@@ -89,6 +89,10 @@
       <Project>{50019bf2-d13f-4b84-8db5-6b635e498f23}</Project>
       <Name>Serilog.Sinks.MFilesObject</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Serilog.Sinks.MFilesSysUtilsEventLog\Serilog.Sinks.MFilesSysUtilsEventLog.csproj">
+      <Project>{f14fe73b-7dc8-4dc3-bafc-ee5a2b72963a}</Project>
+      <Name>Serilog.Sinks.MFilesSysUtilsEventLog</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="RunWhenBuildChanges" AfterTargets="CoreBuild">

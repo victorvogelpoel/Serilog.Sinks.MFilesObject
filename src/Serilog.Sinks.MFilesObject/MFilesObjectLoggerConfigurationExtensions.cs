@@ -20,6 +20,9 @@ namespace Serilog
 {
     public static class MFilesObjectLoggerConfigurationExtensions
     {
+        public const string DefaultMFilesObjectOutputTemplate                   = "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}";
+
+
         /// <summary>
         /// Configuration extension to configure the MFilesObject sink.
         /// </summary>

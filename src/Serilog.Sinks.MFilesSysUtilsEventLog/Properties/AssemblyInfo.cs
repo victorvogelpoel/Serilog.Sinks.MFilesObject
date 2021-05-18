@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Serilog.Sinks.MFiles.ObjectType")]
-[assembly: AssemblyDescription("Serilog sink to write to an M-Files Log object in an attached Vault.")]
+[assembly: AssemblyTitle("Serilog.Sinks.MFilesSysUtilsEventLogSink")]
+[assembly: AssemblyDescription("Serilog sink to write to an M-Files SysUtils EventLog")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Dramatic Development - Victor Vogelpoel")]
-[assembly: AssemblyProduct("Serilog.Sinks.MFilesObject")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("Serilog.Sinks.MFilesSysUtilsEventLogSink")]
 [assembly: AssemblyCopyright("Copyright 2021 © Dramatic Development")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("50019bf2-d13f-4b84-8db5-6b635e498f23")]
+[assembly: Guid("f14fe73b-7dc8-4dc3-bafc-ee5a2b72963a")]
 
 // Version information for an assembly consists of the following four values:
 //

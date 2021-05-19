@@ -43,7 +43,7 @@ namespace Serilog.Sinks.MFilesObject
         //    {
         //        var importContentJob = new ImportContentJob()
         //        {
-        //            SourceLocation = @"C:\PROJECTS\GeONE.LAB.MFilesVaultEventTracer\src\Serilog.Sinks.MFilesObject\assets\{B48A27F9-F7FC-4641-A405-DE7FABA85EE2}_20210511_215545\index.xml"
+        //            SourceLocation = @"c:\SomePath\assets\{B48A27F9-F7FC-4641-A405-DE7FABA85EE2}_20210511_215545\index.xml"
         //        };
 
         //        vault.ManagementOperations.ImportContent(importContentJob);

@@ -1,8 +1,10 @@
 # Serilog.Sinks.MFilesObject
 
-A Serilog structured logging sink that emits LogEvents to an M-Files Vault Object.
+A Serilog structured logging sink that emits LogEvents to a "rolling" Log object in an M-Files vault.
 
 This is a **proof of concept** project by Victor Vogelpoel. See the disclaimer.
+
+The solution contains two sinks, `Serilog.Sinks.MFilesObject` and `Serilog.Sinks.MFilesSysUtilsEventLog`, a sample sandbox console application, a sample vault application and a backup of its accompanying sample vault.
 
 ## Use Case
 
@@ -38,18 +40,23 @@ Serilog.Sinks.MFilesObject is copyright 2021 Victor Vogelpoel - Provided under t
 
 ## Samples
 
-This repository contains a sample Vault Application, called `DemoVaultApplication.sln` with appdef name "Serilog.Sinks.MFilesObject Demo" and logs any check in of the "Document" class objects. Refresh the vault content in the M-Files Desktop App to find the Log objects with name `"Serilog.Sinks.MFilesObject Demo-Log-yyyy-MM-dd"`.
+You'll find the backup of a sample vault at `"src\DemoVault\Serilog.Sinks.MFilesObject-empty,no Log structure.mfb"`. This is no more than an empty vault with an extra alias for the `Document` class. Restore this sample vault and use the sample vault application with this vault.
+The `Serilog.Sinks.MFilesObject` sink will add the necessary logging structure to the vault at first run (if executed with administrative privileges).
+
+This repository contains a sample Vault Application, called `DemoVaultApplication.sln` with appdef name `"Serilog.Sinks.MFilesObject Demo"` and logs any check-in of the "Document" class objects. Refresh the vault content in the M-Files Desktop App to find the Log objects with name `"VaultApp Serilog.Sinks.MFilesObject Demo-Log-yyyy-MM-dd"`.
 
 Another sample is `SANDBOX` that logs on to the sample vault, ensures Log structure and logs some messages. Again, refresh the vault content in the M-Files Desktop App to find the Log objects with name `"LoggingFromSandboxDemo-Log-yyyy-MM-dd"`.
 
 ## Getting the samples to work
 
-1. Import sample vault `src\DemoVault\Serilog.Sinks.MFilesObject-empty,no Log structure.mfb` to your local M-Files server, naming it "Serilog.Sinks.MFilesObject" and preserving the Vault GUID; Grant access to an account.
+1. Import the sample vault `"src\DemoVault\Serilog.Sinks.MFilesObject-empty,no Log structure.mfb"` to your local M-Files server, naming it `"Serilog.Sinks.MFilesObject"` and preserving the Vault GUID; Grant access to M-files user accounts.
 1. Add the vault connection credentials to the M-Files desktop desktop settings and open an M-Files Explorer.
 1. Open the solution in Visual Studio, and build the `Debug` configuration (not `DebugWithoutDeployment`). Visual Studio will install the vault application into the vault. When installed correctly, the M-Files Admin will show the vault application `Serilog.Sinks.MFilesObject Demo` at `Configurations` > `Other Applications` and even have logged something already.
 1. In the M-Files desktop app, add and check-in a document for class `Document`. The vault application will be triggered for event `BeforeCheckInChangesFinalize` and log the change. Refresh the desktop app to see the new or updated Log object.
 
-The demo vault application has one configuration item to set the minimal event level to log. If set to "ERROR", the sink will only emit log messages of level ERROR.
+The demo vault application has one configuration item where you can set set the minimal event level to log. If set to "None", nothing is logged. The sample vault application currenly only logs INFORMATIONAL events.
+
+Note that the vault application also logs errors to the event log via the additionally configured log sink `Serilog.Sinks.MFilesSysUtilsEventLog`; this sink employs SysUtils.ReportToEventLog().
 
 ## Vault Example code
 
@@ -87,7 +94,7 @@ Instead of the Serilog.Sinks.MFilesObject sink, the example code shows using a D
         Log.Logger = new LoggerConfiguration()
             .Enrich.FromLogContext()
             .MinimumLevel.ControlledBy(_loggingLevelSwitch)
-            // Log to an 'rolling' object in the vault, eg objectType "Log" with a multiline text property.
+            // Using a delegate to buffer log messages that are flushed later with a background job
             .WriteTo.DelegatingTextSink(w => WriteToVaultApplicationBuffer(w), outputTemplate:"[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}", levelSwitch:_loggingLevelSwitch)
             .WriteTo.MFilesSysUtilsEventLogSink(restrictedToMinimumLevel: LogEventLevel.Error)   // Only write errors to the EventLog.
             .CreateLogger();

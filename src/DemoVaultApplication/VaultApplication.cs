@@ -95,7 +95,7 @@ namespace DemoVaultApplication
             Log.Logger = new LoggerConfiguration()
                 .Enrich.FromLogContext()
                 .MinimumLevel.ControlledBy(_loggingLevelSwitch)
-                // Log to an 'rolling' object in the vault, eg objectType "Log" with a multiline text property.
+                // Using a delegate to buffer log messages that are flushed later with a background job
                 .WriteTo.DelegatingTextSink(w => WriteToVaultApplicationBuffer(w), outputTemplate:"[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}", levelSwitch:_loggingLevelSwitch)
                 .WriteTo.MFilesSysUtilsEventLogSink(restrictedToMinimumLevel: LogEventLevel.Error)   // Only write errors to the EventLog.
                 .CreateLogger();

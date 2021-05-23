@@ -89,6 +89,13 @@ namespace DemoVaultApplication
             // Ensure that the structure for the logging-to-object is present in the vault, create if necessary.
             vault.EnsureLogSinkVaultStructure(_loggingStructureConfig);
 
+#if DEBUG
+            var sysUtilsEventLogLevel = LogEventLevel.Information;  // In DEBUG, we want to emit all messages to the event log, because we can access the Windows Event log on our dev machine.
+#else
+            var sysUtilsEventLogLevel = LogEventLevel.Error;        // In RELEASE, we want to emit only error messages to the event log; in a cloud vault, we cannot access the event log and we're only suppose to log ERRORS.
+
+#endif
+
             // ------------------------------------------------------------------------------------------------------------------------------------
             // Build a Serilog logger with MFilesObjectLogSink.
             // Note to Log.CloseAndFlush() in the UninitializeApplication()!
@@ -97,7 +104,7 @@ namespace DemoVaultApplication
                 .MinimumLevel.ControlledBy(_loggingLevelSwitch)
                 // Using a delegate to buffer log messages that are flushed later with a background job
                 .WriteTo.DelegatingTextSink(w => WriteToVaultApplicationBuffer(w), outputTemplate:"[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}", levelSwitch:_loggingLevelSwitch)
-                .WriteTo.MFilesSysUtilsEventLogSink(restrictedToMinimumLevel: LogEventLevel.Error)   // Only write errors to the EventLog.
+                .WriteTo.MFilesSysUtilsEventLogSink(restrictedToMinimumLevel: sysUtilsEventLogLevel)   // Only write errors to the EventLog.
                 .CreateLogger();
 
 

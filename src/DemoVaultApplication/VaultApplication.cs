@@ -108,7 +108,7 @@ namespace DemoVaultApplication
                 .CreateLogger();
 
 
-            // UNFORTUNATELY, the MFilesObjectlogSink CANNOT be created in a VaultApplication like below; we don't control the vault lifecycle (as we do in the SANDBOX console application)
+            // UNFORTUNATELY, the MFilesObjectlogSink CANNOT be created in a VaultApplication like below; WE DON'T CONTROL THE VAULT LIFECYCLE (as we do in the SANDBOX console application)
             // and it will invalidate soon after starting the vault application, yielding a "COM object that has been separated from its underlying RCW cannot be used."
             // when we should try and emit a LogEvent.
             // Hence using a DelegatingTextSink that collects the log messages and a background job that flushes the collected messages after 5 seconds.

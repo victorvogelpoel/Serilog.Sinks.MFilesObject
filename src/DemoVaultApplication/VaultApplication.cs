@@ -135,6 +135,7 @@ namespace DemoVaultApplication
 
         protected override void StartApplication()
         {
+            // Define the delegate action for the flushing to the M-Files Object
             _flushLogAction = new Action(() =>
             {
                 if (_logEventBuffer.Length > 0)
@@ -142,8 +143,10 @@ namespace DemoVaultApplication
                     var batchedLogMessage = _logEventBuffer.ToString();
                     _logEventBuffer.Clear();
 
+
+
                     var controlledSwitch    = new ControlledLevelSwitch(_loggingLevelSwitch);
-                    var sink                = new MFilesObjectLogSink(this.PermanentVault, mfilesLogObjectNamePrefix: $"VaultApp-{ApplicationDefinition.Name}-Log-",
+                    var sink                = new MFilesObjectLogSink(this.PermanentVault, mfilesLogObjectNamePrefix: $"[{Environment.MachineName.ToUpperInvariant()}] VaultApp-{ApplicationDefinition.Name}-Log-",
                                                                             mfilesLogObjectTypeAlias:      _loggingStructureConfig.LogObjectTypeAlias,
                                                                             mfilesLogClassAlias:           _loggingStructureConfig.LogClassAlias,
                                                                             mfilesLogMessagePropDefAlias:  _loggingStructureConfig.LogMessagePropDefAlias,

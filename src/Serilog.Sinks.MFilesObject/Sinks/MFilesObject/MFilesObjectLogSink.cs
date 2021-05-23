@@ -113,7 +113,7 @@ namespace Serilog.Sinks.MFilesObject
             }
             catch (Exception ex)
             {
-                throw;
+                throw;  // Keeping this to help me debug M-Files / Serilog exceptions; TODO: remove the catch at sink release.
             }
 
             return Task.FromResult(0);
@@ -129,6 +129,8 @@ namespace Serilog.Sinks.MFilesObject
         /// <param name="batchedLogMessage"></param>
         public void EmitToMFilesLogObject(string batchedLogMessage)
         {
+
+
             // If nothing to in the message, then don't bother emitting the message to the M-Files object
             if (String.IsNullOrWhiteSpace(batchedLogMessage)) return;
 
@@ -169,10 +171,13 @@ namespace Serilog.Sinks.MFilesObject
             //   PropDef    1 Name or title - text
             //   PropDef 1159 LogMessage - multiline text
 
-            var searchResults = _vault.ObjectSearchOperations.SearchForObjectsByConditionsEx(searchConditions, MFSearchFlags.MFSearchFlagNone, SortResults: false);
-            if (searchResults.Count > 0)
+
+            var searchResults       = _vault.ObjectSearchOperations.SearchForObjectsByConditionsEx(searchConditions, MFSearchFlags.MFSearchFlagNone, SortResults: false);
+            var createNewLogObject  = (searchResults.Count == 0);
+
+            if (!createNewLogObject)
             {
-                // Found a LOG object for today, so APPEND the message to the existing LogMessage contents.
+                // Found a LOG object for today, so APPEND the message to the existing LogMessage contents. Do not create a new Log object for today.
                 ObjectVersion checkedOutObjectVersion = null;
 
                 try
@@ -180,34 +185,51 @@ namespace Serilog.Sinks.MFilesObject
                     // Work on the first item found
                     var existingLogObjID = searchResults[1].ObjVer.ObjID;
 
-                    // If Todays Log object is checked out, then wait a random time
-                    while (_vault.ObjectOperations.IsObjectCheckedOut(existingLogObjID))
+                    // If Todays Log object is checked out, then wait a random time for a number of retries
+                    var logObjectIsCheckedOut   = false;
+                    var maxRetries              = 5;
+                    do
                     {
-                        Thread.Sleep(_rnd.Next(200, 1000));
+                        maxRetries--;
+
+                        logObjectIsCheckedOut = _vault.ObjectOperations.IsObjectCheckedOut(existingLogObjID);
+                        if (maxRetries > 0 && logObjectIsCheckedOut) { Thread.Sleep(_rnd.Next(200, 1000)); }
+
+                    } while (maxRetries > 0 && logObjectIsCheckedOut);
+
+
+                    if (logObjectIsCheckedOut)
+                    {
+                        createNewLogObject = true;
                     }
+                    else
+                    {
+                        // Check out the Log object and append the log message
+                        checkedOutObjectVersion = _vault.ObjectOperations.CheckOut(existingLogObjID);
 
-                    // Check out the Log object
-                    checkedOutObjectVersion = _vault.ObjectOperations.CheckOut(existingLogObjID);
+                        // Get the LogMessage property of the existing Log object and update it with the batched log messages
+                        var logMessagePV = _vault.ObjectPropertyOperations.GetProperty(checkedOutObjectVersion.ObjVer, _mfilesLogMessagePropDefID );  // 1159 = "LogMessage" multiline text
+                        logMessagePV.TypedValue.SetValue(MFDataType.MFDatatypeMultiLineText, $"{logMessagePV.TypedValue.DisplayValue}{batchedLogMessage}");
+                        _vault.ObjectPropertyOperations.SetProperty(checkedOutObjectVersion.ObjVer, logMessagePV);
 
-                    // Get the LogMessage property of the existing Log object and update it with the batched log messages
-                    var logMessagePV = _vault.ObjectPropertyOperations.GetProperty(checkedOutObjectVersion.ObjVer, _mfilesLogMessagePropDefID );  // 1159 = "LogMessage" multiline text
-                    logMessagePV.TypedValue.SetValue(MFDataType.MFDatatypeMultiLineText, $"{logMessagePV.TypedValue.DisplayValue}{batchedLogMessage}");
-                    _vault.ObjectPropertyOperations.SetProperty(checkedOutObjectVersion.ObjVer, logMessagePV);
-
-                    _vault.ObjectOperations.CheckIn(checkedOutObjectVersion.ObjVer);
+                        _vault.ObjectOperations.CheckIn(checkedOutObjectVersion.ObjVer);
+                    }
                 }
                 catch
                 {
-                    // Any errors, then undo the checkout, It's a shame for the logging messages that are now gone...
+                    // Any errors, then undo the checkout
                     if (null != checkedOutObjectVersion)
                     {
                         _vault.ObjectOperations.UndoCheckout(checkedOutObjectVersion.ObjVer);
                     }
 
-                    throw;
+                    // So we have an error with an existing Log Object; now create a NEW Log object to store the batchedLogmessage.
+                    createNewLogObject = true;
                 }
             }
-            else
+
+            // OK, no Log object existed with todays name, or one existed but could not be checked out and we're creating a NEW Log object.
+            if (createNewLogObject)
             {
                 // No Log object found for today, so create a new Log object.
 
@@ -226,7 +248,7 @@ namespace Serilog.Sinks.MFilesObject
                 propertyValues.Add(-1, titlePV);
                 propertyValues.Add(-1, logMessagePV);
 
-                // Create the new Log object for today, with name, eg "Log-2021-05-12", with automatic checkin after
+                // Create the new Log object for today, with name, eg "Log-2021-05-12", with automatic check-in after
                 var newLogObjectVersion = _vault.ObjectOperations.CreateNewObjectEx(_mfilesLogObjectTypeID, propertyValues, SourceFiles: null, SFD:false, CheckIn:true);
             }
         }

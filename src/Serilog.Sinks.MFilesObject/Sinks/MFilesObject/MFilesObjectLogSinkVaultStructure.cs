@@ -131,7 +131,6 @@ namespace Serilog.Sinks.MFilesObject
 
             if (!classHasBeenUpdated)
             {
-                var newAlias = (classForLogObjectType.SemanticAliases.Value.Trim(new char[] {' ', ';' }) + ";" + structureConfig.LogClassAlias.Trim()).Trim(';');
                 // Class for object type has not been updated yet, so add LogMessage PD and alias
 
                 var associatedLogMessagePropDef = new AssociatedPropertyDef
@@ -142,7 +141,7 @@ namespace Serilog.Sinks.MFilesObject
 
                 classForLogObjectType.AssociatedPropertyDefs.Add(-1, associatedLogMessagePropDef);
 
-                // Update Alias, adding if another exists
+                // Update Alias, appending to existing alias
                 classForLogObjectType.SemanticAliases.Value = (classForLogObjectType.SemanticAliases.Value.Trim(new char[] {' ', ';' }) + ";" + structureConfig.LogClassAlias.Trim()).Trim(';');
 
                 vault.ClassOperations.UpdateObjectClassAdmin(classForLogObjectType);

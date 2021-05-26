@@ -46,6 +46,7 @@
     <Compile Include="MFilesObjectLoggerConfigurationExtensions.cs" />
     <Compile Include="Properties\FileVersionInfo.cs" />
     <Compile Include="Sinks\Delegating\DelegatingTextLogSink.cs" />
+    <Compile Include="Sinks\MFilesObject\MFilesLogRepository.cs" />
     <Compile Include="Sinks\MFilesObject\MFilesObjectLogSinkVaultStructure.cs" />
     <Compile Include="Sinks\MFilesObject\ControlledLevelSwitch.cs" />
     <Compile Include="Sinks\MFilesObject\MFilesObjectLogSink.cs" />

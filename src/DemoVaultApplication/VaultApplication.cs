@@ -143,16 +143,13 @@ namespace DemoVaultApplication
                     var batchedLogMessage = _logEventBuffer.ToString();
                     _logEventBuffer.Clear();
 
+                    var repository = new MFilesLogRepository(this.PermanentVault,
+                                                             mfilesLogObjectNamePrefix:     $"[{Environment.MachineName.ToUpperInvariant()}] VaultApp-{ApplicationDefinition.Name}-Log-",
+                                                             mfilesLogObjectTypeAlias:      _loggingStructureConfig.LogObjectTypeAlias,
+                                                             mfilesLogClassAlias:           _loggingStructureConfig.LogClassAlias,
+                                                             mfilesLogMessagePropDefAlias:  _loggingStructureConfig.LogMessagePropDefAlias);
 
-
-                    var controlledSwitch    = new ControlledLevelSwitch(_loggingLevelSwitch);
-                    var sink                = new MFilesObjectLogSink(this.PermanentVault, mfilesLogObjectNamePrefix: $"[{Environment.MachineName.ToUpperInvariant()}] VaultApp-{ApplicationDefinition.Name}-Log-",
-                                                                            mfilesLogObjectTypeAlias:      _loggingStructureConfig.LogObjectTypeAlias,
-                                                                            mfilesLogClassAlias:           _loggingStructureConfig.LogClassAlias,
-                                                                            mfilesLogMessagePropDefAlias:  _loggingStructureConfig.LogMessagePropDefAlias,
-                                                                            controlledSwitch:               controlledSwitch,
-                                                                            formatProvider:                 null);
-                    sink.EmitToMFilesLogObject(batchedLogMessage);
+                    repository.WriteLogMessage(batchedLogMessage);
                 }
             });
 

@@ -46,7 +46,7 @@ namespace DemoVaultApplication
         /// Sample event handler that logs check ins.
         /// </summary>
         /// <param name="env"></param>
-        [EventHandler(MFEventHandlerType.MFEventHandlerBeforeCheckInChangesFinalize, Class="MFiles.Class.Document")]
+        [EventHandler(MFEventHandlerType.MFEventHandlerBeforeCheckInChangesFinalize, ObjectType = (int)MFBuiltInObjectType.MFBuiltInObjectTypeDocument)]
         public void BeforeCheckInChangesFinalizeUpdateLogDemo(EventHandlerEnvironment env)
         {
             Log.Information("User {User} has checked in document {DisplayID} at {TimeStamp}", env.CurrentUserID, env.DisplayID, DateTime.Now);

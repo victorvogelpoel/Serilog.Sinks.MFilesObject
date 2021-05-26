@@ -6,3 +6,8 @@
 using System.Diagnostics.CodeAnalysis;
 
 [assembly: SuppressMessage("Security", "SCS0005:Weak random generator", Justification = "<Pending>", Scope = "member", Target = "~M:Serilog.Sinks.MFilesObject.MFilesObjectLogSink.EmitToMFilesLogObject(System.String)")]
+[assembly: SuppressMessage("Critical Code Smell", "S927:Parameter names should match base declaration and other partial definitions", Justification = "<Pending>", Scope = "member", Target = "~M:Serilog.Sinks.MFilesObject.LogObjectCreatedComparer.Compare(MFilesAPI.ObjectVersion,MFilesAPI.ObjectVersion)~System.Int32")]
+[assembly: SuppressMessage("Security", "SCS0005:Weak random generator", Justification = "<Pending>", Scope = "member", Target = "~M:Serilog.Sinks.MFilesObject.MFilesLogRepository.IsObjectCheckedOut(MFilesAPI.ObjID,System.Int32)~System.Boolean")]
+[assembly: SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>", Scope = "member", Target = "~M:Serilog.Sinks.MFilesObject.MFilesLogRepository.WriteLogMessage(System.String)")]
+[assembly: SuppressMessage("Minor Code Smell", "S2737:\"catch\" clauses should do more than rethrow", Justification = "<Pending>", Scope = "member", Target = "~M:Serilog.Sinks.MFilesObject.MFilesObjectLogSink.EmitBatchAsync(System.Collections.Generic.IEnumerable{Serilog.Events.LogEvent})~System.Threading.Tasks.Task")]
+[assembly: SuppressMessage("Major Code Smell", "S125:Sections of code should not be commented out", Justification = "<Pending>", Scope = "member", Target = "~M:Serilog.Sinks.MFilesObject.MFilesObjectLogSink.OnEmptyBatchAsync~System.Threading.Tasks.Task")]

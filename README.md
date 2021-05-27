@@ -1,6 +1,6 @@
 # Serilog.Sinks.MFilesObject
 
-A Serilog structured logging sink that emits LogEvents to a "rolling" Log object in an M-Files vault.
+Serilog.Sinks.MFilesObject is a Serilog structured logging sink that emits LogEvents to a "rolling" Log object in an M-Files vault.
 
 This is a **proof of concept** project by Victor Vogelpoel. See the disclaimer.
 
@@ -12,10 +12,11 @@ In a Vault Application, the only native logging is to the Windows Event log. Unf
 
 This Serilog sink adds the necessary Log object type, class and property definition structure to the vault and emits LogEvents to a "rolling" Log object in the vault.
 If the sink doesn't find a Log object with todays date in the name, it creates one and adds the log message. An subsequent log messages are appended to the object's LogMessage.
+When the MultiLineText field limit of 10.000 characters is reached in a Log object, the remaining logmessage is added to a new Log object with a sequence number in its title.
 
 To prevent a strain on the vault because of logging, any and all log messages are batched and appended after 5 seconds of collecting.
 
-The default vault structure for logging is as follows and is created in the vault by the sink itself:
+The default vault structure for logging is as follows and is created in the vault by the sink itself at startup:
 
 - ObjectType `Log` - alias `OT.Serilog.MFilesObjectLogSink.Log`
 - Class `Log` - alias `"CL.Serilog.MFilesObjectLogSink.Log"`
@@ -40,12 +41,21 @@ Serilog.Sinks.MFilesObject is copyright 2021 Victor Vogelpoel - Provided under t
 
 ## Samples
 
-You'll find the backup of a sample vault at `"src\DemoVault\Serilog.Sinks.MFilesObject-empty,no Log structure.mfb"`. This is no more than an empty vault with an extra alias for the `Document` class. Restore this sample vault and use the sample vault application with this vault.
+You'll find the backup of a sample vault at `"src\DemoVault\Serilog.Sinks.MFilesObject-empty,no Log structure.mfb"`. This is no more than an new, empty vault. Restore this sample vault and use the sample vault application with this vault.
 The `Serilog.Sinks.MFilesObject` sink will add the necessary logging structure to the vault at first run (if executed with administrative privileges).
 
 This repository contains a sample Vault Application, called `DemoVaultApplication.sln` with appdef name `"Serilog.Sinks.MFilesObject Demo"` and logs any check-in of the "Document" class objects. Refresh the vault content in the M-Files Desktop App to find the Log objects with name `"VaultApp Serilog.Sinks.MFilesObject Demo-Log-yyyy-MM-dd"`.
+In the M-Files Admin tool you can configure the logging level in the configuration of the vault application. Upon saving the configuration, the Serilog.Sinks.MFilesObject sink adheres to the logging level set.
 
 Another sample is `SANDBOX` that logs on to the sample vault, ensures Log structure and logs some messages. Again, refresh the vault content in the M-Files Desktop App to find the Log objects with name `"LoggingFromSandboxDemo-Log-yyyy-MM-dd"`.
+
+## Sample output
+
+Logging in your application to this sink will create one or more Log objects in the vault. Its LogMessage property will look like below.
+
+In this screenshot, you'll see several Log objects with a date in the title and several have a sequence number in the title, eg "`(3)`"
+
+![Screenshot Log object and metadata card with LogMessage](./assets/screenshot-logobject-and-message.png)
 
 ## Getting the samples to work
 
@@ -56,7 +66,8 @@ Another sample is `SANDBOX` that logs on to the sample vault, ensures Log struct
 
 The demo vault application has one configuration item where you can set set the minimal event level to log. If set to "None", nothing is logged. The sample vault application currenly only logs INFORMATIONAL events.
 
-Note that the vault application also logs errors to the event log via the additionally configured log sink `Serilog.Sinks.MFilesSysUtilsEventLog`; this sink employs SysUtils.ReportToEventLog().
+Note that the vault application also logs errors to the event log via the additionally configured log sink `Serilog.Sinks.MFilesSysUtilsEventLog`; this sink employs M-Files SysUtils.ReportToEventLog(). 
+In the sample configuration, the MFilesSysUtilsEventLog is restricted to event level error, thus only error are emitted by the sink into the Windows event log.
 
 ## Vault Example code
 

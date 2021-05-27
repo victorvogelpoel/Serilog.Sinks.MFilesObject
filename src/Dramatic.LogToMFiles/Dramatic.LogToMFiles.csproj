@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="MFilesLogMessageRepository.cs" />
     <Compile Include="MFilesObjectLogSinkVaultStructure.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

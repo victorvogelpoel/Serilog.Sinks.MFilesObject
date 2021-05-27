@@ -96,7 +96,9 @@ namespace Serilog.Sinks.MFilesObject
             {
                 _mfilesLogRepository.WriteLogMessage(batchedMessage.ToString());
             }
+#pragma warning disable CS0168 // Variable is declared but never used
             catch (Exception ex)
+#pragma warning restore CS0168 // Variable is declared but never used
             {
                 throw;  // Keeping this to help me debug M-Files / Serilog exceptions; TODO: remove the catch at sink release.
             }

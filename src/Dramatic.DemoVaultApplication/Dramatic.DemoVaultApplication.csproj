@@ -52,6 +52,7 @@
   <ItemGroup>
     <Compile Include="AssemblyDebuggerDisplay.cs" />
     <Compile Include="Configuration.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VaultApplication.cs" />
   </ItemGroup>

@@ -34,8 +34,7 @@ namespace Serilog.Sinks.MFilesObject
         //static readonly TimeSpan RequiredLevelCheckInterval                     = TimeSpan.FromMinutes(2);
         //private DateTime _nextRequiredLevelCheckUtc                             = DateTime.UtcNow.Add(RequiredLevelCheckInterval);
 
-        //private readonly ControlledLevelSwitch _controlledSwitch;
-        //private readonly IFormatProvider _formatProvider;
+        private readonly ControlledLevelSwitch _controlledSwitch;
         private readonly MFilesLogRepository _mfilesLogRepository;
         private readonly ITextFormatter _formatter;
 
@@ -56,24 +55,6 @@ namespace Serilog.Sinks.MFilesObject
 
             _mfilesLogRepository    = new MFilesLogRepository(vault, mfilesLogObjectNamePrefix, mfilesLogObjectTypeAlias, mfilesLogClassAlias, mfilesLogMessagePropDefAlias);
         }
-
-        ///// <summary>
-        /////
-        ///// </summary>
-        ///// <param name="vault">M-Files vault application</param>
-        ///// <param name="mfilesLogObjectNamePrefix">Prefix for the Log object Name-or-Title. You may want to use the name of the VaultApplication.</param>
-        ///// <param name="mfilesLogObjectTypeAlias">Alias for the Log ObjectType</param>
-        ///// <param name="mfilesLogClassAlias">Alias for the Log ClassObject</param>
-        ///// <param name="mfilesLogMessagePropDefAlias">Alias for the LogMessage PropertyDefinition</param>
-        ///// <param name="controlledSwitch">Serilog switch to use for minimal log level</param>
-        ///// <param name="formatProvider"></param>
-        //public MFilesObjectLogSink(IVault vault, string mfilesLogObjectNamePrefix, string mfilesLogObjectTypeAlias, string mfilesLogClassAlias, string mfilesLogMessagePropDefAlias, ControlledLevelSwitch controlledSwitch, IFormatProvider formatProvider)
-        //{
-        //    _controlledSwitch       = controlledSwitch ?? throw new ArgumentNullException(nameof(controlledSwitch));
-        //    _formatProvider         = formatProvider;
-
-        //    _mfilesLogRepository    = new MFilesLogRepository(vault, mfilesLogObjectNamePrefix, mfilesLogObjectTypeAlias, mfilesLogClassAlias, mfilesLogMessagePropDefAlias);
-        //}
 
         //public async Task OnEmptyBatchAsync()
         //{
@@ -108,8 +89,6 @@ namespace Serilog.Sinks.MFilesObject
 
                     batchedMessage.AppendLine(s.ToString());
                 }
-
-                //batchedMessage.AppendLine($"{logEvent.Timestamp.ToString("HH:mm:ss")} [{logEvent.Level.ToString().ToUpperInvariant()}] {logEvent.RenderMessage(_formatProvider)}");
             }
 
             try

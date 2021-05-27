@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Serilog.Sinks.MFilesSysUtilsEventLogSink")]
+[assembly: AssemblyTitle("Serilog sink to write to an M-Files SysUtils EventLog")]
 [assembly: AssemblyDescription("Serilog sink to write to an M-Files SysUtils EventLog")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Dramatic Development - Victor Vogelpoel")]
@@ -33,4 +33,4 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyInformationalVersion("21.5.1.0")]
+[assembly: AssemblyInformationalVersion("1.0.0.0")]

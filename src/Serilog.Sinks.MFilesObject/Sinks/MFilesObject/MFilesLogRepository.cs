@@ -54,6 +54,12 @@ namespace Serilog.Sinks.MFilesObject
             _mfilesLogObjectTypeID                  = vault.ObjectTypeOperations.GetObjectTypeIDByAlias(mfilesLogObjectTypeAlias);
             _mfilesLogClassID                       = vault.ClassOperations.GetObjectClassIDByAlias(mfilesLogClassAlias);
             _mfilesLogMessagePropDefID              = vault.PropertyDefOperations.GetPropertyDefIDByAlias(mfilesLogMessagePropDefAlias);
+
+            // Health check
+            if (_mfilesLogObjectTypeID == -1 || _mfilesLogClassID == -1 || _mfilesLogMessagePropDefID == -1)
+            {
+                throw new InvalidOperationException($"Missing Log object structure in the vault. Run vault.EnsureLogSinkVaultStructure() with a MFilesObjectLogSinkVaultStructureConfiguration as an M-Files user with administrative permissions to create the logging vault structure.");
+            }
         }
 
         /// <summary>

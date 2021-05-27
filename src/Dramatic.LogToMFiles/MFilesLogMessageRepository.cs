@@ -1,4 +1,10 @@
-﻿using System;
+﻿// MFilesLogRepository.cs
+// 27-5-2021
+// Copyright 2021 Dramatic Development - Victor Vogelpoel
+// If this works, it was written by Victor Vogelpoel (victor@victorvogelpoel.nl).
+// If it doesn't, I don't know who wrote it.
+//
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,11 +12,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using MFilesAPI;
 
-namespace Serilog.Sinks.MFilesObject
+namespace Dramatic.LogToMFiles
 {
-
-
-    public class MFilesLogRepository
+    public class MFilesLogMessageRepository
     {
         private readonly IVault _vault;
 
@@ -35,8 +39,13 @@ namespace Serilog.Sinks.MFilesObject
         /// <param name="mfilesLogMessagePropDefAlias">Alias for the LogMessage PropertyDefinition</param>
         /// <param name="controlledSwitch">Serilog switch to use for minimal log level</param>
         /// <param name="formatProvider"></param>
-        public MFilesLogRepository(IVault vault, string mfilesLogObjectNamePrefix, string mfilesLogObjectTypeAlias, string mfilesLogClassAlias, string mfilesLogMessagePropDefAlias)
+        public MFilesLogMessageRepository(  IVault vault,
+                                            string mfilesLogObjectNamePrefix    = MFilesObjectLogSinkVaultStructure.DefaultMFilesLogObjectNamePrefix,
+                                            string mfilesLogObjectTypeAlias     = MFilesObjectLogSinkVaultStructure.DefaultMFilesLogObjectTypeAlias,
+                                            string mfilesLogClassAlias          = MFilesObjectLogSinkVaultStructure.DefaultMFilesLogClassAlias,
+                                            string mfilesLogMessagePropDefAlias = MFilesObjectLogSinkVaultStructure.DefaultMFilesLogMessagePropertyDefinitionAlias)
         {
+
             if (String.IsNullOrWhiteSpace(mfilesLogObjectNamePrefix))       throw new ArgumentException($"{nameof(mfilesLogObjectNamePrefix)} cannot be null or empty; use something like \"Log-\".", nameof(mfilesLogObjectNamePrefix));
             if (String.IsNullOrWhiteSpace(mfilesLogObjectTypeAlias))        throw new ArgumentException($"{nameof(mfilesLogObjectTypeAlias)} cannot be null or empty; use something like \"OT.Serilog.MFilesObjectLogSink.Log\"", nameof(mfilesLogObjectTypeAlias));
             if (String.IsNullOrWhiteSpace(mfilesLogClassAlias))             throw new ArgumentException($"{nameof(mfilesLogClassAlias)} cannot be null or empty; use something like \"CL.Serilog.MFilesObjectLogSink.Log\"", nameof(mfilesLogClassAlias));

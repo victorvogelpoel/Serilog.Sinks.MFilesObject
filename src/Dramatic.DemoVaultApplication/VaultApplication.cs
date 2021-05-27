@@ -7,6 +7,7 @@
 using System;
 using System.Diagnostics;
 using System.Text;
+using Dramatic.LogToMFiles;
 using MFiles.VAF;
 using MFiles.VAF.Common;
 using MFiles.VAF.Configuration;
@@ -143,7 +144,7 @@ namespace DemoVaultApplication
                     var batchedLogMessage = _logEventBuffer.ToString();
                     _logEventBuffer.Clear();
 
-                    var repository = new MFilesLogRepository(this.PermanentVault,
+                    var repository = new MFilesLogMessageRepository(this.PermanentVault,
                                                              mfilesLogObjectNamePrefix:     $"[{Environment.MachineName.ToUpperInvariant()}] VaultApp-{ApplicationDefinition.Name}-Log-",
                                                              mfilesLogObjectTypeAlias:      _loggingStructureConfig.LogObjectTypeAlias,
                                                              mfilesLogClassAlias:           _loggingStructureConfig.LogClassAlias,

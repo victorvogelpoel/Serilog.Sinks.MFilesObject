@@ -1,22 +1,16 @@
-﻿// AssemblyInfo.cs
-// 14-5-2021
-// Copyright 2021 Dramatic Development - Victor Vogelpoel
-// If this works, it was written by Victor Vogelpoel (victor@victorvogelpoel.nl).
-// If it doesn't, I don't know who wrote it.
-//
-using System.Reflection;
+﻿using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Serilog.Sinks.MFiles.ObjectType")]
-[assembly: AssemblyDescription("Serilog sink to write to an M-Files Log object in an attached Vault.")]
+[assembly: AssemblyTitle("Logging messages to a 'rolling' Log object in an M-Files vault")]
+[assembly: AssemblyDescription("Logging messages to a 'rolling' Log object in an M-Files vault")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Dramatic Development - Victor Vogelpoel")]
-[assembly: AssemblyProduct("Serilog.Sinks.MFilesObject")]
-[assembly: AssemblyCopyright("Copyright 2021 © Dramatic Development - Victor Vogelpoel")]
+[assembly: AssemblyProduct("Dramatic.LogToMFiles")]
+[assembly: AssemblyCopyright("Copyright © 2021 Dramatic Development - Victor Vogelpoel")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -26,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("50019bf2-d13f-4b84-8db5-6b635e498f23")]
+[assembly: Guid("4608499a-7a98-46ef-b5f2-5cfb1d298495")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -40,3 +34,5 @@ using System.Runtime.InteropServices;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyInformationalVersion("1.0.0.0")]
+
+

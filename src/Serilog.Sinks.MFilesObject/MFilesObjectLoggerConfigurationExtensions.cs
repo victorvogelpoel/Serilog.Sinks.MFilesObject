@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Dramatic.LogToMFiles;
 using MFilesAPI;
 using Serilog.Configuration;
 using Serilog.Core;
@@ -54,10 +55,10 @@ namespace Serilog
         public static LoggerConfiguration MFilesObject(
             this LoggerSinkConfiguration loggerSinkConfiguration,
             IVault vault,
-            string mfilesLogObjectNamePrefix        = MFilesObjectLogSink.DefaultMFilesLogObjectNamePrefix,
-            string mfilesLogObjectTypeAlias         = MFilesObjectLogSink.DefaultMFilesLogObjectTypeAlias,
-            string mfilesLogClassAlias              = MFilesObjectLogSink.DefaultMFilesLogClassAlias,
-            string mfilesLogMessagePropDefAlias     = MFilesObjectLogSink.DefaultMFilesLogMessagePropertyDefinitionAlias,
+            string mfilesLogObjectNamePrefix        = MFilesObjectLogSinkVaultStructure.DefaultMFilesLogObjectNamePrefix,
+            string mfilesLogObjectTypeAlias         = MFilesObjectLogSinkVaultStructure.DefaultMFilesLogObjectTypeAlias,
+            string mfilesLogClassAlias              = MFilesObjectLogSinkVaultStructure.DefaultMFilesLogClassAlias,
+            string mfilesLogMessagePropDefAlias     = MFilesObjectLogSinkVaultStructure.DefaultMFilesLogMessagePropertyDefinitionAlias,
             LogEventLevel restrictedToMinimumLevel  = LevelAlias.Minimum,
             int batchPostingLimit                   = MFilesObjectLogSink.DefaultBatchPostingLimit,
             TimeSpan? period                        = null,

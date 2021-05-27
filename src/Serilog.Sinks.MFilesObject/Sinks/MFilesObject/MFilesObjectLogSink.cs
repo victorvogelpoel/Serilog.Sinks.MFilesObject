@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Dramatic.LogToMFiles;
 using MFilesAPI;
 using Serilog.Configuration;
 using Serilog.Core;
@@ -22,10 +23,10 @@ namespace Serilog.Sinks.MFilesObject
 {
     public class MFilesObjectLogSink : IBatchedLogEventSink
     {
-        internal const string DefaultMFilesLogMessagePropertyDefinitionAlias    = "PD.Serilog.MFilesObjectLogSink.LogMessage";
-        internal const string DefaultMFilesLogObjectTypeAlias                   = "OT.Serilog.MFilesObjectLogSink.Log";
-        internal const string DefaultMFilesLogClassAlias                        = "CL.Serilog.MFilesObjectLogSink.Log";
-        internal const string DefaultMFilesLogObjectNamePrefix                  = "Log-";
+        //internal const string DefaultMFilesLogMessagePropertyDefinitionAlias    = "PD.Serilog.MFilesObjectLogSink.LogMessage";
+        //internal const string DefaultMFilesLogObjectTypeAlias                   = "OT.Serilog.MFilesObjectLogSink.Log";
+        //internal const string DefaultMFilesLogClassAlias                        = "CL.Serilog.MFilesObjectLogSink.Log";
+        //internal const string DefaultMFilesLogObjectNamePrefix                  = "Log-";
 
 
         public const int DefaultBatchPostingLimit                               = 1000;
@@ -34,8 +35,8 @@ namespace Serilog.Sinks.MFilesObject
         //static readonly TimeSpan RequiredLevelCheckInterval                     = TimeSpan.FromMinutes(2);
         //private DateTime _nextRequiredLevelCheckUtc                             = DateTime.UtcNow.Add(RequiredLevelCheckInterval);
 
-        private readonly ControlledLevelSwitch _controlledSwitch;
-        private readonly MFilesLogRepository _mfilesLogRepository;
+        //private readonly ControlledLevelSwitch _controlledSwitch;
+        private readonly MFilesLogMessageRepository _mfilesLogRepository;
         private readonly ITextFormatter _formatter;
 
         /// <summary>
@@ -53,7 +54,7 @@ namespace Serilog.Sinks.MFilesObject
             //_controlledSwitch       = controlledSwitch ?? throw new ArgumentNullException(nameof(controlledSwitch));
             _formatter              = formatter ?? throw new ArgumentNullException(nameof(formatter));
 
-            _mfilesLogRepository    = new MFilesLogRepository(vault, mfilesLogObjectNamePrefix, mfilesLogObjectTypeAlias, mfilesLogClassAlias, mfilesLogMessagePropDefAlias);
+            _mfilesLogRepository    = new MFilesLogMessageRepository(vault, mfilesLogObjectNamePrefix, mfilesLogObjectTypeAlias, mfilesLogClassAlias, mfilesLogMessagePropDefAlias);
         }
 
         //public async Task OnEmptyBatchAsync()

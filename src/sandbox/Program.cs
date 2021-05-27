@@ -10,6 +10,8 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Dramatic.LogToMFiles;
+using MFilesAPI;
 using Serilog;
 using Serilog.Core;
 using Serilog.Events;

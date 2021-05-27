@@ -22,10 +22,10 @@ namespace Serilog
         public static LoggerConfiguration DelegatingTextSink(
                     this LoggerSinkConfiguration loggerSinkConfiguration,
                     Action<String> write,
-                    LogEventLevel restrictedToMinimumLevel      = LevelAlias.Minimum,
-                    string outputTemplate                       = MFilesObjectLoggerConfigurationExtensions.DefaultMFilesObjectOutputTemplate,
-                    IFormatProvider formatProvider              = null,
-                    LoggingLevelSwitch levelSwitch              = null
+                    LogEventLevel restrictedToMinimumLevel  = LevelAlias.Minimum,
+                    string outputTemplate                   = MFilesObjectLoggerConfigurationExtensions.DefaultMFilesObjectOutputTemplate,
+                    IFormatProvider formatProvider          = null,
+                    LoggingLevelSwitch levelSwitch          = null
                     )
         {
             if (loggerSinkConfiguration == null)    throw new ArgumentNullException(nameof(loggerSinkConfiguration));

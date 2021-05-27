@@ -154,7 +154,9 @@ namespace DemoVaultApplication
                 }
             });
 
+#pragma warning disable CS0618 // Type or member is obsolete
             this.BackgroundOperations.StartRecurringBackgroundOperation("Periodic Log-to-MFilesObject operation", TimeSpan.FromSeconds(5), _flushLogAction);
+#pragma warning restore CS0618 // Type or member is obsolete
 
             base.StartApplication();
         }

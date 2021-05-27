@@ -182,7 +182,8 @@ namespace DemoVaultApplication
         protected override void UninitializeApplication(Vault vault)
         {
             // IMPORTANT to flush any sink
-            if (_flushLogAction != null) { _flushLogAction(); }
+            _flushLogAction?.Invoke();
+
             Log.CloseAndFlush();
 
             base.UninitializeApplication(vault);

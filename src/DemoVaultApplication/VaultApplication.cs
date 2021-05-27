@@ -28,9 +28,9 @@ namespace DemoVaultApplication
     public class VaultApplication
         : ConfigurableVaultApplicationBase<Configuration>
     {
-        private readonly LoggingLevelSwitch  _loggingLevelSwitch = new LoggingLevelSwitch(LogEventLevel.Information);
-        private StringBuilder _logEventBuffer = new StringBuilder();
-        private Action _flushLogAction;
+        private readonly LoggingLevelSwitch                             _loggingLevelSwitch = new LoggingLevelSwitch(LogEventLevel.Information);
+        private readonly StringBuilder                                  _logEventBuffer = new StringBuilder();
+        private Action                                                  _flushLogAction;
         private readonly MFilesObjectLogSinkVaultStructureConfiguration _loggingStructureConfig = new MFilesObjectLogSinkVaultStructureConfiguration
         {
             LogObjectTypeNameSingular   = "Log",

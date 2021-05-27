@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Serilog.Sinks.MFilesSysUtilsEventLogSink")]
 [assembly: AssemblyDescription("Serilog sink to write to an M-Files SysUtils EventLog")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Dramatic Development - Victor Vogelpoel")]
 [assembly: AssemblyProduct("Serilog.Sinks.MFilesSysUtilsEventLogSink")]
-[assembly: AssemblyCopyright("Copyright 2021 © Dramatic Development")]
+[assembly: AssemblyCopyright("Copyright 2021 © Dramatic Development - Victor Vogelpoel")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

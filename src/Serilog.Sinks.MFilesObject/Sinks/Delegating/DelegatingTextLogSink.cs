@@ -15,15 +15,25 @@ namespace Serilog.Sinks.Delegating
         private readonly Action<String> _write;
         private readonly ITextFormatter _formatter;
 
+        /// <summary>
+        /// A sink that formats the log event using output template and writes the result using the Action.
+        /// </summary>
+        /// <param name="write">The Action delegate to write the formatted log event.</param>
+        /// <param name="formatter">a text formatter for converting the log event into a string with event arguments</param>
         public DelegatingTextLogSink(Action<String> write, ITextFormatter formatter)
         {
             _write      = write ?? throw new ArgumentNullException(nameof(write));
             _formatter  = formatter ?? throw new ArgumentNullException(nameof(formatter));
         }
 
+        /// <summary>
+        /// Emit the log event formatted to the Action writer.
+        /// </summary>
+        /// <param name="logEvent"></param>
         public void Emit(LogEvent logEvent)
         {
-            //logEvent.RenderMessage()
+            // Format the event according to the OutputTemplate, eg "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}"
+            // see https://github.com/serilog/serilog-sinks-console#output-templates
 
             using (var s = new StringWriter())
             {

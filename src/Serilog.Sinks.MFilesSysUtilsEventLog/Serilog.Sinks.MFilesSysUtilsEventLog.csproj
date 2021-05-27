@@ -55,6 +55,9 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="serilog-sink-nuget.png" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="Serilog.Sinks.MFilesSysUtilsEventLog.licenseheader" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

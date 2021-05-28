@@ -128,9 +128,9 @@ namespace DemoVaultApplication
 
         private void WriteToVaultApplicationBuffer(string formattedLogMessage)
         {
-            _logEventBuffer.AppendLine(formattedLogMessage.TrimEnd(new char[]{ '\r', '\n'}));
+            _logEventBuffer.AppendLine(formattedLogMessage.TrimEnd(Environment.NewLine.ToCharArray()));
 
-            // Note that the backgroundoperation will flush these messages to a Log object, as the PermanentVault is a valid reference.
+            // Note that the backgroundoperation will flush these messages to a Log object later, and will use the PermanentVault is a valid vault reference.
         }
 
 

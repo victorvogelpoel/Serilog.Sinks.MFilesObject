@@ -2,7 +2,12 @@
 
 Serilog.Sinks.MFilesObject is a Serilog structured logging sink that emits LogEvents to a "rolling" Log object in an M-Files vault.
 
-This is a **proof of concept** project by Victor Vogelpoel. See the disclaimer.
+
+[![Build](https://github.com/victorvogelpoel/Serilog.Sinks.MFilesObject/actions/workflows/Build%20on%20push.yml/badge.svg)](https://github.com/victorvogelpoel/Serilog.Sinks.MFilesObject/actions/workflows/Build%20on%20push.yml)
+
+[![GitHub Actions Build History](https://buildstats.info/github/chart/victorvogelpoel/Serilog.Sinks.MFilesObject?showStats=false)](https://github.com/victorvogelpoel/Serilog.Sinks.MFilesObject/actions)
+
+This solution is a **proof of concept** project by Victor Vogelpoel and is provided AS-IS. See the disclaimer.
 
 The solution contains two sinks, `Serilog.Sinks.MFilesObject` and `Serilog.Sinks.MFilesSysUtilsEventLog`, a sample sandbox console application, a sample vault application and a backup of its accompanying sample vault.
 
@@ -12,7 +17,7 @@ In a Vault Application, the only native logging is to the Windows Event log. Unf
 
 This Serilog sink adds the necessary Log object type, class and property definition structure to the vault and emits LogEvents to a "rolling" Log object in the vault.
 If the sink doesn't find a Log object with todays date in the name, it creates one and adds the log message. An subsequent log messages are appended to the object's LogMessage.
-When the MultiLineText field limit of 10.000 characters is reached in a Log object, the remaining logmessage is added to a new Log object with a sequence number in its title.
+When the MultiLineText field limit of 10.000 characters is reached in a Log object, the remaining logmessage is added to a *new Log object* with a sequence number in its title.
 
 To prevent a strain on the vault because of logging, any and all log messages are batched and appended after 5 seconds of collecting.
 
@@ -22,8 +27,7 @@ The default vault structure for logging is as follows and is created in the vaul
 - Class `Log` - alias `"CL.Serilog.MFilesObjectLogSink.Log"`
 - Property Def `LogMessage` MultilineText - alias `PD.Serilog.MFilesObjectLogSink.LogMessage`
 
-You can, however, use your own structure and aliases, as long as you configure this when creating the logger.
-
+You can, however, use your own structure and aliases, as long as you configure this when creating the logger sink.
 
 ## DISCLAIMER
 
@@ -53,14 +57,14 @@ Another sample is `SANDBOX` that logs on to the sample vault, ensures Log struct
 
 Logging in your application to this sink will create one or more Log objects in the vault. Its LogMessage property will look like below.
 
-In this screenshot, you'll see several Log objects with a date in the title and several have a sequence number in the title, eg "`(3)`"
+In this screen-shot, you'll see several Log objects with a date in the title and several have a sequence number in the title, eg "`(3)`"
 
-![Screenshot Log object and metadata card with LogMessage](./assets/screenshot-logobject-and-message.png)
+![Screen-shot Log object and metadata card with LogMessage](./assets/screenshot-logobject-and-message.png)
 
 ## Getting the samples to work
 
 1. Import the sample vault `"src\DemoVault\Serilog.Sinks.MFilesObject-empty,no Log structure.mfb"` to your local M-Files server, naming it `"Serilog.Sinks.MFilesObject"` and preserving the Vault GUID; Grant access to M-files user accounts.
-1. Add the vault connection credentials to the M-Files desktop desktop settings and open an M-Files Explorer.
+1. Add the vault connection credentials to the M-Files desktop settings and open an M-Files Explorer.
 1. Open the solution in Visual Studio, and build the `Debug` configuration (not `DebugWithoutDeployment`). Visual Studio will install the vault application into the vault. When installed correctly, the M-Files Admin will show the vault application `Serilog.Sinks.MFilesObject Demo` at `Configurations` > `Other Applications` and even have logged something already.
 1. In the M-Files desktop app, add and check-in a document for class `Document`. The vault application will be triggered for event `BeforeCheckInChangesFinalize` and log the change. Refresh the desktop app to see the new or updated Log object.
 
@@ -241,5 +245,9 @@ The `Sandbox.csproj` project is simply a console application that logs on to the
 - The `MFilesObject` sink implementation builds upon the `Serilog.Sinks.PeriodicBatching` to collect LogEvents before sending these off to the destination Log object in the vault. After installation, the vault will have an object type, class and property definition for logging.
 - The demo vault application updates the logging level when saving the vault application configuration. The configured level is translated to LoggingLevelSwitch for the `Serilog.Sinks.MFilesObject` sink.
 
+## Acknowledgments
 
+A big thanks to:
+
+- Chris Plenter, for peer reviewing and M-Files technical advising.
 

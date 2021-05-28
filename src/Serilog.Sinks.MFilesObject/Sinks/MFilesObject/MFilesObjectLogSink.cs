@@ -23,19 +23,10 @@ namespace Serilog.Sinks.MFilesObject
 {
     public class MFilesObjectLogSink : IBatchedLogEventSink
     {
-        //internal const string DefaultMFilesLogMessagePropertyDefinitionAlias    = "PD.Serilog.MFilesObjectLogSink.LogMessage";
-        //internal const string DefaultMFilesLogObjectTypeAlias                   = "OT.Serilog.MFilesObjectLogSink.Log";
-        //internal const string DefaultMFilesLogClassAlias                        = "CL.Serilog.MFilesObjectLogSink.Log";
-        //internal const string DefaultMFilesLogObjectNamePrefix                  = "Log-";
+        public const int DefaultBatchPostingLimit                           = 1000;
+        public const int DefaultQueueSizeLimit                              = 100000;
+        public static readonly TimeSpan DefaultPeriod                       = TimeSpan.FromSeconds(5);
 
-
-        public const int DefaultBatchPostingLimit                               = 1000;
-        public const int DefaultQueueSizeLimit                                  = 100000;
-        public static readonly TimeSpan DefaultPeriod                           = TimeSpan.FromSeconds(5);
-        //static readonly TimeSpan RequiredLevelCheckInterval                     = TimeSpan.FromMinutes(2);
-        //private DateTime _nextRequiredLevelCheckUtc                             = DateTime.UtcNow.Add(RequiredLevelCheckInterval);
-
-        //private readonly ControlledLevelSwitch _controlledSwitch;
         private readonly MFilesLogMessageRepository _mfilesLogRepository;
         private readonly ITextFormatter _formatter;
 
@@ -47,23 +38,12 @@ namespace Serilog.Sinks.MFilesObject
         /// <param name="mfilesLogObjectTypeAlias">Alias for the Log ObjectType</param>
         /// <param name="mfilesLogClassAlias">Alias for the Log ClassObject</param>
         /// <param name="mfilesLogMessagePropDefAlias">Alias for the LogMessage PropertyDefinition</param>
-        /// <param name="controlledSwitch">Serilog switch to use for minimal log level</param>
         /// <param name="formatter">a text formatter for converting the log event into a string with event arguments</param>
-        public MFilesObjectLogSink(IVault vault, string mfilesLogObjectNamePrefix, string mfilesLogObjectTypeAlias, string mfilesLogClassAlias, string mfilesLogMessagePropDefAlias, ControlledLevelSwitch controlledSwitch, ITextFormatter formatter)
+        public MFilesObjectLogSink(IVault vault, string mfilesLogObjectNamePrefix, string mfilesLogObjectTypeAlias, string mfilesLogClassAlias, string mfilesLogMessagePropDefAlias, ITextFormatter formatter)
         {
-            //_controlledSwitch       = controlledSwitch ?? throw new ArgumentNullException(nameof(controlledSwitch));
             _formatter              = formatter ?? throw new ArgumentNullException(nameof(formatter));
-
             _mfilesLogRepository    = new MFilesLogMessageRepository(vault, mfilesLogObjectNamePrefix, mfilesLogObjectTypeAlias, mfilesLogClassAlias, mfilesLogMessagePropDefAlias);
         }
-
-        //public async Task OnEmptyBatchAsync()
-        //{
-        //    if (_controlledSwitch.IsActive && _nextRequiredLevelCheckUtc < DateTime.UtcNow)
-        //    {
-        //        await EmitBatchAsync(Enumerable.Empty<LogEvent>());
-        //    }
-        //}
 
         public Task OnEmptyBatchAsync()
         {

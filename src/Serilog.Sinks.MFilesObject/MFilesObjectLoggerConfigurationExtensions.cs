@@ -64,7 +64,6 @@ namespace Serilog
             TimeSpan? period                        = null,
             string outputTemplate                   = MFilesObjectLoggerConfigurationExtensions.DefaultMFilesObjectOutputTemplate,
             IFormatProvider formatProvider          = null,
-            LoggingLevelSwitch controlLevelSwitch   = null,
             int queueSizeLimit                      = MFilesObjectLogSink.DefaultQueueSizeLimit
             )
         {
@@ -75,11 +74,10 @@ namespace Serilog
             if (queueSizeLimit < 0)                 throw new ArgumentOutOfRangeException(nameof(queueSizeLimit), "Queue size limit must be non-zero.");
 
             var defaultedPeriod                     = period ?? MFilesObjectLogSink.DefaultPeriod;
-            var controlledSwitch                    = new ControlledLevelSwitch(controlLevelSwitch);
             var formatter                           = new MessageTemplateTextFormatter(outputTemplate, formatProvider);
 
             // Create the M-Files object sink
-            var mfilesSink                          = new MFilesObjectLogSink(vault, mfilesLogObjectNamePrefix, mfilesLogObjectTypeAlias, mfilesLogClassAlias, mfilesLogMessagePropDefAlias, controlledSwitch, formatter);
+            var mfilesSink                          = new MFilesObjectLogSink(vault, mfilesLogObjectNamePrefix, mfilesLogObjectTypeAlias, mfilesLogClassAlias, mfilesLogMessagePropDefAlias, formatter);
 
             var options = new PeriodicBatchingSinkOptions
             {
@@ -91,7 +89,7 @@ namespace Serilog
             // Wrap the MFilesObjectLogSink into a PeriodicBatchingSink for batching emitting events to an M-Files Log object.
             ILogEventSink batchedSink               = new PeriodicBatchingSink(mfilesSink, options);
 
-            return loggerSinkConfiguration.Conditional(controlledSwitch.IsIncluded, wt => wt.Sink(batchedSink, restrictedToMinimumLevel));
+            return loggerSinkConfiguration.Sink(batchedSink, restrictedToMinimumLevel);
         }
     }
 }

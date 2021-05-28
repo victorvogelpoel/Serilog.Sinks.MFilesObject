@@ -46,7 +46,6 @@
     <Compile Include="MFilesObjectLoggerConfigurationExtensions.cs" />
     <Compile Include="Properties\FileVersionInfo.cs" />
     <Compile Include="Sinks\Delegating\DelegatingTextLogSink.cs" />
-    <Compile Include="Sinks\MFilesObject\ControlledLevelSwitch.cs" />
     <Compile Include="Sinks\MFilesObject\MFilesObjectLogSink.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -60,6 +59,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Serilog.Sinks.MFilesObject.licenseheader" />
+    <None Include="Serilog.Sinks.MFilesObject.nuspec" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Dramatic.LogToMFiles\Dramatic.LogToMFiles.csproj">
@@ -77,6 +77,10 @@
     <FileVersionDate>$([System.DateTime]::Now.ToString("dd"))</FileVersionDate>
     <FileVersionTime>$([System.DateTime]::Now.ToString("HHmm"))</FileVersionTime>
     <AssemblyFileVersionAttribute>[assembly:System.Reflection.AssemblyFileVersion("$(FileVersionYear).$(FileVersionMonth).$(FileVersionDate).$(FileVersionTime)")]</AssemblyFileVersionAttribute>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <Target Name="BeforeBuild">
     <WriteLinesToFile File="Properties\FileVersionInfo.cs" Lines="$(AssemblyFileVersionAttribute)" Overwrite="true">

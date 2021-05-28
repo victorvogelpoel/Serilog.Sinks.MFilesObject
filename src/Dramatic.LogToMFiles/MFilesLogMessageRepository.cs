@@ -117,7 +117,6 @@ namespace Dramatic.LogToMFiles
 
         /// <summary>
         /// Emit the batched log messages to one or more M-Files Log objects.
-        ///
         /// If no Log object can be found for today, it will be created and at most 10.000 characters of the batched log message will be stored.
         /// If there is at least one existing Log object for today, then the batched log message will be appended to the LogMessage property of the last created Log object (up to 10.000 characters)
         /// Any remaining characters will be stored in one or more new Log Objects, up to 10.000 characters per object.

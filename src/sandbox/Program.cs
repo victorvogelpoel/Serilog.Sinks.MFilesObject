@@ -33,7 +33,7 @@ namespace SANDBOX
                 var vault               = serverApp.LogInAsUserToVault("{D449E438-89EE-42BB-9769-B862E9B1B140}");  // The "Serilog.Sinks.MFilesObject" demo vault
 
 
-                // Add Vault structure for logging if it isn't there: OT "Log", CL "Log" and PD "LogMessage"
+                // Define vault structure for logging if it isn't there: OT "Log", CL "Log" and PD "LogMessage" and aliases to find them back.
                 var structureConfig = new MFilesObjectLogSinkVaultStructureConfiguration
                 {
                     LogObjectTypeNameSingular   = "Log",
@@ -45,39 +45,71 @@ namespace SANDBOX
                     LogMessagePropDefAlias      = "PD.Serilog.MFilesObjectLogSink.LogMessage"
                 };
 
-                // Ensure that the structure for Logging object and class is present in the vault
+                // Ensure that the structure for Logging object and class is present in the vault (needs full permissions on vault)
                 vault.EnsureLogSinkVaultStructure(structureConfig);
 
 
                 // -------------------------------------------------------------------------------------------------------
                 // Now the fun starts!
+
+                // Define the minimal log level for the log pipeline; any log level below this (eg Verbose, Debug), will not go through.
                 var loggingLevelSwitch = new LoggingLevelSwitch(LogEventLevel.Information);
 
                 // Build a Serilog logger with MFilesObjectLogSink and Console
                 Log.Logger = new LoggerConfiguration()
                     .Enrich.FromLogContext()
                     .MinimumLevel.ControlledBy(loggingLevelSwitch)
-                    .WriteTo.DelegatingTextSink(w => WriteToBuffer(w), outputTemplate:"[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}", levelSwitch:loggingLevelSwitch)
-                    .WriteTo.MFilesObject(vault, mfilesLogObjectNamePrefix:"LoggingFromSandboxDemo-Log-")       // Log to an 'rolling' object in the vault, eg objectType "Log" with a multiline text property.
-                    .WriteTo.Console()                                                                          // Write to the console with the same Log.xx statements to see them in the console terminal :-)
+
+                    // Sample DelegatingTextSink to buffer formatted log events, all log levels
+                    .WriteTo.DelegatingTextSink(w => BufferAllLogEvents(w), outputTemplate:"[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
+
+                    // Sample DelegatingTextSink to buffer formatted ERROR log events (ONLY ERROR level or above).
+                    .WriteTo.DelegatingTextSink(w => BufferErrorEvents(w), outputTemplate:"[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}", restrictedToMinimumLevel: LogEventLevel.Error)
+
+                    // Log events to an 'rolling' Log object in the vault with a MultiLineText property.
+                    .WriteTo.MFilesObject(  vault,
+                                            mfilesLogObjectNamePrefix:      "LoggingFromSandboxDemo-Log-",
+                                            mfilesLogObjectTypeAlias:       structureConfig.LogObjectTypeAlias,
+                                            mfilesLogClassAlias:            structureConfig.LogClassAlias,
+                                            mfilesLogMessagePropDefAlias:   structureConfig.LogMessagePropDefAlias,
+                                            outputTemplate:                 "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
+
+                    // Write to colored console terminal :-)
+                    .WriteTo.Console()
+
+                    //.WriteTo.File(@"c:\somepath\Log-.txt",
+                    //                outputTemplate:"[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}",
+                    //                restrictedToMinimumLevel:LogEventLevel.Information,
+                    //                rollingInterval: RollingInterval.Day)
+
                     .CreateLogger();
 
 
                 // -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
                 // Now log messages
-                // NOTE that these messages are BATCHED and stored in an new or existing M-Files object with the name "Log-yyyy-MM-dd" every 5 seconds.
-                // Log messages do NOT appear immediately in the vault as a Log object, but are collected and pushed every 5 secs.
-                Log.Information("This adds this log message to a Log object in the vault with the name \"DemoSandbox-Log-{Today}\"", DateTime.Today.ToString("yyyy-MM-dd"));
+                // With above configuration, each Log.xxxx() statement will log to the delegating sinks AND and M-Files Log object, AND to the console.
+                // Note that the Log messages do NOT appear immediately in the vault as a Log object, but are collected and pushed every 5 secs.
 
-                Log.Information("This adds another info message to the {LogOT} object", structureConfig.LogObjectTypeNameSingular); // NOTE, structured logging, NOT C# string intrapolation!
+                Log.Information("This adds this log message to a Log object in the vault with the name \"LoggingFromSandboxDemo-Log-{Today}\"", DateTime.Today.ToString("yyyy-MM-dd"));
+
+                Log.Information("This adds another info message to the {LogOT} object", structureConfig.LogObjectTypeNameSingular);     // NOTE, structured logging, NOT C# string intrapolation!
 
                 Log.Warning("And now a warning");
 
                 Log.Error("And an ERROR!");
 
-                // NOTE: in M-Files vault desktop application, explicitly search for ObjectType = "Log"
+                // NOTE: in M-Files vault desktop application, navigate to objects of class "Log"
+
+                Console.WriteLine("-----------------------------------------------------------------------------------------");
+                Console.WriteLine("This is what the AllLogEvents DelegatingTextSink buffered:");
+                Console.WriteLine(_logEventBuffer.ToString());
+                Console.WriteLine("");
+                Console.WriteLine("And this is what the ErrorEvents DelegatingTextSink buffered (should be ONLY errors):");
+                Console.WriteLine(_errorLogEventBuffer.ToString());
 
                 Thread.Sleep(6000);
+
+
 
                 // IMPORTANT to flush out the batched messages to the vault, at the end of the application, otherwise messages within the last 5 seconds would not end up in the vault!
                 Log.CloseAndFlush();
@@ -102,12 +134,20 @@ namespace SANDBOX
             Console.ReadLine();
         }
 
+
+
+
         private static StringBuilder _logEventBuffer = new StringBuilder();
-        private static void WriteToBuffer(string formattedLogMessage)
+        private static void BufferAllLogEvents(string formattedLogMessage)
         {
-            _logEventBuffer.AppendLine(formattedLogMessage);
+            _logEventBuffer.AppendLine(formattedLogMessage.TrimEnd(Environment.NewLine.ToCharArray()));
         }
 
+        private static StringBuilder _errorLogEventBuffer = new StringBuilder();
+        private static void BufferErrorEvents(string formattedLogMessage)
+        {
+            _errorLogEventBuffer.AppendLine(formattedLogMessage.TrimEnd(Environment.NewLine.ToCharArray()));
+        }
 
         private static void OutputException(Exception ex)
         {

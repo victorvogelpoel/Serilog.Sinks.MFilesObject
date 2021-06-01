@@ -27,7 +27,7 @@ namespace Serilog.Sinks.MFilesObject
         public const int DefaultQueueSizeLimit                              = 100000;
         public static readonly TimeSpan DefaultPeriod                       = TimeSpan.FromSeconds(5);
 
-        private readonly MFilesLogMessageRepository _mfilesLogRepository;
+        private readonly MFilesLogObjectRepository _mfilesLogRepository;
         private readonly ITextFormatter _formatter;
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace Serilog.Sinks.MFilesObject
         public MFilesObjectLogSink(IVault vault, string mfilesLogObjectNamePrefix, string mfilesLogObjectTypeAlias, string mfilesLogClassAlias, string mfilesLogMessagePropDefAlias, ITextFormatter formatter)
         {
             _formatter              = formatter ?? throw new ArgumentNullException(nameof(formatter));
-            _mfilesLogRepository    = new MFilesLogMessageRepository(vault, mfilesLogObjectNamePrefix, mfilesLogObjectTypeAlias, mfilesLogClassAlias, mfilesLogMessagePropDefAlias);
+            _mfilesLogRepository    = new MFilesLogObjectRepository(vault, mfilesLogObjectNamePrefix, mfilesLogObjectTypeAlias, mfilesLogClassAlias, mfilesLogMessagePropDefAlias);
         }
 
         public Task OnEmptyBatchAsync()

@@ -14,7 +14,7 @@ using MFilesAPI;
 
 namespace Dramatic.LogToMFiles
 {
-    public class MFilesLogMessageRepository
+    public class MFilesLogObjectRepository
     {
         private readonly IVault _vault;
 
@@ -39,7 +39,7 @@ namespace Dramatic.LogToMFiles
         /// <param name="mfilesLogMessagePropDefAlias">Alias for the LogMessage PropertyDefinition</param>
         /// <param name="controlledSwitch">Serilog switch to use for minimal log level</param>
         /// <param name="formatProvider"></param>
-        public MFilesLogMessageRepository(  IVault vault,
+        public MFilesLogObjectRepository(  IVault vault,
                                             string mfilesLogObjectNamePrefix    = MFilesObjectLogSinkVaultStructure.DefaultMFilesLogObjectNamePrefix,
                                             string mfilesLogObjectTypeAlias     = MFilesObjectLogSinkVaultStructure.DefaultMFilesLogObjectTypeAlias,
                                             string mfilesLogClassAlias          = MFilesObjectLogSinkVaultStructure.DefaultMFilesLogClassAlias,

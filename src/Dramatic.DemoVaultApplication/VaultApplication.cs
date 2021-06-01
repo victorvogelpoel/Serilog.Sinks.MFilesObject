@@ -105,7 +105,8 @@ namespace DemoVaultApplication
                 .MinimumLevel.ControlledBy(_loggingLevelSwitch)
                 // Using a delegate to buffer log messages that are flushed later with a background job
                 .WriteTo.DelegatingTextSink(w => WriteToVaultApplicationBuffer(w), outputTemplate:"[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}", levelSwitch:_loggingLevelSwitch)
-                .WriteTo.MFilesSysUtilsEventLogSink(restrictedToMinimumLevel: sysUtilsEventLogLevel)   // Only write errors to the EventLog.
+                // Write to the Windows EventLog, but only errors or above
+                .WriteTo.MFilesSysUtilsEventLogSink(restrictedToMinimumLevel: sysUtilsEventLogLevel)
                 .CreateLogger();
 
 
@@ -144,7 +145,7 @@ namespace DemoVaultApplication
                     var batchedLogMessage = _logEventBuffer.ToString();
                     _logEventBuffer.Clear();
 
-                    var repository = new MFilesLogMessageRepository(this.PermanentVault,
+                    var repository = new MFilesLogObjectRepository(this.PermanentVault,
                                                              mfilesLogObjectNamePrefix:     $"[{Environment.MachineName.ToUpperInvariant()}] VaultApp-{ApplicationDefinition.Name}-Log-",
                                                              mfilesLogObjectTypeAlias:      _loggingStructureConfig.LogObjectTypeAlias,
                                                              mfilesLogClassAlias:           _loggingStructureConfig.LogClassAlias,

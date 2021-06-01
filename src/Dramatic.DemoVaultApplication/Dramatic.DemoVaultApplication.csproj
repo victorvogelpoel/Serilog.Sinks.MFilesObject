@@ -95,7 +95,7 @@
       <Name>Serilog.Sinks.MFilesObject</Name>
     </ProjectReference>
     <ProjectReference Include="..\Serilog.Sinks.MFilesSysUtilsEventLog\Serilog.Sinks.MFilesSysUtilsEventLog.csproj">
-      <Project>{f14fe73b-7dc8-4dc3-bafc-ee5a2b72963a}</Project>
+      <Project>{019b8ca5-ce8d-4117-9445-70190f92395c}</Project>
       <Name>Serilog.Sinks.MFilesSysUtilsEventLog</Name>
     </ProjectReference>
   </ItemGroup>

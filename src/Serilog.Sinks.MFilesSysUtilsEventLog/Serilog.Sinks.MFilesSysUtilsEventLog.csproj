@@ -1,75 +1,29 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{F14FE73B-7DC8-4DC3-BAFC-EE5A2B72963A}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Serilog</RootNamespace>
-    <AssemblyName>Serilog.Sinks.MFilesSysUtilsEventLog</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <Deterministic>true</Deterministic>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="MFilesSysUtilsEventLogSinkExtensions.cs" />
-    <Compile Include="Properties\FileVersionInfo.cs" />
-    <Compile Include="Sinks\MFilesSysUtilsEventLog\MFilesSysUtilsEventLogSink.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="MFiles.VAF">
-      <Version>2.2.0.11</Version>
-    </PackageReference>
-    <PackageReference Include="Serilog">
-      <Version>2.10.0</Version>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="serilog-sink-nuget.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Serilog.Sinks.MFilesSysUtilsEventLog.licenseheader" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <FileVersionYear>$([System.DateTime]::Now.ToString("yyyy"))</FileVersionYear>
-    <FileVersionMonth>$([System.DateTime]::Now.ToString("MM"))</FileVersionMonth>
-    <FileVersionDate>$([System.DateTime]::Now.ToString("dd"))</FileVersionDate>
-    <FileVersionTime>$([System.DateTime]::Now.ToString("HHmm"))</FileVersionTime>
-    <AssemblyFileVersionAttribute>[assembly:System.Reflection.AssemblyFileVersion("$(FileVersionYear).$(FileVersionMonth).$(FileVersionDate).$(FileVersionTime)")]</AssemblyFileVersionAttribute>
-  </PropertyGroup>
-  <Target Name="BeforeBuild">
-    <WriteLinesToFile File="Properties\FileVersionInfo.cs" Lines="$(AssemblyFileVersionAttribute)" Overwrite="true">
-    </WriteLinesToFile>
-  </Target>
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFrameworks>net45</TargetFrameworks>
+        <RootNamespace>Serilog</RootNamespace>
+        <Authors>Victor Vogelpoel</Authors>
+        <Company>Dramatic Development</Company>
+        <Copyright>Copyright (c) Dramatic Development - Victor Vogelpoel</Copyright>
+        <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+        <PackageTags>serilog M-Files MFiles VAF</PackageTags>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="MFiles.VAF" Version="2.2.0.11" />
+        <PackageReference Include="Serilog" Version="2.10.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Properties\" />
+    </ItemGroup>
+
+    <Target Name="PostBuild" AfterTargets="Pack" Condition=" '$(Configuration)' == 'Release'">
+        <!--RemoveDir Directories="..\current" /-->
+        <Copy SourceFiles="$(OutputPath)$(PackageId).$(PackageVersion).nupkg" DestinationFolder="..\current" />
+    </Target>
+
+
 </Project>

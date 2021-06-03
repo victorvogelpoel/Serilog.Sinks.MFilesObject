@@ -17,7 +17,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dramatic.DemoVaultApplicati
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dramatic.LogToMFiles", "src\Dramatic.LogToMFiles\Dramatic.LogToMFiles.csproj", "{4608499A-7A98-46EF-B5F2-5CFB1D298495}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Serilog.Sinks.MFilesSysUtilsEventLog", "src\Serilog.Sinks.MFilesSysUtilsEventLog\Serilog.Sinks.MFilesSysUtilsEventLog.csproj", "{019B8CA5-CE8D-4117-9445-70190F92395C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

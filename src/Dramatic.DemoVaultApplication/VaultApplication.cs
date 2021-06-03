@@ -105,8 +105,6 @@ namespace DemoVaultApplication
                 .MinimumLevel.ControlledBy(_loggingLevelSwitch)
                 // Using a delegate to buffer log messages that are flushed later with a background job
                 .WriteTo.DelegatingTextSink(w => WriteToVaultApplicationBuffer(w), outputTemplate:"[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}", levelSwitch:_loggingLevelSwitch)
-                // Write to the Windows EventLog, but only errors or above
-                .WriteTo.MFilesSysUtilsEventLogSink(restrictedToMinimumLevel: sysUtilsEventLogLevel)
                 .CreateLogger();
 
 

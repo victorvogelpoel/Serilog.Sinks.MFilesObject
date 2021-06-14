@@ -5,8 +5,10 @@
 // If it doesn't, I don't know who wrote it.
 //
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,8 +25,12 @@ namespace SANDBOX
     {
         static void Main(string[] args)
         {
+            // Test();
+
+
+
             // -------------------------------------------------------------------------------------------------------
-            // IMPORTANT: THIS IS A PERSONAL LAB PROJECT BY VICTOR VOGELPOEL. YMMV!
+            // CAUTION: THIS IS A PERSONAL LAB PROJECT BY VICTOR VOGELPOEL. YMMV!
 
             try
             {
@@ -47,6 +53,15 @@ namespace SANDBOX
 
                 // Ensure that the structure for Logging object and class is present in the vault (needs full permissions on vault)
                 vault.EnsureLogSinkVaultStructure(structureConfig);
+
+
+
+
+                // ----------------------------------------------------------------------------
+                //// Do a test with MFilesLogRepository
+                //MFilesLogRepositoryTest(vault, "SANDBOX-Serilog.Sinks.MFilesObject Demo-Log-", structureConfig);
+                //return;
+
 
 
                 // -------------------------------------------------------------------------------------------------------
@@ -117,23 +132,50 @@ namespace SANDBOX
             }
             catch (Exception ex)
             {
-                if (ex is AggregateException aggrEx)  // AggregateException is an compound exception when something failed in a async/task function, like a Validation.
-                {
-                    foreach (var innerEx in aggrEx.InnerExceptions)
-                    {
-                        OutputException(innerEx);
-                    }
-                }
-                else
-                {
-                    OutputException(ex);
-                }
+                Console.WriteLine(ex.ToDetailedString());
+
+
+                //if (ex is AggregateException aggrEx)  // AggregateException is an compound exception when something failed in a async/task function, like a Validation.
+                //{
+                //    foreach (var innerEx in aggrEx.InnerExceptions)
+                //    {
+                //        OutputException(innerEx);
+                //    }
+                //}
+                //else
+                //{
+                //    OutputException(ex);
+                //}
             }
 
             Console.WriteLine("Hit enter to exit");
             Console.ReadLine();
         }
 
+
+
+
+        private static void MFilesLogRepositoryTest(IVault vault, String mfilesLogObjectNamePrefix, MFilesObjectLogSinkVaultStructureConfiguration structureConfig)
+        {
+            var repository = new MFilesLogObjectRepository(vault, mfilesLogObjectNamePrefix, structureConfig.LogObjectTypeAlias, structureConfig.LogClassAlias, structureConfig.LogMessagePropDefAlias);
+
+            repository.WriteLogMessage("Test message" + Environment.NewLine);
+
+            // Write a LARGE log message
+            string s            = $"Dit is een langere log string die in het log object terecht moet komen..\r\n";
+            int repeat          = 100;
+            int maxSize         = 1000;
+            var sblogMessage    = new StringBuilder(s.Length * repeat);
+
+            for(int cnt=1; cnt <= repeat; cnt++)
+            {
+                sblogMessage.Append($"{cnt}:{s}");
+            }
+            var logMessage = sblogMessage.ToString();
+
+            repository.WriteLogMessage(logMessage);
+
+        }
 
 
 
@@ -159,4 +201,174 @@ namespace SANDBOX
             }
         }
     }
+
+
+
+
+    // source: https://gist.github.com/RehanSaeed/c256828acc04d685d024
+    public static class ExceptionExtensions
+    {
+        public static string ToDetailedString(this Exception exception)
+        {
+            if (exception == null)
+            {
+                throw new ArgumentNullException(nameof(exception));
+            }
+
+            return ToDetailedString(exception, ExceptionOptions.Default);
+        }
+
+        public static string ToDetailedString(this Exception exception, ExceptionOptions options)
+        {
+            var stringBuilder = new StringBuilder();
+
+            AppendValue(stringBuilder, "Type", exception.GetType().FullName, options);
+
+            foreach (PropertyInfo property in exception
+                .GetType()
+                .GetProperties()
+                .OrderByDescending(x => string.Equals(x.Name, nameof(exception.Message), StringComparison.Ordinal))
+                .ThenByDescending(x => string.Equals(x.Name, nameof(exception.Source), StringComparison.Ordinal))
+                .ThenBy(x => string.Equals(x.Name, nameof(exception.InnerException), StringComparison.Ordinal))
+                .ThenBy(x => string.Equals(x.Name, nameof(AggregateException.InnerExceptions), StringComparison.Ordinal)))
+            {
+                var value = property.GetValue(exception, null);
+                if (value == null && options.OmitNullProperties)
+                {
+                    if (options.OmitNullProperties)
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        value = string.Empty;
+                    }
+                }
+
+                AppendValue(stringBuilder, property.Name, value, options);
+            }
+
+            return stringBuilder.ToString().TrimEnd('\r', '\n');
+        }
+
+        private static void AppendCollection(
+            StringBuilder stringBuilder,
+            string propertyName,
+            IEnumerable collection,
+            ExceptionOptions options)
+        {
+            stringBuilder.AppendLine($"{options.Indent}{propertyName} =");
+
+            var innerOptions = new ExceptionOptions(options, options.CurrentIndentLevel + 1);
+
+            var i = 0;
+            foreach (var item in collection)
+            {
+                var innerPropertyName = $"[{i}]";
+
+                if (item is Exception)
+                {
+                    var innerException = (Exception)item;
+                    AppendException(
+                        stringBuilder,
+                        innerPropertyName,
+                        innerException,
+                        innerOptions);
+                }
+                else
+                {
+                    AppendValue(
+                        stringBuilder,
+                        innerPropertyName,
+                        item,
+                        innerOptions);
+                }
+
+                ++i;
+            }
+        }
+
+        private static void AppendException(
+            StringBuilder stringBuilder,
+            string propertyName,
+            Exception exception,
+            ExceptionOptions options)
+        {
+            var innerExceptionString = ToDetailedString(
+                exception,
+                new ExceptionOptions(options, options.CurrentIndentLevel + 1));
+
+            stringBuilder.AppendLine($"{options.Indent}{propertyName} =");
+            stringBuilder.AppendLine(innerExceptionString);
+        }
+
+        private static string IndentString(string value, ExceptionOptions options)
+        {
+            return value.Replace(Environment.NewLine, Environment.NewLine + options.Indent);
+        }
+
+        private static void AppendValue(
+            StringBuilder stringBuilder,
+            string propertyName,
+            object value,
+            ExceptionOptions options)
+        {
+            if (value is DictionaryEntry)
+            {
+                DictionaryEntry dictionaryEntry = (DictionaryEntry)value;
+                stringBuilder.AppendLine($"{options.Indent}{propertyName} = {dictionaryEntry.Key} : {dictionaryEntry.Value}");
+            }
+            else if (value is Exception)
+            {
+                var innerException = (Exception)value;
+                AppendException(
+                    stringBuilder,
+                    propertyName,
+                    innerException,
+                    options);
+            }
+            else if (value is IEnumerable && !(value is string))
+            {
+                var collection = (IEnumerable)value;
+                if (collection.GetEnumerator().MoveNext())
+                {
+                    AppendCollection(
+                        stringBuilder,
+                        propertyName,
+                        collection,
+                        options);
+                }
+            }
+            else
+            {
+                stringBuilder.AppendLine($"{options.Indent}{propertyName} = {value}");
+            }
+        }
+    }
+
+    public struct ExceptionOptions
+    {
+        public static readonly ExceptionOptions Default = new ExceptionOptions()
+        {
+            CurrentIndentLevel = 0,
+            IndentSpaces = 4,
+            OmitNullProperties = true
+        };
+
+        internal ExceptionOptions(ExceptionOptions options, int currentIndent)
+        {
+            this.CurrentIndentLevel = currentIndent;
+            this.IndentSpaces = options.IndentSpaces;
+            this.OmitNullProperties = options.OmitNullProperties;
+        }
+
+        internal string Indent { get { return new string(' ', this.IndentSpaces * this.CurrentIndentLevel); } }
+
+        internal int CurrentIndentLevel { get; set; }
+
+        public int IndentSpaces { get; set; }
+
+        public bool OmitNullProperties { get; set; }
+    }
+
 }

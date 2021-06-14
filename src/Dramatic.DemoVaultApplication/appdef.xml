@@ -4,8 +4,8 @@
 			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 			xsi:noNamespaceSchemaLocation="http://www.m-files.com/schemas/appdef-server-v3.xsd">
   <guid>D449E438-89EE-42BB-9769-B862E9B1B140</guid>
-  <name>Serilog.Sinks.MFilesObject Demo</name>
-  <description>Demo application for demonstrating Serilog sink to M-Files object</description>
+  <name>MFilesObject sink sample vault application</name>
+  <description>Sample application for demonstrating Serilog logging using the Serilog.Sinks.MFilesObject sink</description>
   <publisher>Victor Vogelpoel</publisher>
   <version>0.1</version>
   <copyright>Dramatic Development</copyright>

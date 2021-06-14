@@ -14,7 +14,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("DemoVaultApplication")]
 [assembly: AssemblyDescription("Vault Application for demonstrating Serilog.Sink.MFilesObject")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Dramatic Development")]
 [assembly: AssemblyProduct("DemoVaultApplication")]
 [assembly: AssemblyCopyright("Copyright © 2021 Dramatic Development - Victor Vogelpoel")]
 [assembly: AssemblyTrademark("")]

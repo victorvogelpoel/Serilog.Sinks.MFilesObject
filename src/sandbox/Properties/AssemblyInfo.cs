@@ -12,11 +12,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("SANDBOX")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Console application to demonstrate Serilog Logging with Serilog.Sinks.MFilesObject")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Dramatic Development - Victor Vogelpoel")]
 [assembly: AssemblyProduct("SANDBOX")]
-[assembly: AssemblyCopyright("Copyright ©  2021")]
+[assembly: AssemblyCopyright("Copyright © 2021 Dramatic Development - Victor Vogelpoel")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

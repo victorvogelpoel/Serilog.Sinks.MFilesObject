@@ -19,11 +19,11 @@ namespace DemoVaultApplication
         [Security(ChangeBy = SecurityAttribute.UserLevel.SystemAdmin)]
         [JsonConfEditor(
             TypeEditor      = "options",
-            Options         = "{selectOptions:[\"None\", \"ERROR\", \"WARNING\", \"INFO\"]}",
+            Options         = "{selectOptions:[\"OFF\", \"ERROR\", \"WARNING\", \"INFO\"]}",
             Label           = "Log level",
             HelpText        = "Configure the level of logging messages to M-Files vault object",
             IsRequired      = false,
-            DefaultValue    = "None")]
-        public string LogLevel { get; set; } = "None";
+            DefaultValue    = "OFF")]
+        public string LogLevel { get; set; } = "OFF";
     }
 }

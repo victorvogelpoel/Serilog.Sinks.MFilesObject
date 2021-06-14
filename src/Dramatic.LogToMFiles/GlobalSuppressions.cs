@@ -5,7 +5,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[assembly: SuppressMessage("Security", "SCS0005:Weak random generator", Justification = "<Pending>", Scope = "member", Target = "~M:Dramatic.LogToMFiles.MFilesLogMessageRepository.IsObjectCheckedOut(MFilesAPI.ObjID,System.Int32)~System.Boolean")]
+[assembly: SuppressMessage("Security", "SCS0005:Weak random generator", Justification = "<Pending>", Scope = "member", Target = "~M:Dramatic.LogToMFiles.MFilesLogObjectRepository.IsObjectCheckedOut(MFilesAPI.ObjID,System.Int32)~System.Boolean")]
 [assembly: SuppressMessage("Critical Code Smell", "S927:Parameter names should match base declaration and other partial definitions", Justification = "<Pending>", Scope = "member", Target = "~M:Dramatic.LogToMFiles.LogObjectCreatedComparer.Compare(MFilesAPI.ObjectVersion,MFilesAPI.ObjectVersion)~System.Int32")]
-[assembly: SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>", Scope = "member", Target = "~M:Dramatic.LogToMFiles.MFilesLogMessageRepository.WriteLogMessage(System.String)")]
+[assembly: SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>", Scope = "member", Target = "~M:Dramatic.LogToMFiles.MFilesLogObjectRepository.WriteLogMessage(System.String)")]
 [assembly: SuppressMessage("Info Code Smell", "S1135:Track uses of \"TODO\" tags", Justification = "<Pending>", Scope = "type", Target = "~T:Dramatic.LogToMFiles.MFilesObjectLogSinkVaultStructure")]

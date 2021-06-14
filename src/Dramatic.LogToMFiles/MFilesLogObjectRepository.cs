@@ -159,13 +159,13 @@ namespace Dramatic.LogToMFiles
                     if (!lastLogObjectIsStillCheckedOut)
                     {
                         // Read the LogMessage MultiLineText prop of the Log object
-                        var logMessagePV        = _vault.ObjectPropertyOperations.GetProperty(lastLogObjVer, _mfilesLogMessagePropDefID );
+                        var logMessagePV            = _vault.ObjectPropertyOperations.GetProperty(lastLogObjVer, _mfilesLogMessagePropDefID );
 
                         // Check out the Log object and append the log message
-                        checkedOutLogObjectVersion = _vault.ObjectOperations.CheckOut(lastLogObjVer.ObjID);
+                        checkedOutLogObjectVersion  = _vault.ObjectOperations.CheckOut(lastLogObjVer.ObjID);
 
                         // Get at most (maxLogObjectMessageSize - logMessagePV.TypedValue.DisplayValue.length) characters from the logMessage...
-                        var logmessagePart = batchedLogMessage.TakeSubstringUpTotheLastSentence(index, maxLogObjectMessageSize - logMessagePV.TypedValue.DisplayValue.Length);
+                        var logmessagePart          = batchedLogMessage.TakeSubstringUpTotheLastSentence(index, maxLogObjectMessageSize - logMessagePV.TypedValue.DisplayValue.Length);
 
                         // ... and save this with the existing log Object
                         logMessagePV.TypedValue.SetValue(MFDataType.MFDatatypeMultiLineText, $"{logMessagePV.TypedValue.DisplayValue}{logmessagePart}");

@@ -5,17 +5,16 @@
         <RootNamespace>Serilog</RootNamespace>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <PackageId>Serilog.Sinks.MFilesObject</PackageId>
-        <Authors>Victor Vogelpoel</Authors>
-        <Company>Dramatic Development</Company>
         <Product>Serilog.Sinks.MFilesObject</Product>
         <Description>Serilog sink to write to an M-Files Log object in an attached Vault.</Description>
-        <Copyright>Copyright (c) 2021 Dramatic Development - Victor Vogelpoel</Copyright>
         <RepositoryUrl>https://github.com/victorvogelpoel/Serilog.Sinks.MFilesObject</RepositoryUrl>
         <PackageIcon>serilog-sink-nuget.png</PackageIcon>
         <PackageTags>serilog m-files</PackageTags>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
         <PackageProjectUrl>https://github.com/victorvogelpoel/Serilog.Sinks.MFilesObject</PackageProjectUrl>
+        <Authors>Victor Vogelpoel</Authors>
+
     </PropertyGroup>
 
     <ItemGroup>

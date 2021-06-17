@@ -8,7 +8,7 @@
   <description>Sample application for demonstrating Serilog logging using the Serilog.Sinks.MFilesObject sink</description>
   <publisher>Dramatic Development</publisher>
   <version>0.1</version>
-  <copyright>Dramatic Development</copyright>
+  <copyright>Copyright 2021 Dramatic Development</copyright>
   <required-mfiles-version>20.5.0.0</required-mfiles-version>
   <multi-server-compatible>false</multi-server-compatible>
   <extension-objects>

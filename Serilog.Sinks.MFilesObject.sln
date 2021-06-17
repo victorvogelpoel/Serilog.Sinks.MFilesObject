@@ -15,6 +15,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dramatic.LogToMFiles", "src
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Actions", "Actions", "{4FD253A9-5BE3-4694-A147-6DE3901B6AD4}"
 	ProjectSection(SolutionItems) = preProject
+		.github\workflows\Build on push.yml = .github\workflows\Build on push.yml
 		.github\workflows\Publish-current-to-nuget.yml = .github\workflows\Publish-current-to-nuget.yml
 	EndProjectSection
 EndProject

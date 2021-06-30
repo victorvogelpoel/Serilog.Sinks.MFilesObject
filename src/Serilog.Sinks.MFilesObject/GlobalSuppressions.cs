@@ -12,6 +12,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[assembly: SuppressMessage("Minor Code Smell", "S2737:\"catch\" clauses should do more than rethrow", Justification = "<Pending>", Scope = "member", Target = "~M:Serilog.Sinks.MFilesObject.MFilesObjectLogSink.EmitBatchAsync(System.Collections.Generic.IEnumerable{Serilog.Events.LogEvent})~System.Threading.Tasks.Task")]
-[assembly: SuppressMessage("Major Code Smell", "S125:Sections of code should not be commented out", Justification = "<Pending>", Scope = "member", Target = "~M:Serilog.Sinks.MFilesObject.MFilesObjectLogSink.OnEmptyBatchAsync~System.Threading.Tasks.Task")]
-[assembly: SuppressMessage("Major Code Smell", "S125:Sections of code should not be commented out", Justification = "<Pending>", Scope = "type", Target = "~T:Serilog.Sinks.MFilesObject.MFilesObjectLogSink")]
+[assembly: SuppressMessage("Minor Code Smell", "S2737:\"catch\" clauses should do more than rethrow", Justification = "<Pending>", Scope = "member", Target = "~M:Serilog.Sinks.MFilesObject.MFilesLogObjectMessageSink.EmitBatchAsync(System.Collections.Generic.IEnumerable{Serilog.Events.LogEvent})~System.Threading.Tasks.Task")]
+[assembly: SuppressMessage("Major Code Smell", "S125:Sections of code should not be commented out", Justification = "<Pending>", Scope = "member", Target = "~M:Serilog.Sinks.MFilesObject.MFilesLogObjectMessageSink.OnEmptyBatchAsync~System.Threading.Tasks.Task")]
+[assembly: SuppressMessage("Major Code Smell", "S125:Sections of code should not be commented out", Justification = "<Pending>", Scope = "type", Target = "~T:Serilog.Sinks.MFilesObject.MFilesLogObjectMessageSink")]

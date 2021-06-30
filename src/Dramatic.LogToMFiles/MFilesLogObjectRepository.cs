@@ -6,6 +6,7 @@
 //
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -26,7 +27,6 @@ namespace Dramatic.LogToMFiles
         private readonly int _mfilesLogObjectTypeID;
         private readonly int _mfilesLogClassID;
         private readonly int _mfilesLogMessagePropDefID;
-
         private readonly Random _rnd = new Random();
 
         /// <summary>
@@ -71,6 +71,7 @@ namespace Dramatic.LogToMFiles
             }
         }
 
+
         /// <summary>
         /// Search for the Log object with prefix and date of today in the object NameOrTitle.
         /// Multiple found objects may be returned.
@@ -111,7 +112,6 @@ namespace Dramatic.LogToMFiles
             // return 0, 1 or more Log objects for the current date, like "Log-2021-05-12", "Log-2021-05-12 (2)". They may not be sorted on title; we'll sort later on CreatedUtc
 
             return searchResults;
-
         }
 
 
@@ -158,11 +158,11 @@ namespace Dramatic.LogToMFiles
                     var lastLogObjectIsStillCheckedOut = IsObjectCheckedOut(lastLogObjVer.ObjID, maxRetries: 5);
                     if (!lastLogObjectIsStillCheckedOut)
                     {
-                        // Read the LogMessage MultiLineText prop of the Log object
-                        var logMessagePV            = _vault.ObjectPropertyOperations.GetProperty(lastLogObjVer, _mfilesLogMessagePropDefID );
-
                         // Check out the Log object and append the log message
                         checkedOutLogObjectVersion  = _vault.ObjectOperations.CheckOut(lastLogObjVer.ObjID);
+
+                        // Read the LogMessage MultiLineText prop of the Log object
+                        var logMessagePV            = _vault.ObjectPropertyOperations.GetProperty(lastLogObjVer, _mfilesLogMessagePropDefID );
 
                         // Get at most (maxLogObjectMessageSize - logMessagePV.TypedValue.DisplayValue.length) characters from the logMessage...
                         var logmessagePart          = batchedLogMessage.TakeSubstringUpTotheLastSentence(index, maxLogObjectMessageSize - logMessagePV.TypedValue.DisplayValue.Length);

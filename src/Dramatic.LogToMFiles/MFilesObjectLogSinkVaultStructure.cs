@@ -18,6 +18,9 @@ namespace Dramatic.LogToMFiles
         public string LogObjectTypeAlias        { get; set; } = MFilesObjectLogSinkVaultStructure.DefaultMFilesLogObjectTypeAlias;
         public string LogClassAlias             { get; set; } = MFilesObjectLogSinkVaultStructure.DefaultMFilesLogClassAlias;
         public string LogMessagePropDefAlias    { get; set; } = MFilesObjectLogSinkVaultStructure.DefaultMFilesLogMessagePropertyDefinitionAlias;
+
+        public string LogFileClassName          { get; set; } = MFilesObjectLogSinkVaultStructure.DefaultLogFileClassName;
+        public string LogFileClassAlias         { get; set; } = MFilesObjectLogSinkVaultStructure.DefaultMFilesLogFileClassAlias;
     }
 
 
@@ -26,11 +29,16 @@ namespace Dramatic.LogToMFiles
         public const string DefaultMFilesLogObjectTypeAlias                 = "OT.Serilog.MFilesObjectLogSink.Log";
         public const string DefaultMFilesLogClassAlias                      = "CL.Serilog.MFilesObjectLogSink.Log";
         public const string DefaultMFilesLogMessagePropertyDefinitionAlias  = "PD.Serilog.MFilesObjectLogSink.LogMessage";
+        public const string DefaultMFilesLogFileClassAlias                  = "CL.Serilog.MFilesObjectLogSink.LogFile";
         public const string DefaultMFilesLogObjectNamePrefix                = "Log-";
 
         public const string DefaultLogObjectTypeNameSingular                = "Log";
         public const string DefaultLogObjectTypeNamePlural                  = "Logs";
         public const string DefaultLogMessagePropDefName                    = "LogMessage";
+
+        public const string DefaultMFilesLogFileNamePrefix                  = "Log-";
+        public const string DefaultLogFileClassName                         = "LogFile";
+
 
         /// <summary>
         /// Ensure the structure in the M-Files vault needed for logging; full control permissions are necessary to create or update structure.
@@ -39,10 +47,16 @@ namespace Dramatic.LogToMFiles
         /// <param name="structureConfig">Settings for creating Log structure in the vault.</param>
         public static void EnsureLogSinkVaultStructure(this IVault vault, MFilesObjectLogSinkVaultStructureConfiguration structureConfig)
         {
+            // Add OT "Log" with CL "Log"
+            // Add PD "LogMessage"
+            // Add CL "LogFile" for OT "Document"
+
             if (vault == null) throw new ArgumentNullException(nameof(vault));
 
             var logObjectTypeID     = vault.ObjectTypeOperations.GetObjectTypeIDByAlias(structureConfig.LogObjectTypeAlias);
             var logMessagePropDefID = vault.PropertyDefOperations.GetPropertyDefIDByAlias(structureConfig.LogMessagePropDefAlias);
+            var logFileClassID      = vault.ClassOperations.GetObjectClassIDByAlias(structureConfig.LogFileClassAlias);
+
 
             // Add Log ObjectType if it doesn't exist
             if (logObjectTypeID == -1)
@@ -60,7 +74,8 @@ namespace Dramatic.LogToMFiles
                     Hierarchical                    = false,
                     HasOwnerType                    = false,
                     OwnerType                       = 0,
-                    Translatable                    = false
+                    Translatable                    = false,
+                    //Icon                            =
                 };
 
                 var objTypeAdmin = new ObjTypeAdmin()
@@ -131,6 +146,35 @@ namespace Dramatic.LogToMFiles
 
                 vault.ClassOperations.UpdateObjectClassAdmin(classForLogObjectType);
             }
+
+            // Add LogFile class, if not already existing
+            if (logFileClassID == -1)
+            {
+                var associatedNamePropDef = new AssociatedPropertyDef
+                {
+                    PropertyDef = 0, // NameOrTitle
+                    Required = true
+                };
+
+                var associatedPropDefs = new AssociatedPropertyDefs
+                {
+                    { -1, associatedNamePropDef },
+                };
+
+                var objectClassAdmin = new ObjectClassAdmin
+                {
+                    Name                    = structureConfig.LogFileClassName,
+                    ObjectType              = (int)MFBuiltInObjectType.MFBuiltInObjectTypeDocument,
+                    NamePropertyDef         = 0, // NameOrTitle PropertyDef
+                    AssociatedPropertyDefs  = associatedPropDefs,
+                    ForceWorkflow           = false,
+
+                    SemanticAliases         = new SemanticAliases() { Value = structureConfig.LogFileClassAlias }
+                };
+
+                var logFileClass = vault.ClassOperations.AddObjectClassAdmin(objectClassAdmin);
+            }
+
         }
 
 

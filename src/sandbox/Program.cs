@@ -19,6 +19,7 @@ using Serilog.Core;
 using Serilog.Events;
 using Serilog.Sinks.MFilesObject;
 
+
 namespace SANDBOX
 {
     class Program
@@ -36,7 +37,8 @@ namespace SANDBOX
             {
                 var serverApp           = new MFilesAPI.MFilesServerApplication();
                 serverApp.Connect(MFilesAPI.MFAuthType.MFAuthTypeLoggedOnWindowsUser);
-                var vault               = serverApp.LogInAsUserToVault("{D449E438-89EE-42BB-9769-B862E9B1B140}");  // The "Serilog.Sinks.MFilesObject" demo vault
+                var vaultOnServer       = serverApp.GetOnlineVaults().GetVaultByName("Serilog.Sinks.MFilesObject"); // The "Serilog.Sinks.MFilesObject" demo vault that mysteriously bears the same name as the logging solution
+                var vault               = serverApp.LogInAsUserToVault(vaultOnServer.GUID);  // "{D449E438-89EE-42BB-9769-B862E9B1B140}"
 
 
                 // Define vault structure for logging if it isn't there: OT "Log", CL "Log" and PD "LogMessage" and aliases to find them back.
@@ -81,13 +83,19 @@ namespace SANDBOX
                     // Sample DelegatingTextSink to buffer formatted ERROR log events (ONLY ERROR level or above).
                     .WriteTo.DelegatingTextSink(w => BufferErrorEvents(w), outputTemplate:"[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}", restrictedToMinimumLevel: LogEventLevel.Error)
 
-                    // Log events to an 'rolling' Log object in the vault with a MultiLineText property.
-                    .WriteTo.MFilesObject(  vault,
-                                            mfilesLogObjectNamePrefix:      "LoggingFromSandboxDemo-Log-",
-                                            mfilesLogObjectTypeAlias:       structureConfig.LogObjectTypeAlias,
-                                            mfilesLogClassAlias:            structureConfig.LogClassAlias,
-                                            mfilesLogMessagePropDefAlias:   structureConfig.LogMessagePropDefAlias,
-                                            outputTemplate:                 "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
+                    //// Log events to an 'rolling' Log object in the vault with a MultiLineText property.
+                    .WriteTo.MFilesObjectLogMessage(vault,
+                                            mfilesLogObjectNamePrefix: "LoggingFromSandboxDemo-Log-",
+                                            mfilesLogObjectTypeAlias: structureConfig.LogObjectTypeAlias,
+                                            mfilesLogClassAlias: structureConfig.LogClassAlias,
+                                            mfilesLogMessagePropDefAlias: structureConfig.LogMessagePropDefAlias,
+                                            outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
+
+                    .WriteTo.MFilesLogFile( vault,
+                                            mfilesLogFileNamePrefix: "LoggingFromSandboxDemo-Log-",
+                                            mfilesLogFileClassAlias: structureConfig.LogFileClassAlias,
+                                            outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
+
 
                     // Write to colored console terminal :-)
                     .WriteTo.Console()

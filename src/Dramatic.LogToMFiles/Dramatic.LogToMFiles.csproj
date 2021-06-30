@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="MFilesLogFileRepository.cs" />
     <Compile Include="MFilesLogObjectRepository.cs" />
     <Compile Include="MFilesObjectLogSinkVaultStructure.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

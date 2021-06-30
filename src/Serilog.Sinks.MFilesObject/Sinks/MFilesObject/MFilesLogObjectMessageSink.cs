@@ -21,7 +21,7 @@ using Serilog.Sinks.PeriodicBatching;
 
 namespace Serilog.Sinks.MFilesObject
 {
-    public class MFilesObjectLogSink : IBatchedLogEventSink
+    public class MFilesLogObjectMessageSink : IBatchedLogEventSink
     {
         public const int DefaultBatchPostingLimit                           = 1000;
         public const int DefaultQueueSizeLimit                              = 100000;
@@ -39,7 +39,7 @@ namespace Serilog.Sinks.MFilesObject
         /// <param name="mfilesLogClassAlias">Alias for the Log ClassObject</param>
         /// <param name="mfilesLogMessagePropDefAlias">Alias for the LogMessage PropertyDefinition</param>
         /// <param name="formatter">a text formatter for converting the log event into a string with event arguments</param>
-        public MFilesObjectLogSink(IVault vault, string mfilesLogObjectNamePrefix, string mfilesLogObjectTypeAlias, string mfilesLogClassAlias, string mfilesLogMessagePropDefAlias, ITextFormatter formatter)
+        public MFilesLogObjectMessageSink(IVault vault, string mfilesLogObjectNamePrefix, string mfilesLogObjectTypeAlias, string mfilesLogClassAlias, string mfilesLogMessagePropDefAlias, ITextFormatter formatter)
         {
             _formatter              = formatter ?? throw new ArgumentNullException(nameof(formatter));
             _mfilesLogRepository    = new MFilesLogObjectRepository(vault, mfilesLogObjectNamePrefix, mfilesLogObjectTypeAlias, mfilesLogClassAlias, mfilesLogMessagePropDefAlias);
@@ -68,7 +68,7 @@ namespace Serilog.Sinks.MFilesObject
                 {
                     _formatter.Format(logEvent, s);
 
-                    batchedMessage.AppendLine(s.ToString());
+                    batchedMessage.AppendLine(s.ToString().TrimEnd(Environment.NewLine.ToCharArray()));
                 }
             }
 

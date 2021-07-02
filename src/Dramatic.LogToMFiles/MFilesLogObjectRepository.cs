@@ -19,9 +19,6 @@ namespace Dramatic.LogToMFiles
     {
         private readonly IVault _vault;
 
-        public readonly string MFilesLogMessagePropertyDefinitionAlias;
-        public readonly string MFilesLogObjectTypeAlias;
-        public readonly string MFilesLogClassAlias;
 
         private readonly string _mfilesLogObjectNamePrefix;
         private readonly int _mfilesLogObjectTypeID;
@@ -52,10 +49,6 @@ namespace Dramatic.LogToMFiles
             if (String.IsNullOrWhiteSpace(mfilesLogMessagePropDefAlias))    throw new ArgumentException($"{nameof(mfilesLogMessagePropDefAlias)} cannot be null or empty; use something like \"PD.Serilog.MFilesObjectLogSink.LogMessage\"", nameof(mfilesLogMessagePropDefAlias));
 
             _vault                                  = vault ?? throw new ArgumentNullException(nameof(vault));
-
-            MFilesLogObjectTypeAlias                = mfilesLogObjectTypeAlias;
-            MFilesLogClassAlias                     = mfilesLogClassAlias;
-            MFilesLogMessagePropertyDefinitionAlias = mfilesLogMessagePropDefAlias;
 
             _mfilesLogObjectNamePrefix              = mfilesLogObjectNamePrefix;
 

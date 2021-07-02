@@ -19,7 +19,6 @@ namespace Dramatic.LogToMFiles
     {
         private readonly IVault _vault;
 
-        public readonly string MFilesLogFileClassAlias;
 
         private readonly string _mfilesLogFileNamePrefix;
         private readonly int _mfilesLogFileClassID;
@@ -40,8 +39,6 @@ namespace Dramatic.LogToMFiles
             if (String.IsNullOrWhiteSpace(mfilesLogFileClassAlias)) throw new ArgumentException($"{nameof(mfilesLogFileClassAlias)} cannot be null or empty; use something like \"PD.Serilog.MFilesObjectLogSink.LogFile\"", nameof(mfilesLogFileClassAlias));
 
             _vault                      = vault ?? throw new ArgumentNullException(nameof(vault));
-
-            MFilesLogFileClassAlias     = mfilesLogFileClassAlias;
             _mfilesLogFileNamePrefix    = mfilesLogFileNamePrefix;
 
             // Get the vault structure IDs for the aliases:

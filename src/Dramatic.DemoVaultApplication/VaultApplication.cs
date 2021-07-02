@@ -5,22 +5,17 @@
 // If it doesn't, I don't know who wrote it.
 //
 using System;
-using System.Diagnostics;
 using System.Reflection;
 using System.Text;
 using Dramatic.LogToMFiles;
-using MFiles.VAF;
 using MFiles.VAF.Common;
-using MFiles.VAF.Configuration;
 using MFiles.VAF.Configuration.AdminConfigurations;
 using MFiles.VAF.Core;
 using MFilesAPI;
 using Serilog;
 using Serilog.Context;
 using Serilog.Core;
-//using Serilog.Destructuring;
 using Serilog.Events;
-using Serilog.Sinks.MFilesObject;
 
 namespace DemoVaultApplication
 {
@@ -61,24 +56,62 @@ namespace DemoVaultApplication
             base.InitializeApplication(vault);
 
             // Configure logging
-            ConfigureApplication(vault);
+            ConfigureLogging(Configuration.LogLevel);
         }
 
 
-        /// <summary>
-        /// Configure logging in the vault application, even create structure if necessary.
-        /// </summary>
-        /// <param name="vault"></param>
-        public void ConfigureApplication(Vault vault)
+        ///// <summary>
+        ///// Configure logging in the vault application, even create structure if necessary.
+        ///// </summary>
+        ///// <param name="vault"></param>
+        //public void ConfigureApplication(Vault vault)
+        //{
+        //    // Configure logging
+        //    // As this method is called from InitializeApplication, we can alter the vault structure, eg add ObjectType for Logging
+
+        //    // Initialize the _loggingLevelSwitch from configuration
+        //    ConfigureLoggingLevelSwitch(Configuration.LogLevel);
+
+        //    // Ensure that the structure for the logging-to-object is present in the vault, create if necessary.
+        //    vault.EnsureLogSinkVaultStructure(_loggingStructureConfig);
+
+        //    // ------------------------------------------------------------------------------------------------------------------------------------
+        //    // Build a Serilog logger with MFilesObjectLogSink.
+        //    // Note to Log.CloseAndFlush() in the UninitializeApplication()!
+        //    Log.Logger = new LoggerConfiguration()
+        //        .Enrich.FromLogContext()
+        //        .MinimumLevel.ControlledBy(_loggingLevelSwitch)
+
+        //        // Using a delegate to buffer log messages that are flushed later with a background job
+        //        .WriteTo.DelegatingTextSink(w => WriteToVaultApplicationBuffer(w), outputTemplate:"[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
+
+        //        .CreateLogger();
+
+
+        //    // UNFORTUNATELY, the MFilesObjectlogSink CANNOT be created directly in a VaultApplication like below.
+        //    // WE DON'T CONTROL THE VAULT REFERENCE LIFECYCLE (as we do in the SANDBOX console application) and it will
+        //    // invalidate soon after starting the vault application, yielding a "COM object that has been separated from its underlying RCW cannot be used."
+        //    // when we should try and emit a LogEvent.
+        //    // Hence in a Vault Application, we use DelegatingTextSink that collects the log messages and a background job that flushes the collected messages after 5 seconds.
+        //    //
+        //    //  .WriteTo.MFilesObject(vaultPersistent, mfilesLogObjectNamePrefix:     $"VaultApp-{ApplicationDefinition.Name}-Log-",       // DO NOT USE in a Vault Application
+        //    //                                         mfilesLogObjectTypeAlias:      _loggingStructureConfig.LogObjectTypeAlias,
+        //    //                                         mfilesLogClassAlias:           _loggingStructureConfig.LogClassAlias,
+        //    //                                         mfilesLogMessagePropDefAlias:  _loggingStructureConfig.LogMessagePropDefAlias,
+        //    //                                         controlLevelSwitch:            _loggingLevelSwitch)
+
+
+        //    Log.Information("VaultApplication {ApplicationName} has configured logging to an M-Files rolling Log object.", ApplicationDefinition.Name);   // NOTE, structured logging with curly braces, NOT C# string intrapolation $"" with curly braces!
+        //    Log.Warning("Sample warning");
+        //    Log.Error("Sample error");
+        //    Log.Error(new Exception("A sample exception"), "Sample error with exception");
+        //}
+
+        private void ConfigureLogging(string logLevelString)
         {
-            // Configure logging
-            // As this method is called from InitializeApplication, we can alter the vault structure, eg add ObjectType for Logging
 
-            // Initialize the _loggingLevelSwitch from configuration
-            ConfigureLoggingLevelSwitch(Configuration.LogLevel);
+            _loggingLevelSwitch.MinimumLevel = GetLoggingLevelFor(logLevelString);
 
-            // Ensure that the structure for the logging-to-object is present in the vault, create if necessary.
-            vault.EnsureLogSinkVaultStructure(_loggingStructureConfig);
 
             // ------------------------------------------------------------------------------------------------------------------------------------
             // Build a Serilog logger with MFilesObjectLogSink.
@@ -93,36 +126,37 @@ namespace DemoVaultApplication
                 .CreateLogger();
 
 
-            // UNFORTUNATELY, the MFilesObjectlogSink CANNOT be created directly in a VaultApplication like below.
-            // WE DON'T CONTROL THE VAULT LIFECYCLE (as we do in the SANDBOX console application) and it will
-            // invalidate soon after starting the vault application, yielding a "COM object that has been separated from its underlying RCW cannot be used."
+            // UNFORTUNATELY, the MFilesObjectlogSink CANNOT be created directly in a vault application like below.
+            // WE DON'T CONTROL THE VAULT REFERENCE LIFECYCLE (as we do in the SANDBOX console application) and it will invalidate
+            // soon after starting the vault application, yielding a "COM object that has been separated from its underlying RCW cannot be used."
             // when we should try and emit a LogEvent.
+            // Hence in a vault application, we use DelegatingTextSink that collects the log messages and a vault application background job that
+            // flushes the collected messages after 5 seconds.
             //
-            // Hence using a DelegatingTextSink that collects the log messages and a background job that flushes the collected messages after 5 seconds.
-            //
-            //  .WriteTo.MFilesObject(vaultPersistent, mfilesLogObjectNamePrefix:     $"VaultApp-{ApplicationDefinition.Name}-Log-",
+            //  .WriteTo.MFilesObject(vaultPersistent, mfilesLogObjectNamePrefix:     $"VaultApp-{ApplicationDefinition.Name}-Log-",       // DO NOT USE in a Vault Application; you can use it where YOU control the vault reference, eq in a console application
             //                                         mfilesLogObjectTypeAlias:      _loggingStructureConfig.LogObjectTypeAlias,
             //                                         mfilesLogClassAlias:           _loggingStructureConfig.LogClassAlias,
             //                                         mfilesLogMessagePropDefAlias:  _loggingStructureConfig.LogMessagePropDefAlias,
             //                                         controlLevelSwitch:            _loggingLevelSwitch)
 
 
-            Log.Information("VaultApplication {ApplicationName} has configured logging to an M-Files rolling Log object.", ApplicationDefinition.Name);   // NOTE, structured logging with curly braces, NOT C# string intrapolation $"" with curly braces!
+            Log.Information("VaultApplication {ApplicationName} {BuildVersion} has configured logging to an M-Files rolling Log object.", ApplicationDefinition.Name, _buildFileVersion);   // NOTE, structured logging with curly braces, NOT C# string intrapolation $"" with curly braces!
             Log.Warning("Sample warning");
             Log.Error("Sample error");
             Log.Error(new Exception("A sample exception"), "Sample error with exception");
         }
 
-        private void ConfigureLoggingLevelSwitch(string logLevel)
+        private LogEventLevel GetLoggingLevelFor(string logLevelString)
         {
-            switch(logLevel)
+            switch(logLevelString)
             {
-                case "OFF":     _loggingLevelSwitch.MinimumLevel = ((LogEventLevel) 1 + (int) LogEventLevel.Fatal);     break;  // https://stackoverflow.com/questions/30849166/how-to-turn-off-serilog
-                case "INFO":    _loggingLevelSwitch.MinimumLevel = LogEventLevel.Information;                           break;
-                case "WARNING": _loggingLevelSwitch.MinimumLevel = LogEventLevel.Warning;                               break;
-                case "ERROR":   _loggingLevelSwitch.MinimumLevel = LogEventLevel.Error;                                 break;
-                default:        _loggingLevelSwitch.MinimumLevel = LogEventLevel.Information;                           break;
+                case "OFF":     return ((LogEventLevel) 1 + (int) LogEventLevel.Fatal);     // https://stackoverflow.com/questions/30849166/how-to-turn-off-serilog
+                case "INFO":    return LogEventLevel.Information;
+                case "WARNING": return LogEventLevel.Warning;
+                case "ERROR":   return LogEventLevel.Error;
+                default:        return LogEventLevel.Information;
             }
+
         }
 
         /// <summary>
@@ -135,11 +169,20 @@ namespace DemoVaultApplication
         {
             if (oldConfiguration.LogLevel != Configuration.LogLevel)
             {
-                ConfigureLoggingLevelSwitch(Configuration.LogLevel);
+                if (oldConfiguration.LogLevel == "OFF")
+                {
+                    // An admin changed the logging level from OFF to INFO, WARNING or ERROR.
+                    // Now create the logging objects, classes, properties if they don't exist.
+                    // THUS vault structure is altered at logging level change!
+                    PermanentVault.EnsureLogSinkVaultStructure(_loggingStructureConfig);  // DOES NOT RETURN and context.Vault bombs with "Incompatible isolation levels: "65536 -> 1048576"" GRRRR
+                }
+
+                ConfigureLogging(Configuration.LogLevel);
             }
 
             Log.Information("Log level changed to {LogLevel}", Configuration.LogLevel);
         }
+
 
 
         private void WriteToVaultApplicationBuffer(string formattedLogMessage)
@@ -218,7 +261,7 @@ namespace DemoVaultApplication
 
                 Log.Information("User {User} has checked in document {DisplayID} at {TimeStamp}", env.CurrentUserID, env.DisplayID, DateTime.Now);
 
-                // ... do stuff
+                // ... do other stuff
             }
         }
     }

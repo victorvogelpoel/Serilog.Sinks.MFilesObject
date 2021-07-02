@@ -15,10 +15,12 @@ using MFilesAPI;
 
 namespace Dramatic.LogToMFiles
 {
+    /// <summary>
+    /// Repository for writing to n multilinetext property in an M-Files Log object (ObjectType 'Log', class 'Log', MultiLineText property 'LogMessage')
+    /// </summary>
     public class MFilesLogObjectRepository
     {
         private readonly IVault _vault;
-
 
         private readonly string _mfilesLogObjectNamePrefix;
         private readonly int _mfilesLogObjectTypeID;
@@ -27,7 +29,7 @@ namespace Dramatic.LogToMFiles
         private readonly Random _rnd = new Random();
 
         /// <summary>
-        ///
+        /// Construct the MFilesLogObjectRepository
         /// </summary>
         /// <param name="vault">M-Files vault application</param>
         /// <param name="mfilesLogObjectNamePrefix">Prefix for the Log object Name-or-Title. You may want to use the name of the VaultApplication.</param>
@@ -49,7 +51,6 @@ namespace Dramatic.LogToMFiles
             if (String.IsNullOrWhiteSpace(mfilesLogMessagePropDefAlias))    throw new ArgumentException($"{nameof(mfilesLogMessagePropDefAlias)} cannot be null or empty; use something like \"PD.Serilog.MFilesObjectLogSink.LogMessage\"", nameof(mfilesLogMessagePropDefAlias));
 
             _vault                                  = vault ?? throw new ArgumentNullException(nameof(vault));
-
             _mfilesLogObjectNamePrefix              = mfilesLogObjectNamePrefix;
 
             // Get the vault structure IDs for the aliases:
@@ -271,6 +272,9 @@ namespace Dramatic.LogToMFiles
     }
 
 
+    /// <summary>
+    /// A String extension to take a number of lines that fit the characters limit.
+    /// </summary>
     public static class StringExtensions
     {
         /// <summary>

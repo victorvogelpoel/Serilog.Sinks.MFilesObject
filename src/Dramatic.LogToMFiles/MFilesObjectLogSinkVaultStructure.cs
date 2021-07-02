@@ -36,8 +36,9 @@ namespace Dramatic.LogToMFiles
         public const string DefaultLogObjectTypeNamePlural                  = "Logs";
         public const string DefaultLogMessagePropDefName                    = "LogMessage";
 
-        public const string DefaultMFilesLogFileNamePrefix                  = "Log-";
         public const string DefaultLogFileClassName                         = "LogFile";
+
+        public const string DefaultMFilesLogFileNamePrefix                  = "Log-";
 
 
         /// <summary>
@@ -165,7 +166,7 @@ namespace Dramatic.LogToMFiles
                 {
                     Name                    = structureConfig.LogFileClassName,
                     ObjectType              = (int)MFBuiltInObjectType.MFBuiltInObjectTypeDocument,
-                    NamePropertyDef         = 0, // NameOrTitle PropertyDef
+                    NamePropertyDef         = 0,    // NameOrTitle PropertyDef
                     AssociatedPropertyDefs  = associatedPropDefs,
                     ForceWorkflow           = false,
 

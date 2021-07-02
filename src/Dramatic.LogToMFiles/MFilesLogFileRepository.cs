@@ -5,20 +5,19 @@
 // If it doesn't, I don't know who wrote it.
 //
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using MFilesAPI;
 
 namespace Dramatic.LogToMFiles
 {
+    /// <summary>
+    /// Repository for writing log message to an M-Files file (objecttype Document, class 'LogFile')
+    /// </summary>
     public class MFilesLogFileRepository
     {
         private readonly IVault _vault;
-
 
         private readonly string _mfilesLogFileNamePrefix;
         private readonly int _mfilesLogFileClassID;
@@ -32,8 +31,8 @@ namespace Dramatic.LogToMFiles
         /// <param name="controlledSwitch">Serilog switch to use for minimal log level</param>
         /// <param name="formatProvider"></param>
         public MFilesLogFileRepository( IVault vault,
-                                        string mfilesLogFileNamePrefix    = MFilesObjectLogSinkVaultStructure.DefaultMFilesLogObjectNamePrefix,
-                                        string mfilesLogFileClassAlias      = MFilesObjectLogSinkVaultStructure.DefaultMFilesLogFileClassAlias)
+                                        string mfilesLogFileNamePrefix  = MFilesObjectLogSinkVaultStructure.DefaultMFilesLogObjectNamePrefix,
+                                        string mfilesLogFileClassAlias  = MFilesObjectLogSinkVaultStructure.DefaultMFilesLogFileClassAlias)
         {
             if (String.IsNullOrWhiteSpace(mfilesLogFileNamePrefix)) throw new ArgumentException($"{nameof(mfilesLogFileNamePrefix)} cannot be null or empty; use something like \"Log-\".", nameof(mfilesLogFileNamePrefix));
             if (String.IsNullOrWhiteSpace(mfilesLogFileClassAlias)) throw new ArgumentException($"{nameof(mfilesLogFileClassAlias)} cannot be null or empty; use something like \"PD.Serilog.MFilesObjectLogSink.LogFile\"", nameof(mfilesLogFileClassAlias));
@@ -63,12 +62,6 @@ namespace Dramatic.LogToMFiles
             excludeDeletedItemSearchCondition.Expression.SetStatusValueExpression(MFStatusType.MFStatusTypeDeleted);
             excludeDeletedItemSearchCondition.ConditionType = MFConditionType.MFConditionTypeEqual;
             excludeDeletedItemSearchCondition.TypedValue.SetValue(MFDataType.MFDatatypeBoolean, false);
-
-            //// Search for ObjectType Document
-            //var otSearchCondition = new SearchCondition();
-            //otSearchCondition.Expression.SetStatusValueExpression(MFStatusType.MFStatusTypeObjectTypeID);
-            //otSearchCondition.ConditionType = MFConditionType.MFConditionTypeEqual;
-            //otSearchCondition.TypedValue.SetValue(MFDataType.MFDatatypeLookup, (int)MFBuiltInObjectType.MFBuiltInObjectTypeDocument);
 
             // Search for class LogFile
             var logFileClassSearchCondition = new SearchCondition();
@@ -234,12 +227,6 @@ namespace Dramatic.LogToMFiles
 
                 // Create the new Log object for today, with name, eg "Log-2021-05-12", with automatic check-in after
                 _vault.ObjectOperations.CreateNewSFDObject((int)MFBuiltInObjectType.MFBuiltInObjectTypeDocument, propertyValues, sourceFile, CheckIn:true);
-
-                //var sourceFiles = new SourceObjectFiles();
-                //sourceFiles.AddFile(logObjectTitle, "txt", logFileTempFilePath);
-
-                // Create the new Log object for today, with name, eg "Log-2021-05-12", with automatic check-in after
-                //_vault.ObjectOperations.CreateNewObjectEx(_mfilesLogObjectTypeID, propertyValues, sourceFiles, SFD: true, CheckIn: true);
             }
             finally
             {

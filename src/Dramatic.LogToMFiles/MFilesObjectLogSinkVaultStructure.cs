@@ -173,7 +173,7 @@ namespace Dramatic.LogToMFiles
                     SemanticAliases         = new SemanticAliases() { Value = structureConfig.LogFileClassAlias }
                 };
 
-                var logFileClass = vault.ClassOperations.AddObjectClassAdmin(objectClassAdmin);
+                vault.ClassOperations.AddObjectClassAdmin(objectClassAdmin);
             }
 
         }

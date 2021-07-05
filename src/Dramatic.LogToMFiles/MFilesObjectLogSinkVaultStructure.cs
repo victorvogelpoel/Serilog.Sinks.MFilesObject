@@ -181,7 +181,7 @@ namespace Dramatic.LogToMFiles
 
 
 #pragma warning disable S125
-        //public static void Remove(IVault vault, string mfilesLogObjectTypeAlias = MFilesObjectLogSink.DefaultMFilesLogObjectTypeAlias, string mfilesLogClassAlias = MFilesObjectLogSink.DefaultMFilesLogClassAlias, string mfilesLogMessagePropDefAlias = MFilesObjectLogSink.DefaultMFilesLogMessagePropertyDefinitionAlias)
+        //public static void RemoveLogObjectsAndVaultStructure(IVault vault, string mfilesLogObjectTypeAlias = MFilesObjectLogSink.DefaultMFilesLogObjectTypeAlias, string mfilesLogClassAlias = MFilesObjectLogSink.DefaultMFilesLogClassAlias, string mfilesLogMessagePropDefAlias = MFilesObjectLogSink.DefaultMFilesLogMessagePropertyDefinitionAlias)
         //{
         //    // Delete all objects for the objecttype/class
         //    // Then remove the structure

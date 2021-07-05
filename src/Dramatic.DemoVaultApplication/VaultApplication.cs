@@ -5,11 +5,14 @@
 // If it doesn't, I don't know who wrote it.
 //
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using Dramatic.LogToMFiles;
 using MFiles.VAF.Common;
 using MFiles.VAF.Configuration.AdminConfigurations;
+using MFiles.VAF.Configuration.Domain;
+using MFiles.VAF.Configuration.Interfaces.Domain;
 using MFiles.VAF.Core;
 using MFilesAPI;
 using Serilog;
@@ -174,10 +177,12 @@ namespace DemoVaultApplication
                     // An admin changed the logging level from OFF to INFO, WARNING or ERROR.
                     // Now create the logging objects, classes, properties if they don't exist.
                     // THUS vault structure is altered at logging level change!
-                    PermanentVault.EnsureLogSinkVaultStructure(_loggingStructureConfig);  // DOES NOT RETURN and context.Vault bombs with "Incompatible isolation levels: "65536 -> 1048576"" GRRRR
+                    //PermanentVault.EnsureLogSinkVaultStructure(_loggingStructureConfig);  // DOES NOT RETURN and context.Vault bombs with "Incompatible isolation levels: "65536 -> 1048576"" GRRRR
                 }
 
-                ConfigureLogging(Configuration.LogLevel);
+                //ConfigureLogging(Configuration.LogLevel);
+
+                _loggingLevelSwitch.MinimumLevel = GetLoggingLevelFor(Configuration.LogLevel);
             }
 
             Log.Information("Log level changed to {LogLevel}", Configuration.LogLevel);
@@ -244,6 +249,43 @@ namespace DemoVaultApplication
             base.UninitializeApplication(vault);
         }
 
+
+        [VaultExtensionMethod("SampleVaultApp.Serilog.Sinks.MFilesObject.EnsureLogSinkVaultStructure", RequiredVaultAccess = MFVaultAccess.MFVaultAccessChangeFullControlRole)]  // MFVaultAccess.MFVaultAccessChangeFullControlRole  / MFVaultAccess.MFVaultAccessChangeMetaDataStructure
+        private string EnsureLogSinkVaultStructure(EventHandlerEnvironment env)
+        {
+            PermanentVault.EnsureLogSinkVaultStructure(_loggingStructureConfig);
+
+            return "Logging structure has been created in the vault";
+        }
+
+        // TODO: log method to be used from VBScript:
+        [VaultExtensionMethod("SampleVaultApp.LogToMFilesObject")] // RequiredVaultAccess = MFVaultAccess.MFVaultAccessSeeAllDocs | MFVaultAccess.MFVaultAccessCreateDocs | MFVaultAccess.MFVaultAccessEditAllDocs | MFVaultAccess.MFVaultAccessForceUndoCheckout
+        private string LogToMFilesObject(EventHandlerEnvironment env)
+        {
+            WriteToVaultApplicationBuffer(env.Input);
+
+            return "";
+        }
+
+
+
+        private readonly CustomDomainCommand cmdEnsureSinkVaultStructureMenuItem = new CustomDomainCommand
+        {
+            ID              = "cmdEnsureLogSinkVaultStructure",
+            ConfirmMessage  = "Are you sure you want to add vault structure for logging?",
+            Execute         = (context, operations) => operations.ShowMessage(context.Vault.ExtensionMethodOperations.ExecuteVaultExtensionMethod("SampleVaultApp.Serilog.Sinks.MFilesObject.EnsureLogSinkVaultStructure", "")),
+            DisplayName     = "Create Logging vault structure",
+            Locations       = new List<ICommandLocation> { new DomainMenuCommandLocation(icon: "plus") }
+        };
+
+
+        public override IEnumerable<CustomDomainCommand> GetCommands(IConfigurationRequestContext context)
+        {
+	        return new List<CustomDomainCommand>(base.GetCommands(context))
+	        {
+		        this.cmdEnsureSinkVaultStructureMenuItem,
+	        };
+        }
 
         // ===========================================================================================================================================================
         // The business use case events

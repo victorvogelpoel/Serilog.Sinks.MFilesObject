@@ -60,6 +60,8 @@ namespace DemoVaultApplication
 
             // Configure logging
             ConfigureLogging(Configuration.LogLevel);
+
+            Log.Information("VaultApplication {ApplicationName} {BuildVersion} has been initialized", ApplicationDefinition.Name, _buildFileVersion);   // NOTE, structured logging with curly braces, NOT C# string intrapolation $"" with curly braces!
         }
 
 
@@ -163,7 +165,7 @@ namespace DemoVaultApplication
         }
 
         /// <summary>
-        /// Update the Serilog loggingLevelSwitch, when the LogLevel configuration for the Vault Application is changed in M-Files Admin.
+        /// When the admin changes the log event in the configuration of the vault application, set the corresponding Serilog LogEventLevel
         /// </summary>
         /// <param name="context"></param>
         /// <param name="clientOps"></param>
@@ -189,18 +191,22 @@ namespace DemoVaultApplication
         }
 
 
-
+        /// <summary>
+        /// Buffer log events. Note that the backgroundoperation will flush these messages to a Log object later, and will use the PermanentVault is a valid vault reference.
+        /// </summary>
+        /// <param name="formattedLogMessage"></param>
         private void WriteToVaultApplicationBuffer(string formattedLogMessage)
         {
             lock(_logBufferLockObj)
             {
                 _logEventBuffer.AppendLine(formattedLogMessage.TrimEnd(Environment.NewLine.ToCharArray()));
             }
-
-            // Note that the backgroundoperation will flush these messages to a Log object later, and will use the PermanentVault is a valid vault reference.
         }
 
 
+        /// <summary>
+        /// Start the Vault Application
+        /// </summary>
         protected override void StartApplication()
         {
             // Define the delegate action for the flushing to the M-Files Object
@@ -240,6 +246,8 @@ namespace DemoVaultApplication
         /// <param name="vault"></param>
         protected override void UninitializeApplication(Vault vault)
         {
+            Log.Information("VaultApplication {ApplicationName} {BuildVersion} is powering down.", ApplicationDefinition.Name, _buildFileVersion);   // NOTE, structured logging with curly braces, NOT C# string intrapolation $"" with curly braces!
+
             // IMPORTANT: flush any buffered messages
             _flushLogAction?.Invoke();
 

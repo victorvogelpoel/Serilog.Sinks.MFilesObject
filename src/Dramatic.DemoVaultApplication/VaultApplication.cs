@@ -35,16 +35,16 @@ namespace DemoVaultApplication
 
         private Action                                                  _flushLogAction;
         private readonly StringBuilder                                  _logEventBuffer         = new StringBuilder();
-        private readonly MFilesObjectLogSinkVaultStructureConfiguration _loggingStructureConfig = new MFilesObjectLogSinkVaultStructureConfiguration
-        {
-            LogObjectTypeNameSingular   = "Log",
-            LogObjectTypeNamePlural     = "Logs",
-            LogMessagePropDefName       = "LogMessage",
+        private readonly MFilesObjectLoggingVaultStructureConfiguration _loggingStructureConfig = new MFilesObjectLoggingVaultStructureConfiguration
+                                                                                                {
+                                                                                                    LogObjectTypeNameSingular   = "Log",
+                                                                                                    LogObjectTypeNamePlural     = "Logs",
+                                                                                                    LogMessagePropDefName       = "LogMessage",
 
-            LogObjectTypeAlias          = "OT.Serilog.MFilesObjectLogSink.Log",
-            LogClassAlias               = "CL.Serilog.MFilesObjectLogSink.Log",
-            LogMessagePropDefAlias      = "PD.Serilog.MFilesObjectLogSink.LogMessage"
-        };
+                                                                                                    LogObjectTypeAlias          = "OT.Serilog.MFilesObjectLogSink.Log",
+                                                                                                    LogClassAlias               = "CL.Serilog.MFilesObjectLogSink.Log",
+                                                                                                    LogMessagePropDefAlias      = "PD.Serilog.MFilesObjectLogSink.LogMessage"
+                                                                                                };
 
 
         // ===========================================================================================================================================================
@@ -250,8 +250,8 @@ namespace DemoVaultApplication
         }
 
 
-        [VaultExtensionMethod("SampleVaultApp.Serilog.Sinks.MFilesObject.EnsureLogSinkVaultStructure", RequiredVaultAccess = MFVaultAccess.MFVaultAccessChangeFullControlRole)]  // MFVaultAccess.MFVaultAccessChangeFullControlRole  / MFVaultAccess.MFVaultAccessChangeMetaDataStructure
-        private string EnsureLogSinkVaultStructure(EventHandlerEnvironment env)
+        [VaultExtensionMethod("SampleVaultApp.Serilog.Sinks.MFilesObject.EnsureLoggingVaultStructure", RequiredVaultAccess = MFVaultAccess.MFVaultAccessChangeFullControlRole)]  // MFVaultAccess.MFVaultAccessChangeFullControlRole  / MFVaultAccess.MFVaultAccessChangeMetaDataStructure
+        private string EnsureLoggingVaultStructure(EventHandlerEnvironment env)
         {
             PermanentVault.EnsureLogSinkVaultStructure(_loggingStructureConfig);
 

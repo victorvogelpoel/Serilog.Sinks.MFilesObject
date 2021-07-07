@@ -44,7 +44,7 @@
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="MFilesLogFileRepository.cs" />
     <Compile Include="MFilesLogObjectRepository.cs" />
-    <Compile Include="MFilesObjectLogSinkVaultStructure.cs" />
+    <Compile Include="MFilesObjectLoggingVaultStructure.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\FileVersionInfo.cs" />
   </ItemGroup>

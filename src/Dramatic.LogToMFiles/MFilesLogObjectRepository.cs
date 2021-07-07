@@ -39,10 +39,10 @@ namespace Dramatic.LogToMFiles
         /// <param name="controlledSwitch">Serilog switch to use for minimal log level</param>
         /// <param name="formatProvider"></param>
         public MFilesLogObjectRepository(  IVault vault,
-                                            string mfilesLogObjectNamePrefix    = MFilesObjectLogSinkVaultStructure.DefaultMFilesLogObjectNamePrefix,
-                                            string mfilesLogObjectTypeAlias     = MFilesObjectLogSinkVaultStructure.DefaultMFilesLogObjectTypeAlias,
-                                            string mfilesLogClassAlias          = MFilesObjectLogSinkVaultStructure.DefaultMFilesLogClassAlias,
-                                            string mfilesLogMessagePropDefAlias = MFilesObjectLogSinkVaultStructure.DefaultMFilesLogMessagePropertyDefinitionAlias)
+                                            string mfilesLogObjectNamePrefix    = MFilesObjectLoggingVaultStructure.DefaultMFilesLogObjectNamePrefix,
+                                            string mfilesLogObjectTypeAlias     = MFilesObjectLoggingVaultStructure.DefaultMFilesLogObjectTypeAlias,
+                                            string mfilesLogClassAlias          = MFilesObjectLoggingVaultStructure.DefaultMFilesLogClassAlias,
+                                            string mfilesLogMessagePropDefAlias = MFilesObjectLoggingVaultStructure.DefaultMFilesLogMessagePropertyDefinitionAlias)
         {
 
             if (String.IsNullOrWhiteSpace(mfilesLogObjectNamePrefix))       throw new ArgumentException($"{nameof(mfilesLogObjectNamePrefix)} cannot be null or empty; use something like \"Log-\".", nameof(mfilesLogObjectNamePrefix));

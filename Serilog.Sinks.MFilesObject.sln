@@ -9,8 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SANDBOX", "src\sandbox\SAND
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{7A5AA5D3-3671-4852-8525-0B02749E2EDD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dramatic.DemoVaultApplication", "src\Dramatic.DemoVaultApplication\Dramatic.DemoVaultApplication.csproj", "{15C41E9D-35E8-4904-A1E0-74D5A27829A7}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dramatic.LogToMFiles", "src\Dramatic.LogToMFiles\Dramatic.LogToMFiles.csproj", "{4608499A-7A98-46EF-B5F2-5CFB1D298495}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Actions", "Actions", "{4FD253A9-5BE3-4694-A147-6DE3901B6AD4}"
@@ -28,6 +26,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{F51A2C4D
 	ProjectSection(SolutionItems) = preProject
 		Directory.Build.props = Directory.Build.props
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dramatic.DemoVaultApplication", "src\DemoVaultApplication\Dramatic.DemoVaultApplication.csproj", "{15C41E9D-35E8-4904-A1E0-74D5A27829A7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

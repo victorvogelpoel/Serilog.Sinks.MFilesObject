@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<application
+			type="server-application"
+			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			xsi:noNamespaceSchemaLocation="http://www.m-files.com/schemas/appdef-server-v3.xsd">
+  <guid>dca37da1-4798-4f31-ac76-e0c053b47504</guid>
+  <name>Logging companion app for Sample VaultApp for Serilog.Sinks.MFilesObject</name>
+  <description>Companion VaultApp for adding &amp; removing logging structure when enabling and disabling this VaultApp</description>
+  <publisher>Dramatic Development</publisher>
+  <version>0.1</version>
+  <copyright>Copyright 2021 Dramatic Development</copyright>
+  <required-mfiles-version>20.5.0.0</required-mfiles-version>
+  <multi-server-compatible>false</multi-server-compatible>
+  <extension-objects>
+    <extension-object>
+      <name>DemoVaultApplication.LoggingCompanion</name>
+      <assembly>DemoVaultApplication.LoggingCompanion.dll</assembly>
+      <class>DemoVaultApplication.LoggingCompanion.VaultApplication</class>
+      <installation-method>Install</installation-method>
+      <uninstallation-method>Uninstall</uninstallation-method>
+      <initialization-method>Initialize</initialization-method>
+      <uninitialization-method>Uninitialize</uninitialization-method>
+      <start-operations-method>StartOperations</start-operations-method>
+    </extension-object>
+  </extension-objects>
+</application>

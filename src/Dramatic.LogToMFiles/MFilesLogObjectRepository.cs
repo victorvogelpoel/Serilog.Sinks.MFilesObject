@@ -23,9 +23,14 @@ namespace Dramatic.LogToMFiles
         private readonly IVault _vault;
 
         private readonly string _mfilesLogObjectNamePrefix;
-        private readonly int _mfilesLogObjectTypeID;
-        private readonly int _mfilesLogClassID;
-        private readonly int _mfilesLogMessagePropDefID;
+        private readonly string _mfilesLogObjectTypeAlias;
+        private readonly string _mfilesLogClassAlias;
+        private readonly string _mfilesLogMessagePropDefAlias;
+
+
+        //private readonly int _mfilesLogObjectTypeID;
+        //private readonly int _mfilesLogClassID;
+        //private readonly int _mfilesLogMessagePropDefID;
         private readonly Random _rnd = new Random();
 
         /// <summary>
@@ -50,19 +55,32 @@ namespace Dramatic.LogToMFiles
             if (String.IsNullOrWhiteSpace(mfilesLogClassAlias))             throw new ArgumentException($"{nameof(mfilesLogClassAlias)} cannot be null or empty; use something like \"CL.Serilog.MFilesObjectLogSink.Log\"", nameof(mfilesLogClassAlias));
             if (String.IsNullOrWhiteSpace(mfilesLogMessagePropDefAlias))    throw new ArgumentException($"{nameof(mfilesLogMessagePropDefAlias)} cannot be null or empty; use something like \"PD.Serilog.MFilesObjectLogSink.LogMessage\"", nameof(mfilesLogMessagePropDefAlias));
 
-            _vault                                  = vault ?? throw new ArgumentNullException(nameof(vault));
-            _mfilesLogObjectNamePrefix              = mfilesLogObjectNamePrefix;
+            _vault                          = vault ?? throw new ArgumentNullException(nameof(vault));
+            _mfilesLogObjectNamePrefix      = mfilesLogObjectNamePrefix;
 
-            // Get the vault structure IDs for the aliases:
-            _mfilesLogObjectTypeID                  = vault.ObjectTypeOperations.GetObjectTypeIDByAlias(mfilesLogObjectTypeAlias);
-            _mfilesLogClassID                       = vault.ClassOperations.GetObjectClassIDByAlias(mfilesLogClassAlias);
-            _mfilesLogMessagePropDefID              = vault.PropertyDefOperations.GetPropertyDefIDByAlias(mfilesLogMessagePropDefAlias);
+            _mfilesLogObjectTypeAlias       = mfilesLogObjectTypeAlias;
+            _mfilesLogClassAlias            = mfilesLogClassAlias;
+            _mfilesLogMessagePropDefAlias   = mfilesLogMessagePropDefAlias;
 
-            // Health check
-            if (_mfilesLogObjectTypeID == -1 || _mfilesLogClassID == -1 || _mfilesLogMessagePropDefID == -1)
-            {
-                throw new InvalidOperationException($"Missing Log object structure in the vault. Run vault.EnsureLogSinkVaultStructure() with a MFilesObjectLogSinkVaultStructureConfiguration as an M-Files user with administrative permissions to create the logging vault structure.");
-            }
+
+            //// Get the vault structure IDs for the aliases:
+            //_mfilesLogObjectTypeID                  = vault.ObjectTypeOperations.GetObjectTypeIDByAlias(mfilesLogObjectTypeAlias);
+            //_mfilesLogClassID                       = vault.ClassOperations.GetObjectClassIDByAlias(mfilesLogClassAlias);
+            //_mfilesLogMessagePropDefID              = vault.PropertyDefOperations.GetPropertyDefIDByAlias(mfilesLogMessagePropDefAlias);
+
+            //// Health check
+            //if (_mfilesLogObjectTypeID == -1)
+            //{
+            //    throw new InvalidOperationException($"Missing Logging vault structure \"Log\" ObjectType with alias \"{mfilesLogObjectTypeAlias}\". Run vault.EnsureLogSinkVaultStructure() with an MFilesObjectLogSinkVaultStructureConfiguration instance with M-Files administrative permissions to create the logging vault structure.");
+            //}
+            //else if (_mfilesLogClassID == -1)
+            //{
+            //    throw new InvalidOperationException($"Missing Logging vault structure \"Log\" Class with alias \"{mfilesLogClassAlias}\". Run vault.EnsureLogSinkVaultStructure() with an MFilesObjectLogSinkVaultStructureConfiguration instance with M-Files administrative permissions to create the logging vault structure.");
+            //}
+            //else if (_mfilesLogMessagePropDefID == -1)
+            //{
+            //    throw new InvalidOperationException($"Missing Logging vault structure \"LogMessage\" property definition with alias \"{mfilesLogMessagePropDefAlias}\". Run vault.EnsureLogSinkVaultStructure() with an MFilesObjectLogSinkVaultStructureConfiguration instance with M-Files administrative permissions to create the logging vault structure.");
+            //}
         }
 
 
@@ -71,7 +89,7 @@ namespace Dramatic.LogToMFiles
         /// Multiple found objects may be returned.
         /// </summary>
         /// <returns></returns>
-        private ObjectSearchResults SearchTodaysLogObjects()
+        private ObjectSearchResults SearchTodaysLogObjects(int mfileLogObjectTypeID)
         {
             var excludeDeletedItemSearchCondition = new SearchCondition();
             excludeDeletedItemSearchCondition.Expression.SetStatusValueExpression(MFStatusType.MFStatusTypeDeleted);
@@ -83,7 +101,7 @@ namespace Dramatic.LogToMFiles
             var otSearchCondition = new SearchCondition();
             otSearchCondition.Expression.SetStatusValueExpression(MFStatusType.MFStatusTypeObjectTypeID);
             otSearchCondition.ConditionType = MFConditionType.MFConditionTypeEqual;
-            otSearchCondition.TypedValue.SetValue(MFDataType.MFDatatypeLookup, _mfilesLogObjectTypeID);
+            otSearchCondition.TypedValue.SetValue(MFDataType.MFDatatypeLookup, mfileLogObjectTypeID);
 
 
             var titleDefSearchCondition = new SearchCondition();
@@ -103,7 +121,7 @@ namespace Dramatic.LogToMFiles
 
             var searchResults       = _vault.ObjectSearchOperations.SearchForObjectsByConditionsEx(searchConditions, MFSearchFlags.MFSearchFlagNone, SortResults: false);
 
-            // return 0, 1 or more Log objects for the current date, like "Log-2021-05-12", "Log-2021-05-12 (2)". They may not be sorted on title; we'll sort later on CreatedUtc
+            // return 0, 1, 2 or more Log objects for the current date, like "Log-2021-05-12", "Log-2021-05-12 (2)". They may not be sorted on title; we'll sort later on CreatedUtc
 
             return searchResults;
         }
@@ -123,78 +141,92 @@ namespace Dramatic.LogToMFiles
             //   PropDef    1 Name or title - text
             //   PropDef 1159 LogMessage - multiline text
 
-
             // If nothing to in the message, then don't bother going further
-            if (String.IsNullOrWhiteSpace(batchedLogMessage))       { return; }
+            if (String.IsNullOrWhiteSpace(batchedLogMessage)) { return; }
 
-            // Make sure the batched logMessage has a newline termination
-            if (!batchedLogMessage.EndsWith(Environment.NewLine))   { batchedLogMessage += Environment.NewLine; }
-
-            int index                   = 0;
-            var maxLogObjectMessageSize = 10000;
-
-            var searchResults           = SearchTodaysLogObjects();
-            var existingLogObjectCount  = searchResults.Count;
-
-            if (existingLogObjectCount > 0)
+            lock(MFilesObjectLoggingVaultStructure.StructureChangeLock)
             {
-                ObjectVersion checkedOutLogObjectVersion = null;
+                // Get the vault structure IDs for the aliases:
+                var mfilesLogObjectTypeID      = _vault.ObjectTypeOperations.GetObjectTypeIDByAlias(_mfilesLogObjectTypeAlias);
+                var mfilesLogClassID           = _vault.ClassOperations.GetObjectClassIDByAlias(_mfilesLogClassAlias);
+                var mfilesLogMessagePropDefID  = _vault.PropertyDefOperations.GetPropertyDefIDByAlias(_mfilesLogMessagePropDefAlias);
 
-                // Found one or more Log objects for today. First sort it on CreatedUtc
-                searchResults.Sort(new LogObjectCreatedComparer());
-
-                // Work on the last item found, which is the last Log object that was created
-                var lastLogObjVer = searchResults[existingLogObjectCount].ObjVer;
-
-                try
+                // Health check
+                if (mfilesLogObjectTypeID == -1 || mfilesLogClassID == -1 || mfilesLogMessagePropDefID == -1)
                 {
-                    // Is the object checked out? (and even test a number of retries with random waits)
-                    var lastLogObjectIsStillCheckedOut = IsObjectCheckedOut(lastLogObjVer.ObjID, maxRetries: 5);
-                    if (!lastLogObjectIsStillCheckedOut)
-                    {
-                        // Check out the Log object and append the log message
-                        checkedOutLogObjectVersion  = _vault.ObjectOperations.CheckOut(lastLogObjVer.ObjID);
-
-                        // Read the LogMessage MultiLineText prop of the Log object
-                        var logMessagePV            = _vault.ObjectPropertyOperations.GetProperty(lastLogObjVer, _mfilesLogMessagePropDefID );
-
-                        // Get at most (maxLogObjectMessageSize - logMessagePV.TypedValue.DisplayValue.length) characters from the logMessage...
-                        var logmessagePart          = batchedLogMessage.TakeSubstringUpTotheLastSentence(index, maxLogObjectMessageSize - logMessagePV.TypedValue.DisplayValue.Length);
-
-                        // ... and save this with the existing log Object
-                        logMessagePV.TypedValue.SetValue(MFDataType.MFDatatypeMultiLineText, $"{logMessagePV.TypedValue.DisplayValue}{logmessagePart}");
-                        _vault.ObjectPropertyOperations.SetProperty(checkedOutLogObjectVersion.ObjVer, logMessagePV);
-
-                        // And at last, check in the existing Log object again.
-                        _vault.ObjectOperations.CheckIn(checkedOutLogObjectVersion.ObjVer);
-
-                        // Advance the index into the batchedLogMessage until we have written it all.
-                        index += logmessagePart.Length;
-
-                    }
-                    // else: the object is checked out even after retries, so we're going to create a new Log object for the batchedLogMessage
+                    // If logging structure is not complete, then just return. (any thrown exceptions would be swallowed by the serilog framework).
+                    return;
                 }
-                catch
+
+                // Make sure the batched logMessage has a newline termination
+                if (!batchedLogMessage.EndsWith(Environment.NewLine))   { batchedLogMessage += Environment.NewLine; }
+
+                int index                   = 0;
+                var maxLogObjectMessageSize = 10000;
+
+                var searchResults           = SearchTodaysLogObjects(mfilesLogObjectTypeID);
+                var existingLogObjectCount  = searchResults.Count;
+
+                if (existingLogObjectCount > 0)
                 {
-                    // Any errors updating an existing Log object, then undo the checkout, and we'll try and create a new Log object for the batchedLogMessage instead
-                    if (null != checkedOutLogObjectVersion)
+                    ObjectVersion checkedOutLogObjectVersion = null;
+
+                    // Found one or more Log objects for today. First sort it on CreatedUtc
+                    searchResults.Sort(new LogObjectCreatedComparer());
+
+                    // Work on the last item found, which is the last Log object that was created
+                    var lastLogObjVer = searchResults[existingLogObjectCount].ObjVer;
+
+                    try
                     {
-                        _vault.ObjectOperations.UndoCheckout(checkedOutLogObjectVersion.ObjVer);
+                        // Is the object checked out? (and even test a number of retries with random waits)
+                        var lastLogObjectIsStillCheckedOut = IsObjectCheckedOut(lastLogObjVer.ObjID, maxRetries: 5);
+                        if (!lastLogObjectIsStillCheckedOut)
+                        {
+                            // Check out the Log object and append the log message
+                            checkedOutLogObjectVersion  = _vault.ObjectOperations.CheckOut(lastLogObjVer.ObjID);
+
+                            // Read the LogMessage MultiLineText prop of the Log object
+                            var logMessagePV            = _vault.ObjectPropertyOperations.GetProperty(lastLogObjVer, mfilesLogMessagePropDefID );
+
+                            // Get at most (maxLogObjectMessageSize - logMessagePV.TypedValue.DisplayValue.length) characters from the logMessage...
+                            var logmessagePart          = batchedLogMessage.TakeSubstringUpTotheLastSentence(index, maxLogObjectMessageSize - logMessagePV.TypedValue.DisplayValue.Length);
+
+                            // ... and save this with the existing log Object
+                            logMessagePV.TypedValue.SetValue(MFDataType.MFDatatypeMultiLineText, $"{logMessagePV.TypedValue.DisplayValue}{logmessagePart}");
+                            _vault.ObjectPropertyOperations.SetProperty(checkedOutLogObjectVersion.ObjVer, logMessagePV);
+
+                            // And at last, check in the existing Log object again.
+                            _vault.ObjectOperations.CheckIn(checkedOutLogObjectVersion.ObjVer);
+
+                            // Advance the index into the batchedLogMessage until we have written it all.
+                            index += logmessagePart.Length;
+
+                        }
+                        // else: the object is checked out even after retries, so we're going to create a new Log object for the batchedLogMessage
+                    }
+                    catch
+                    {
+                        // Any errors updating an existing Log object, then undo the checkout, and we'll try and create a new Log object for the batchedLogMessage instead
+                        if (null != checkedOutLogObjectVersion)
+                        {
+                            _vault.ObjectOperations.UndoCheckout(checkedOutLogObjectVersion.ObjVer);
+                        }
                     }
                 }
-            }
 
 
-            // If we have still characters left in the batchedLogMessage, then create 1 or more Log objects for it
-            while (index < batchedLogMessage.Length)
-            {
-                // Get at most (maxLogObjectMessageSize - logMessagePV.TypedValue.DisplayValue.length) characters from the logMessage...
-                var logmessagePart = batchedLogMessage.TakeSubstringUpTotheLastSentence(index, Math.Min(maxLogObjectMessageSize, batchedLogMessage.Length-index));
+                // If we have still characters left in the batchedLogMessage, then create 1 or more Log objects for it
+                while (index < batchedLogMessage.Length)
+                {
+                    // Get at most (maxLogObjectMessageSize - logMessagePV.TypedValue.DisplayValue.length) characters from the logMessage...
+                    var logmessagePart = batchedLogMessage.TakeSubstringUpTotheLastSentence(index, Math.Min(maxLogObjectMessageSize, batchedLogMessage.Length-index));
 
-                CreateNewLogObjectWithLogMessage(logmessagePart, ++existingLogObjectCount);
+                    CreateNewLogObjectWithLogMessage(mfilesLogObjectTypeID, mfilesLogClassID, mfilesLogMessagePropDefID, _mfilesLogObjectNamePrefix, logmessagePart, ++existingLogObjectCount);
 
-                // Advance the index into the batchedLogMessage until we have written it all.
-                index += logmessagePart.Length;
+                    // Advance the index into the batchedLogMessage until we have written it all.
+                    index += logmessagePart.Length;
+                }
             }
         }
 
@@ -205,21 +237,21 @@ namespace Dramatic.LogToMFiles
         /// </summary>
         /// <param name="logMessage">a Log message with at most 10000 characters (MultiLineText limit)</param>
         /// <param name="logObjectOrdinal">the number of the new Log object to create. If larger than 1, this is added to the Log object title.</param>
-        private void CreateNewLogObjectWithLogMessage(string logMessage, int logObjectOrdinal)
+        private void CreateNewLogObjectWithLogMessage(int mfilesLogObjectTypeID, int mfilesLogClassID, int mfilesLogMessagePropDefID, string mfilesLogObjectNamePrefix, string logMessage, int logObjectOrdinal)
         {
-            var logObjectTitle = $"{_mfilesLogObjectNamePrefix}{DateTime.Now:yyyy-MM-dd}";
+            var logObjectTitle = $"{mfilesLogObjectNamePrefix}{DateTime.Now:yyyy-MM-dd}";
 
             if (logObjectOrdinal > 1) { logObjectTitle += $" ({logObjectOrdinal})"; }
 
 
             // Class Log
             var classPV = new PropertyValue { PropertyDef = (int)MFBuiltInPropertyDef.MFBuiltInPropertyDefClass };
-            classPV.Value.SetValue(MFDataType.MFDatatypeLookup, _mfilesLogClassID);  // "Log" class
+            classPV.Value.SetValue(MFDataType.MFDatatypeLookup, mfilesLogClassID);  // "Log" class
 
             var titlePV = new PropertyValue { PropertyDef = (int)MFBuiltInPropertyDef.MFBuiltInPropertyDefNameOrTitle };
             titlePV.Value.SetValue(MFDataType.MFDatatypeText, logObjectTitle);     // eg "Log-2021-05-26", or "Log-2021-05-26 (2)"
 
-            var logMessagePV = new PropertyValue { PropertyDef = _mfilesLogMessagePropDefID };  // 1159 = "LogMessage" multiline text
+            var logMessagePV = new PropertyValue { PropertyDef = mfilesLogMessagePropDefID };  // 1159 = "LogMessage" multiline text
             logMessagePV.Value.SetValue(MFDataType.MFDatatypeMultiLineText, logMessage);
 
             var propertyValues = new PropertyValues
@@ -230,7 +262,7 @@ namespace Dramatic.LogToMFiles
             };
 
             // Create the new Log object for today, with name, eg "Log-2021-05-12", with automatic check-in after
-            _vault.ObjectOperations.CreateNewObjectEx(_mfilesLogObjectTypeID, propertyValues, SourceFiles: null, SFD:false, CheckIn:true);
+            _vault.ObjectOperations.CreateNewObjectEx(mfilesLogObjectTypeID, propertyValues, SourceFiles: null, SFD:false, CheckIn:true);
         }
 
 

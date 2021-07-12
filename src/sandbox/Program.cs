@@ -42,7 +42,7 @@ namespace SANDBOX
 
 
                 // Define vault structure for logging if it isn't there: OT "Log", CL "Log" and PD "LogMessage" and aliases to find them back.
-                var structureConfig = new MFilesObjectLogSinkVaultStructureConfiguration
+                var structureConfig = new MFilesObjectLoggingVaultStructureConfiguration
                 {
                     LogObjectTypeNameSingular   = "Log",
                     LogObjectTypeNamePlural     = "Logs",
@@ -53,8 +53,12 @@ namespace SANDBOX
                     LogMessagePropDefAlias      = "PD.Serilog.MFilesObjectLogSink.LogMessage"
                 };
 
+
+
+                vault.RemoveLogObjectsAndLoggingVaultStructure(structureConfig);
+
                 // Ensure that the structure for Logging object and class is present in the vault (needs full permissions on vault)
-                vault.EnsureLogSinkVaultStructure(structureConfig);
+                vault.EnsureLoggingVaultStructure(structureConfig);
 
 
 
@@ -85,14 +89,14 @@ namespace SANDBOX
 
                     //// Log events to an 'rolling' Log object in the vault with a MultiLineText property.
                     .WriteTo.MFilesObjectLogMessage(vault,
-                                            mfilesLogObjectNamePrefix: "LoggingFromSandboxDemo-Log-",
+                                            mfilesLogObjectNamePrefix: "Sandbox-Log Object Demo-",
                                             mfilesLogObjectTypeAlias: structureConfig.LogObjectTypeAlias,
                                             mfilesLogClassAlias: structureConfig.LogClassAlias,
                                             mfilesLogMessagePropDefAlias: structureConfig.LogMessagePropDefAlias,
                                             outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
 
                     .WriteTo.MFilesLogFile( vault,
-                                            mfilesLogFileNamePrefix: "LoggingFromSandboxDemo-Log-",
+                                            mfilesLogFileNamePrefix: "SandboxDemo-Log FILE Demo-",
                                             mfilesLogFileClassAlias: structureConfig.LogFileClassAlias,
                                             outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
 
@@ -100,6 +104,7 @@ namespace SANDBOX
                     // Write to colored console terminal :-)
                     .WriteTo.Console()
 
+                    // Write to a rolling file
                     //.WriteTo.File(@"c:\somepath\Log-.txt",
                     //                outputTemplate:"[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}",
                     //                restrictedToMinimumLevel:LogEventLevel.Information,
@@ -163,7 +168,7 @@ namespace SANDBOX
 
 
 
-        private static void MFilesLogRepositoryTest(IVault vault, String mfilesLogObjectNamePrefix, MFilesObjectLogSinkVaultStructureConfiguration structureConfig)
+        private static void MFilesLogRepositoryTest(IVault vault, String mfilesLogObjectNamePrefix, MFilesObjectLoggingVaultStructureConfiguration structureConfig)
         {
             var repository = new MFilesLogObjectRepository(vault, mfilesLogObjectNamePrefix, structureConfig.LogObjectTypeAlias, structureConfig.LogClassAlias, structureConfig.LogMessagePropDefAlias);
 

@@ -86,8 +86,6 @@ namespace Dramatic.LogToMFiles
 
             lock(StructureChangeLock)
             {
-                if (vault == null) throw new ArgumentNullException(nameof(vault));
-
                 var logObjectTypeID     = vault.ObjectTypeOperations.GetObjectTypeIDByAlias(structureConfig.LogObjectTypeAlias);
                 var logMessagePropDefID = vault.PropertyDefOperations.GetPropertyDefIDByAlias(structureConfig.LogMessagePropDefAlias);
                 var logFileClassID      = vault.ClassOperations.GetObjectClassIDByAlias(structureConfig.LogFileClassAlias);

@@ -35,16 +35,6 @@ namespace DemoVaultApplication
 
         private Action                                                  _flushLogAction;
         private readonly StringBuilder                                  _logEventBuffer         = new StringBuilder();
-        private readonly MFilesObjectLoggingVaultStructureConfiguration _loggingStructureConfig = new MFilesObjectLoggingVaultStructureConfiguration
-                                                                                                {
-                                                                                                    LogObjectTypeNameSingular   = "Log",
-                                                                                                    LogObjectTypeNamePlural     = "Logs",
-                                                                                                    LogMessagePropDefName       = "LogMessage",
-
-                                                                                                    LogObjectTypeAlias          = "OT.Serilog.MFilesObjectLogSink.Log",
-                                                                                                    LogClassAlias               = "CL.Serilog.MFilesObjectLogSink.Log",
-                                                                                                    LogMessagePropDefAlias      = "PD.Serilog.MFilesObjectLogSink.LogMessage"
-                                                                                                };
 
 
         // ===========================================================================================================================================================
@@ -59,7 +49,7 @@ namespace DemoVaultApplication
             base.InitializeApplication(vault);
 
             // Configure logging
-            ConfigureLogging(Configuration.LogLevel);
+            ConfigureLogging(Configuration?.LoggingConfiguration?.LogLevel);
 
             Log.Information("VaultApplication {ApplicationName} {BuildVersion} has been initialized", ApplicationDefinition.Name, _buildFileVersion);   // NOTE, structured logging with curly braces, NOT C# string intrapolation $"" with curly braces!
         }
@@ -109,9 +99,12 @@ namespace DemoVaultApplication
                 case "INFO":    return LogEventLevel.Information;
                 case "WARNING": return LogEventLevel.Warning;
                 case "ERROR":   return LogEventLevel.Error;
+
                 default:        return LogEventLevel.Information;
             }
         }
+
+
 
         /// <summary>
         /// When the admin changes the log event in the configuration of the vault application, set the corresponding Serilog LogEventLevel
@@ -121,12 +114,12 @@ namespace DemoVaultApplication
         /// <param name="oldConfiguration"></param>
         protected override void OnConfigurationUpdated(IConfigurationRequestContext context, ClientOperations clientOps, Configuration oldConfiguration)
         {
-            if (oldConfiguration.LogLevel != Configuration.LogLevel)
+            if (oldConfiguration?.LoggingConfiguration?.LogLevel != Configuration?.LoggingConfiguration?.LogLevel)
             {
-                _loggingLevelSwitch.MinimumLevel = GetLoggingLevelFor(Configuration.LogLevel);
+                _loggingLevelSwitch.MinimumLevel = GetLoggingLevelFor(Configuration?.LoggingConfiguration?.LogLevel);
             }
 
-            Log.Information("Admin changed Log level to {LogLevel}", Configuration.LogLevel);
+            Log.Information("Admin changed Log level to {LogLevel}", Configuration?.LoggingConfiguration?.LogLevel);
         }
 
 
@@ -161,11 +154,23 @@ namespace DemoVaultApplication
                         _logEventBuffer.Clear();
                     }
 
+                    if (null == Configuration.LoggingConfiguration ||
+                        !Configuration.LoggingConfiguration.LogOT.IsResolved ||
+                        !Configuration.LoggingConfiguration.LogCL.IsResolved ||
+                        !Configuration.LoggingConfiguration.LogMessagePD.IsResolved ||
+                        String.IsNullOrWhiteSpace(Configuration.LoggingConfiguration.LogOT.Alias) ||
+                        String.IsNullOrWhiteSpace(Configuration.LoggingConfiguration.LogCL.Alias) ||
+                        String.IsNullOrWhiteSpace(Configuration.LoggingConfiguration.LogMessagePD.Alias))
+                    { return; }
+
+                    var prefix = Configuration.LoggingConfiguration.LogObjectNamePrefix; // 'DemoVaultApp-Log-'
+                    if (string.IsNullOrWhiteSpace(prefix)) { prefix = "DemoVaultApp-Log-"; }
+
                     var repository = new MFilesLogObjectRepository(PermanentVault,
-                                                                   mfilesLogObjectNamePrefix:     $"[{Environment.MachineName.ToUpperInvariant()}] DemoVaultApp-Log-",
-                                                                   mfilesLogObjectTypeAlias:      _loggingStructureConfig.LogObjectTypeAlias,
-                                                                   mfilesLogClassAlias:           _loggingStructureConfig.LogClassAlias,
-                                                                   mfilesLogMessagePropDefAlias:  _loggingStructureConfig.LogMessagePropDefAlias);
+                                                                   mfilesLogObjectNamePrefix:     $"[{Environment.MachineName.ToUpperInvariant()}] {prefix}",
+                                                                   mfilesLogObjectTypeAlias:      Configuration.LoggingConfiguration.LogOT.Alias,
+                                                                   mfilesLogClassAlias:           Configuration.LoggingConfiguration.LogCL.Alias,
+                                                                   mfilesLogMessagePropDefAlias:  Configuration.LoggingConfiguration.LogMessagePD.Alias);
 
                     repository.WriteLogMessage(batchedLogMessages);
                 }
@@ -230,11 +235,49 @@ namespace DemoVaultApplication
             Locations       = new List<ICommandLocation> { new DomainMenuCommandLocation(icon: "play") }
         };
 
+
+        /// <summary>
+	    /// The command which will be executed.
+	    /// </summary>
+	    /// <remarks>The "Execute" method will be called when the command is clicked.</remarks>
+	    private readonly CustomDomainCommand refreshDashboardCommand = new CustomDomainCommand
+	    {
+		    ID = "cmdRefreshDashboard",
+		    ConfirmMessage = "Are you sure you would like to refresh the dashboard?",
+		    Execute = (c, o) =>
+		    {
+			    o.RefreshDashboard();
+		    }
+	    };
+
+
+
+	    /// <inheritdoc />
+	    public override string GetDashboardContent(IConfigurationRequestContext context)
+	    {
+		    // Create the surrounding dashboard.
+		    var dashboard = new StatusDashboard();
+
+		    // Create a panel showing when the dashboard was rendered.
+		    var refreshPanel = new DashboardPanel();
+		    refreshPanel.SetInnerContent( $"Dashboard generated at: {DateTime.Now.ToString( "T" )}" );
+
+		    // Add the refresh command to the panel, and the panel to the dashboard.
+		    refreshPanel.Commands.Add( DashboardHelper.CreateDomainCommand( "Refresh", this.refreshDashboardCommand.ID ) );
+		    dashboard.AddContent( refreshPanel );
+
+		    return dashboard.ToString();
+	    }
+
+
+
+
         public override IEnumerable<CustomDomainCommand> GetCommands(IConfigurationRequestContext context)
         {
 	        return new List<CustomDomainCommand>(base.GetCommands(context))
 	        {
-                cmdTestLogMessageMenuItem
+                cmdTestLogMessageMenuItem,
+			    refreshDashboardCommand
 	        };
         }
 

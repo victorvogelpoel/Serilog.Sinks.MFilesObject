@@ -26,11 +26,6 @@ namespace Dramatic.LogToMFiles
         private readonly string _mfilesLogObjectTypeAlias;
         private readonly string _mfilesLogClassAlias;
         private readonly string _mfilesLogMessagePropDefAlias;
-
-
-        //private readonly int _mfilesLogObjectTypeID;
-        //private readonly int _mfilesLogClassID;
-        //private readonly int _mfilesLogMessagePropDefID;
         private readonly Random _rnd = new Random();
 
         /// <summary>
@@ -61,26 +56,6 @@ namespace Dramatic.LogToMFiles
             _mfilesLogObjectTypeAlias       = mfilesLogObjectTypeAlias;
             _mfilesLogClassAlias            = mfilesLogClassAlias;
             _mfilesLogMessagePropDefAlias   = mfilesLogMessagePropDefAlias;
-
-
-            //// Get the vault structure IDs for the aliases:
-            //_mfilesLogObjectTypeID                  = vault.ObjectTypeOperations.GetObjectTypeIDByAlias(mfilesLogObjectTypeAlias);
-            //_mfilesLogClassID                       = vault.ClassOperations.GetObjectClassIDByAlias(mfilesLogClassAlias);
-            //_mfilesLogMessagePropDefID              = vault.PropertyDefOperations.GetPropertyDefIDByAlias(mfilesLogMessagePropDefAlias);
-
-            //// Health check
-            //if (_mfilesLogObjectTypeID == -1)
-            //{
-            //    throw new InvalidOperationException($"Missing Logging vault structure \"Log\" ObjectType with alias \"{mfilesLogObjectTypeAlias}\". Run vault.EnsureLogSinkVaultStructure() with an MFilesObjectLogSinkVaultStructureConfiguration instance with M-Files administrative permissions to create the logging vault structure.");
-            //}
-            //else if (_mfilesLogClassID == -1)
-            //{
-            //    throw new InvalidOperationException($"Missing Logging vault structure \"Log\" Class with alias \"{mfilesLogClassAlias}\". Run vault.EnsureLogSinkVaultStructure() with an MFilesObjectLogSinkVaultStructureConfiguration instance with M-Files administrative permissions to create the logging vault structure.");
-            //}
-            //else if (_mfilesLogMessagePropDefID == -1)
-            //{
-            //    throw new InvalidOperationException($"Missing Logging vault structure \"LogMessage\" property definition with alias \"{mfilesLogMessagePropDefAlias}\". Run vault.EnsureLogSinkVaultStructure() with an MFilesObjectLogSinkVaultStructureConfiguration instance with M-Files administrative permissions to create the logging vault structure.");
-            //}
         }
 
 

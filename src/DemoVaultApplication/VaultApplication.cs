@@ -197,45 +197,23 @@ namespace DemoVaultApplication
         }
 
 
-        [VaultExtensionMethod("SampleVaultApp.Serilog.Sinks.MFilesObject.EnsureLoggingVaultStructure", RequiredVaultAccess = MFVaultAccess.MFVaultAccessChangeFullControlRole)]  // MFVaultAccess.MFVaultAccessChangeFullControlRole  / MFVaultAccess.MFVaultAccessChangeMetaDataStructure
-        private string EnsureLoggingVaultStructure(EventHandlerEnvironment env)
-        {
-            PermanentVault.EnsureLoggingVaultStructure(_loggingStructureConfig);
-
-            // Reinitialize the PermanentVault cache, otherwise the Logging structure changes won't be noticed.
-            ReinitializeMetadataStructureCache(PermanentVault);
-
-            return "Logging structure has been created in the vault";
-        }
-
-        [VaultExtensionMethod("SampleVaultApp.Serilog.Sinks.MFilesObject.RemoveLoggingVaultStructure", RequiredVaultAccess = MFVaultAccess.MFVaultAccessChangeFullControlRole)]  // MFVaultAccess.MFVaultAccessChangeFullControlRole  / MFVaultAccess.MFVaultAccessChangeMetaDataStructure
-        private string RemoveLoggingVaultStructure(EventHandlerEnvironment env)
-        {
-            PermanentVault.RemoveLogObjectsAndLoggingVaultStructure(_loggingStructureConfig);
-
-            // Reinitialize the PermanentVault cache, otherwise the Logging structure changes won't be noticed.
-            ReinitializeMetadataStructureCache(PermanentVault);
-
-            return "Logging objects and logging vault structure are removed from the vault";
-        }
-
 
         // TODO: log method to be used from VBScript:
-        [VaultExtensionMethod("SampleVaultApp.LogInformation")] // RequiredVaultAccess = MFVaultAccess.MFVaultAccessSeeAllDocs | MFVaultAccess.MFVaultAccessCreateDocs | MFVaultAccess.MFVaultAccessEditAllDocs | MFVaultAccess.MFVaultAccessForceUndoCheckout
+        [VaultExtensionMethod("SampleVaultApp.LogInformation")]
         private string LogInformation(EventHandlerEnvironment env)
         {
             Log.Information(env.Input);
             return $"Logged the following Information message:\r\n{env.Input}";
         }
 
-        [VaultExtensionMethod("SampleVaultApp.LogWarning")] // RequiredVaultAccess = MFVaultAccess.MFVaultAccessSeeAllDocs | MFVaultAccess.MFVaultAccessCreateDocs | MFVaultAccess.MFVaultAccessEditAllDocs | MFVaultAccess.MFVaultAccessForceUndoCheckout
+        [VaultExtensionMethod("SampleVaultApp.LogWarning")]
         private string LogWarning(EventHandlerEnvironment env)
         {
             Log.Warning(env.Input);
             return $"Logged the following warning message:\r\n{env.Input}";
         }
 
-        [VaultExtensionMethod("SampleVaultApp.LogError")] // RequiredVaultAccess = MFVaultAccess.MFVaultAccessSeeAllDocs | MFVaultAccess.MFVaultAccessCreateDocs | MFVaultAccess.MFVaultAccessEditAllDocs | MFVaultAccess.MFVaultAccessForceUndoCheckout
+        [VaultExtensionMethod("SampleVaultApp.LogError")]
         private string LogError(EventHandlerEnvironment env)
         {
             Log.Error(env.Input);
@@ -243,23 +221,6 @@ namespace DemoVaultApplication
         }
 
 
-        private readonly CustomDomainCommand cmdEnsureLoggingVaultStructureMenuItem = new CustomDomainCommand
-        {
-            ID              = "cmdEnsureLoggingVaultStructure",
-            ConfirmMessage  = "Are you sure you want to add logging vault structure?",
-            Execute         = (context, operations) => operations.ShowMessage(context.Vault.ExtensionMethodOperations.ExecuteVaultExtensionMethod("SampleVaultApp.Serilog.Sinks.MFilesObject.EnsureLoggingVaultStructure", "")),
-            DisplayName     = "Logging: Add logging vault structure",
-            Locations       = new List<ICommandLocation> { new DomainMenuCommandLocation(icon: "plus") }
-        };
-
-        private readonly CustomDomainCommand cmdRemoveLoggingVaultStructureMenuItem = new CustomDomainCommand
-        {
-            ID              = "cmdRemoveLoggingVaultStructure",
-            ConfirmMessage  = "Are you sure you want to remove logging objects and logging vault structure?",
-            Execute         = (context, operations) => operations.ShowMessage(context.Vault.ExtensionMethodOperations.ExecuteVaultExtensionMethod("SampleVaultApp.Serilog.Sinks.MFilesObject.RemoveLoggingVaultStructure", "")),
-            DisplayName     = "Logging: remove logging vault structure",
-            Locations       = new List<ICommandLocation> { new DomainMenuCommandLocation(icon: "trash") }
-        };
 
         private readonly CustomDomainCommand cmdTestLogMessageMenuItem = new CustomDomainCommand
         {
@@ -273,11 +234,11 @@ namespace DemoVaultApplication
         {
 	        return new List<CustomDomainCommand>(base.GetCommands(context))
 	        {
-		        cmdEnsureLoggingVaultStructureMenuItem,
-                cmdRemoveLoggingVaultStructureMenuItem,
                 cmdTestLogMessageMenuItem
 	        };
         }
+
+
 
         // ===========================================================================================================================================================
         // The business use case events

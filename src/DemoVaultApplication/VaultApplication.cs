@@ -250,7 +250,7 @@ namespace DemoVaultApplication
         [EventHandler(MFEventHandlerType.MFEventHandlerBeforeCheckInChangesFinalize, ObjectType = (int)MFBuiltInObjectType.MFBuiltInObjectTypeDocument)]
         public void BeforeCheckInChangesFinalizeUpdateLogDemo(EventHandlerEnvironment env)
         {
-            using (LogContext.PushProperty("MFEventType", env.EventType.ToString()))  // Note "Enrich.FromLogContext()" in the configuration builder!
+            using (LogContext.PushProperty("MFEventType", env.EventType.ToString()))  // Note "Enrich.FromLogContext()" in the configuration builder earlier!
             {
                 // Now every log event in this scope automatically has this additional property "MFEventType" from the M-Files event handler environment!
 

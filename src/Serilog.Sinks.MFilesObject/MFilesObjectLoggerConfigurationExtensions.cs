@@ -52,7 +52,7 @@ namespace Serilog
         /// <param name="formatProvider">Supplies culture-specific formatting information, or null.</param>
         /// <param name="controlLevelSwitch">If provided, the switch will be updated based on the log level setting in vault application</param>
         /// <returns>A LoggerSinkConfiguration with configuration for MFilesObject sink added.</returns>
-        public static LoggerConfiguration MFilesObjectLogMessage(
+        public static LoggerConfiguration MFilesLogObjectMessage(
             this LoggerSinkConfiguration loggerSinkConfiguration,
             IVault vault,
             string mfilesLogObjectNamePrefix        = MFilesObjectLoggingVaultStructure.DefaultMFilesLogObjectNamePrefix,

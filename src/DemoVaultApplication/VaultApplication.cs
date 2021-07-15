@@ -80,11 +80,12 @@ namespace DemoVaultApplication
             // Hence in a vault application, we use DelegatingTextSink that collects the log messages and a vault application background job that
             // flushes the collected messages after 5 seconds.
             //
-            //  .WriteTo.MFilesObject(vaultPersistent, mfilesLogObjectNamePrefix:     $"VaultApp-{ApplicationDefinition.Name}-Log-",       // DO NOT USE in a Vault Application; you can use it where YOU control the vault reference, eq in a console application
-            //                                         mfilesLogObjectTypeAlias:      _loggingStructureConfig.LogObjectTypeAlias,
-            //                                         mfilesLogClassAlias:           _loggingStructureConfig.LogClassAlias,
-            //                                         mfilesLogMessagePropDefAlias:  _loggingStructureConfig.LogMessagePropDefAlias,
-            //                                         controlLevelSwitch:            _loggingLevelSwitch)
+                //.WriteTo.MFilesLogObjectMessage(PermanentVault,                                                       // DO NOT USE in a Vault Application; you can use it where YOU control the vault reference, eq in a console application
+                //                                mfilesLogObjectNamePrefix:  $"[{Environment.MachineName.ToUpperInvariant()}] {Configuration?.LoggingConfiguration?.LogObjectNamePrefix}",
+                //                                mfilesLogObjectTypeAlias:      Configuration?.LoggingConfiguration?.LogOT.Alias,
+                //                                mfilesLogClassAlias:           Configuration?.LoggingConfiguration?.LogCL.Alias,
+                //                                mfilesLogMessagePropDefAlias:  Configuration?.LoggingConfiguration?.LogMessagePD.Alias,
+                //                                outputTemplate:                "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
         }
 
         /// <summary>

@@ -168,27 +168,27 @@ namespace SANDBOX
 
 
 
-        private static void MFilesLogRepositoryTest(IVault vault, String mfilesLogObjectNamePrefix, MFilesObjectLoggingVaultStructureConfiguration structureConfig)
-        {
-            var repository = new MFilesLogObjectRepository(vault, mfilesLogObjectNamePrefix, structureConfig.LogObjectTypeAlias, structureConfig.LogClassAlias, structureConfig.LogMessagePropDefAlias);
+        //private static void MFilesLogRepositoryTest(IVault vault, String mfilesLogObjectNamePrefix, MFilesObjectLoggingVaultStructureConfiguration structureConfig)
+        //{
+            //var repository = new MFilesLogObjectRepository(vault, mfilesLogObjectNamePrefix, structureConfig.LogObjectTypeAlias, structureConfig.LogClassAlias, structureConfig.LogMessagePropDefAlias);
 
-            repository.WriteLogMessage("Test message" + Environment.NewLine);
+            //repository.WriteLogMessage("Test message" + Environment.NewLine);
 
-            // Write a LARGE log message
-            string s            = $"Dit is een langere log string die in het log object terecht moet komen..\r\n";
-            int repeat          = 100;
-            int maxSize         = 1000;
-            var sblogMessage    = new StringBuilder(s.Length * repeat);
+            //// Write a LARGE log message
+            //string s            = $"Dit is een langere log string die in het log object terecht moet komen..\r\n";
+            //int repeat          = 100;
+            //int maxSize         = 1000;
+            //var sblogMessage    = new StringBuilder(s.Length * repeat);
 
-            for(int cnt=1; cnt <= repeat; cnt++)
-            {
-                sblogMessage.Append($"{cnt}:{s}");
-            }
-            var logMessage = sblogMessage.ToString();
+            //for(int cnt=1; cnt <= repeat; cnt++)
+            //{
+                //sblogMessage.Append($"{cnt}:{s}");
+            //}
+            //var logMessage = sblogMessage.ToString();
 
-            repository.WriteLogMessage(logMessage);
+            //repository.WriteLogMessage(logMessage);
 
-        }
+        //}
 
 
 

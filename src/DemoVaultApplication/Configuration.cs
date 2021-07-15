@@ -71,7 +71,6 @@ namespace DemoVaultApplication
         public MFIdentifier LogMessagePD { get; set; } = MFilesObjectLoggingVaultStructure.DefaultMFilesLogMessagePropertyDefinitionAlias;
 
 
-        [MFPropertyDef(Required = true)]
         [DataMember]
         [Security(ChangeBy = SecurityAttribute.UserLevel.VaultAdmin)]
         [JsonConfEditor(

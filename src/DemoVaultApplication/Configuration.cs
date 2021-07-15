@@ -32,7 +32,7 @@ namespace DemoVaultApplication
             Options         = "{selectOptions:[\"OFF\", \"INFO\", \"WARNING\", \"ERROR\"]}",
             DefaultValue    = "OFF",
             Label           = "Log level",
-            HelpText        = "Configure the minimal log level of writing messages to M-Files vault object"
+            HelpText        = "Configure the minimal log level of writing events to the M-Files vault object"
             )]
         public string LogLevel { get; set; } = "OFF";
 

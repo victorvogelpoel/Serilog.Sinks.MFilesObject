@@ -293,7 +293,7 @@ namespace Dramatic.LogToMFiles
         /// Search for the Log objects.
         /// </summary>
         /// <returns></returns>
-        private static ObjectSearchResults SearchAllLogObjects(IVault vault, int logObjectTypeID)
+        public static ObjectSearchResults SearchAllLogObjects(this IVault vault, int logObjectTypeID)
         {
             // Search for ObjectType "Log"
             var otSearchCondition = new SearchCondition();
@@ -317,7 +317,7 @@ namespace Dramatic.LogToMFiles
         /// Search for the LogFile class (OT document) objects.
         /// </summary>
         /// <returns></returns>
-        private static ObjectSearchResults SearchAllLogFileObjects(IVault vault, int logFileClassID)
+        public static ObjectSearchResults SearchAllLogFileObjects(this IVault vault, int logFileClassID)
         {
             // Search for Class "LogFile"
             var otSearchCondition = new SearchCondition();

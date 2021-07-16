@@ -89,7 +89,6 @@ namespace Dramatic.LogToMFiles
             // return 0, 1 or more Log objects for the current date, like "Log-2021-05-12", "Log-2021-05-12 (2)". They may not be sorted on title; we'll sort later on CreatedUtc
 
             return searchResults;
-
         }
 
 
@@ -106,6 +105,7 @@ namespace Dramatic.LogToMFiles
             // If nothing to in the message, then don't bother going further
             if (String.IsNullOrWhiteSpace(batchedLogMessage))       { return; }
 
+            // Make sure a vault structure change for logging and storing log message in the vault don't mix
             lock(MFilesObjectLoggingVaultStructure.StructureChangeLock)
             {
                 // Make sure the batched logMessage has a newline termination
@@ -173,7 +173,7 @@ namespace Dramatic.LogToMFiles
         }
 
 
-        private void AppendToLogObjectFile(string logMessage, ObjectFile currentLogFile, ObjectFile updatedLogFile) // ObjID objID, FileVer fileVer)
+        private void AppendToLogObjectFile(string logMessage, ObjectFile currentLogFile, ObjectFile updatedLogFile)
         {
             string logFileTempFilePath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 

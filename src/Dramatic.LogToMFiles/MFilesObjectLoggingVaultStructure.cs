@@ -40,7 +40,7 @@ namespace Dramatic.LogToMFiles
         public const string DefaultMFilesLogFileNamePrefix                  = "Log-";
 
 
-        public static object StructureChangeLock = new Object();
+        public static readonly object StructureChangeLock                   = new Object();
 
 
         /// <summary>

@@ -6,6 +6,7 @@
 //
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -76,11 +77,12 @@ namespace Serilog.Sinks.MFilesObject
             {
                 _mfilesLogRepository.WriteLogMessage(batchedMessage.ToString());
             }
-#pragma warning disable CS0168 // Variable is declared but never used
-            catch (Exception ex)
-#pragma warning restore CS0168 // Variable is declared but never used
+            catch (Exception ex) when (Debugger.IsAttached)
             {
-                throw;  // Keeping this to help me debug M-Files / Serilog exceptions; TODO: remove the catch at sink release.
+                _ = ex;
+                Debugger.Break();   // Keeping this to help me debug M-Files / Serilog exceptions
+
+                throw;
             }
 
             return Task.FromResult(0);

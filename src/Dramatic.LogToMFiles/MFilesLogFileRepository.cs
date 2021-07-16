@@ -20,7 +20,7 @@ namespace Dramatic.LogToMFiles
         private readonly IVault _vault;
 
         private readonly string _mfilesLogFileNamePrefix;
-        private readonly int _mfilesLogFileClassID;
+        private readonly string _mfilesLogFileClassAlias;
         private readonly Random _rnd = new Random();
 
         /// <summary>
@@ -38,16 +38,10 @@ namespace Dramatic.LogToMFiles
             if (String.IsNullOrWhiteSpace(mfilesLogFileClassAlias)) throw new ArgumentException($"{nameof(mfilesLogFileClassAlias)} cannot be null or empty; use something like \"PD.Serilog.MFilesObjectLogSink.LogFile\"", nameof(mfilesLogFileClassAlias));
 
             _vault                      = vault ?? throw new ArgumentNullException(nameof(vault));
+
+            // Storing the aliases
             _mfilesLogFileNamePrefix    = mfilesLogFileNamePrefix;
-
-            // Get the vault structure IDs for the aliases:
-            _mfilesLogFileClassID       = vault.ClassOperations.GetObjectClassIDByAlias(mfilesLogFileClassAlias);
-
-            // Health check
-            if (_mfilesLogFileClassID == -1)
-            {
-                throw new InvalidOperationException($"Missing Logging vault structure. Run vault.EnsureLogSinkVaultStructure() with an MFilesObjectLogSinkVaultStructureConfiguration instance with M-Files administrative permissions to create the logging vault structure.");
-            }
+            _mfilesLogFileClassAlias    = mfilesLogFileClassAlias;
         }
 
 
@@ -56,7 +50,7 @@ namespace Dramatic.LogToMFiles
         /// Multiple found objects may be returned.
         /// </summary>
         /// <returns></returns>
-        private ObjectSearchResults SearchTodaysLogFileDocuments()
+        private ObjectSearchResults SearchTodaysLogFileDocuments(int mfilesLogFileClassID)
         {
             var excludeDeletedItemSearchCondition = new SearchCondition();
             excludeDeletedItemSearchCondition.Expression.SetStatusValueExpression(MFStatusType.MFStatusTypeDeleted);
@@ -67,7 +61,7 @@ namespace Dramatic.LogToMFiles
             var logFileClassSearchCondition = new SearchCondition();
             logFileClassSearchCondition.Expression.SetPropertyValueExpression((int)MFBuiltInPropertyDef.MFBuiltInPropertyDefClass, MFParentChildBehavior.MFParentChildBehaviorNone);
             logFileClassSearchCondition.ConditionType = MFConditionType.MFConditionTypeEqual;
-            logFileClassSearchCondition.TypedValue.SetValue(MFDataType.MFDatatypeLookup, _mfilesLogFileClassID);
+            logFileClassSearchCondition.TypedValue.SetValue(MFDataType.MFDatatypeLookup, mfilesLogFileClassID);
 
             var titleDefSearchCondition = new SearchCondition();
             titleDefSearchCondition.Expression.SetPropertyValueExpression((int)MFBuiltInPropertyDef.MFBuiltInPropertyDefNameOrTitle, MFParentChildBehavior.MFParentChildBehaviorNone);
@@ -108,12 +102,22 @@ namespace Dramatic.LogToMFiles
             // Make sure a vault structure change for logging and storing log message in the vault don't mix
             lock(MFilesObjectLoggingVaultStructure.StructureChangeLock)
             {
+                // Get the vault structure IDs for the alias:
+                var mfilesLogFileClassID       = _vault.ClassOperations.GetObjectClassIDByAlias(_mfilesLogFileClassAlias);
+
+                // Health check
+                if (mfilesLogFileClassID == -1)
+                {
+                    // If logging structure is not complete, then just return. (any thrown exceptions would be swallowed by the serilog framework).
+                    return;
+                }
+
                 // Make sure the batched logMessage has a newline termination
                 if (!batchedLogMessage.EndsWith(Environment.NewLine))   { batchedLogMessage += Environment.NewLine; }
 
                 bool createNewLogObject     = true;
 
-                var searchResults           = SearchTodaysLogFileDocuments();
+                var searchResults           = SearchTodaysLogFileDocuments(mfilesLogFileClassID);
                 var existingLogObjectCount  = searchResults.Count;
 
                 if (existingLogObjectCount > 0)
@@ -167,7 +171,7 @@ namespace Dramatic.LogToMFiles
                 // If we failed before, then createNewLogObject is still true ==> just add a new LogFile object with the message as txt file
                 if (createNewLogObject)
                 {
-                    CreateNewLogObjectWithFile(batchedLogMessage, ++existingLogObjectCount);
+                    CreateNewLogObjectWithFile(mfilesLogFileClassID, batchedLogMessage, ++existingLogObjectCount);
                 }
             }
         }
@@ -192,7 +196,7 @@ namespace Dramatic.LogToMFiles
         /// </summary>
         /// <param name="logMessage">a Log message with at most 10000 characters (MultiLineText limit)</param>
         /// <param name="logObjectOrdinal">the number of the new Log object to create. If larger than 1, this is added to the Log object title.</param>
-        private void CreateNewLogObjectWithFile(string logMessage, int logObjectOrdinal)
+        private void CreateNewLogObjectWithFile(int mfilesLogFileClassID, string logMessage, int logObjectOrdinal)
         {
             string logFileTempFilePath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 
@@ -207,7 +211,7 @@ namespace Dramatic.LogToMFiles
 
                 // Class "LogFile"
                 var classPV = new PropertyValue { PropertyDef = (int)MFBuiltInPropertyDef.MFBuiltInPropertyDefClass };
-                classPV.Value.SetValue(MFDataType.MFDatatypeLookup, _mfilesLogFileClassID);  // "LogFile" class
+                classPV.Value.SetValue(MFDataType.MFDatatypeLookup, mfilesLogFileClassID);  // "LogFile" class
 
                 // Prop "NameOrTitle"
                 var titlePV = new PropertyValue { PropertyDef = (int)MFBuiltInPropertyDef.MFBuiltInPropertyDefNameOrTitle };

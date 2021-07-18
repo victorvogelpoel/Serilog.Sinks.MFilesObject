@@ -21,6 +21,13 @@ namespace DemoVaultApplication
     [DataContract]
     public class LoggingConfiguration
     {
+        //public readonly
+
+
+
+
+
+
         [DataMember]
         [Security(ChangeBy = SecurityAttribute.UserLevel.VaultAdmin)]
         [JsonConfEditor(
@@ -40,9 +47,9 @@ namespace DemoVaultApplication
         [JsonConfEditor(
             Label           = "Log Object type",
             IsRequired      = true,
-            DefaultValue    = MFilesObjectLoggingVaultStructure.DefaultMFilesLogObjectTypeAlias,
+            DefaultValue    = DefaultMFilesLoggingVaultStructure.LogObjectTypeAlias,
             Hidden          = true, ShowWhen = ".parent._children{.key == 'LogLevel' && .value != 'OFF' }")]
-        public MFIdentifier LogOT { get; set; } =  MFilesObjectLoggingVaultStructure.DefaultMFilesLogObjectTypeAlias;
+        public MFIdentifier LogOT { get; set; } =  DefaultMFilesLoggingVaultStructure.LogObjectTypeAlias;
 
 
         [MFClass(Required = true, RefMember = nameof(LoggingConfiguration.LogOT))]
@@ -51,10 +58,10 @@ namespace DemoVaultApplication
         [JsonConfEditor(
             Label           = "Log class",
             IsRequired      = true,
-            DefaultValue    = MFilesObjectLoggingVaultStructure.DefaultMFilesLogClassAlias,
+            DefaultValue    = DefaultMFilesLoggingVaultStructure.LogClassAlias,
             Hidden          = true,
             ShowWhen        = ".parent._children{.key == 'LogLevel' && .value != 'OFF' }")]
-        public MFIdentifier LogCL { get; set; } = MFilesObjectLoggingVaultStructure.DefaultMFilesLogClassAlias;
+        public MFIdentifier LogCL { get; set; } = DefaultMFilesLoggingVaultStructure.LogClassAlias;
 
 
         [MFPropertyDef(Required = true, RefMember = nameof(LoggingConfiguration.LogCL))]
@@ -63,9 +70,9 @@ namespace DemoVaultApplication
         [JsonConfEditor(
             Label           = "LogMessage MultilineText property",
             IsRequired      = true,
-            DefaultValue    = MFilesObjectLoggingVaultStructure.DefaultMFilesLogMessagePropertyDefinitionAlias,
+            DefaultValue    = DefaultMFilesLoggingVaultStructure.LogMessagePropertyDefinitionAlias,
             Hidden = true, ShowWhen = ".parent._children{.key == 'LogLevel' && .value != 'OFF' }")]
-        public MFIdentifier LogMessagePD { get; set; } = MFilesObjectLoggingVaultStructure.DefaultMFilesLogMessagePropertyDefinitionAlias;
+        public MFIdentifier LogMessagePD { get; set; } = DefaultMFilesLoggingVaultStructure.LogMessagePropertyDefinitionAlias;
 
 
         [DataMember]

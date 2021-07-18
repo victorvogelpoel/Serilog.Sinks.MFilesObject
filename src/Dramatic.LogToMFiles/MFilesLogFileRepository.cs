@@ -31,8 +31,8 @@ namespace Dramatic.LogToMFiles
         /// <param name="controlledSwitch">Serilog switch to use for minimal log level</param>
         /// <param name="formatProvider"></param>
         public MFilesLogFileRepository( IVault vault,
-                                        string mfilesLogFileNamePrefix  = MFilesObjectLoggingVaultStructure.DefaultMFilesLogObjectNamePrefix,
-                                        string mfilesLogFileClassAlias  = MFilesObjectLoggingVaultStructure.DefaultMFilesLogFileClassAlias)
+                                        string mfilesLogFileNamePrefix  = DefaultMFilesLoggingVaultStructure.LogObjectNamePrefix,
+                                        string mfilesLogFileClassAlias  = DefaultMFilesLoggingVaultStructure.LogFileClassAlias)
         {
             if (String.IsNullOrWhiteSpace(mfilesLogFileNamePrefix)) throw new ArgumentException($"{nameof(mfilesLogFileNamePrefix)} cannot be null or empty; use something like \"Log-\".", nameof(mfilesLogFileNamePrefix));
             if (String.IsNullOrWhiteSpace(mfilesLogFileClassAlias)) throw new ArgumentException($"{nameof(mfilesLogFileClassAlias)} cannot be null or empty; use something like \"PD.Serilog.MFilesObjectLogSink.LogFile\"", nameof(mfilesLogFileClassAlias));

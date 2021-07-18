@@ -5,42 +5,103 @@
 // If it doesn't, I don't know who wrote it.
 //
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using MFilesAPI;
 
 namespace Dramatic.LogToMFiles
 {
-    public class MFilesObjectLoggingVaultStructureConfiguration
+    /// <summary>Default names and aliases for the logging vault structure</summary>
+    public static class DefaultMFilesLoggingVaultStructure
     {
-        public string LogObjectTypeNameSingular { get; set; } = MFilesObjectLoggingVaultStructure.DefaultLogObjectTypeNameSingular;
-        public string LogObjectTypeNamePlural   { get; set; } = MFilesObjectLoggingVaultStructure.DefaultLogObjectTypeNamePlural;
-        public string LogMessagePropDefName     { get; set; } = MFilesObjectLoggingVaultStructure.DefaultLogMessagePropDefName;
+        /// <summary>Singular name of the M-Files Log object type, default "Log"</summary>
+        public const string LogObjectTypeNameSingular               = "Log";
+        /// <summary>Plural name of the M-Files Log object type, default "Logs"</summary>
+        public const string LogObjectTypeNamePlural                 = "Logs";
+        /// <summary>Name of the M-Files LogMessage property definition, default "LogMessage"</summary>
+        public const string LogMessagePropDefName                   = "LogMessage";
 
-        public string LogObjectTypeAlias        { get; set; } = MFilesObjectLoggingVaultStructure.DefaultMFilesLogObjectTypeAlias;
-        public string LogClassAlias             { get; set; } = MFilesObjectLoggingVaultStructure.DefaultMFilesLogClassAlias;
-        public string LogMessagePropDefAlias    { get; set; } = MFilesObjectLoggingVaultStructure.DefaultMFilesLogMessagePropertyDefinitionAlias;
+        /// <summary>Alias for the M-Files Log object type, default "OT.Serilog.MFilesObjectLogSink.Log"</summary>
+        public const string LogObjectTypeAlias                      = "OT.Serilog.MFilesObjectLogSink.Log";
+        /// <summary>Alias for the M-Files class for the Log class, default "CL.Serilog.MFilesObjectLogSink.Log"</summary></summary>
+        public const string LogClassAlias                           = "CL.Serilog.MFilesObjectLogSink.Log";
+        /// <summary>Alias for the LogMessage property definition, default "PD.Serilog.MFilesObjectLogSink.LogMessage"</summary>
+        public const string LogMessagePropertyDefinitionAlias       = "PD.Serilog.MFilesObjectLogSink.LogMessage";
+        /// <summary>Prefix string for the NameOrTitle of the Log Object document object, eg "Log-" results in Log object with name "Log-2021-07-18", "Log-2021-07-18 (2)", etc </summary>
+        public const string LogObjectNamePrefix                     = "Log-";
 
-        public string LogFileClassName          { get; set; } = MFilesObjectLoggingVaultStructure.DefaultLogFileClassName;
-        public string LogFileClassAlias         { get; set; } = MFilesObjectLoggingVaultStructure.DefaultMFilesLogFileClassAlias;
+        /// <summary>Alias for the Log file document class, default "CL.Serilog.MFilesObjectLogSink.LogFile"</summary>
+        public const string LogFileClassName                        = "LogFile";
+        /// <summary>Name of the M-Files class for the Log file document object (with OT Document)</summary>
+        public const string LogFileClassAlias                       = "CL.Serilog.MFilesObjectLogSink.LogFile";
+        /// <summary>Prefix string for the NameOrTitle of the Log File document object, eg "Log-", which results in "Log-2021-07-18.txt"</summary>
+        public const string LogFileNamePrefix                       = "Log-";
     }
 
 
+    /// <summary>
+    /// Configuration for the logging vault structure
+    /// </summary>
+    public class MFilesLoggingVaultStructureConfiguration
+    {
+        /// <summary>Singular name of the M-Files Log object type, default "Log"</summary>
+        public string LogObjectTypeNameSingular { get; set; }       = DefaultMFilesLoggingVaultStructure.LogObjectTypeNameSingular;
+        /// <summary>Plural name of the M-Files Log object type, default "Logs"</summary>
+        public string LogObjectTypeNamePlural   { get; set; }       = DefaultMFilesLoggingVaultStructure.LogObjectTypeNamePlural;
+        /// <summary>Name of the M-Files LogMessage property definition, default "LogMessage"</summary>
+        public string LogMessagePropDefName     { get; set; }       = DefaultMFilesLoggingVaultStructure.LogMessagePropDefName;
+
+        /// <summary>Alias for the M-Files Log object type, default "OT.Serilog.MFilesObjectLogSink.Log"</summary>
+        public string LogObjectTypeAlias        { get; set; }       = DefaultMFilesLoggingVaultStructure.LogObjectTypeAlias;
+        /// <summary>Alias for the M-Files class for the Log class, default "CL.Serilog.MFilesObjectLogSink.Log"</summary></summary>
+        public string LogClassAlias             { get; set; }       = DefaultMFilesLoggingVaultStructure.LogClassAlias;
+        /// <summary>Alias for the LogMessage property definition, default "PD.Serilog.MFilesObjectLogSink.LogMessage"</summary>
+        public string LogMessagePropDefAlias    { get; set; }       = DefaultMFilesLoggingVaultStructure.LogMessagePropertyDefinitionAlias;
+
+        /// <summary>Name of the M-Files class for the Log file document object (with OT Document)</summary>
+        public string LogFileClassName          { get; set; }       = DefaultMFilesLoggingVaultStructure.LogFileClassName;
+        /// <summary>Alias for the Log file document class, default "CL.Serilog.MFilesObjectLogSink.LogFile"</summary>
+        public string LogFileClassAlias         { get; set; }       = DefaultMFilesLoggingVaultStructure.LogFileClassAlias;
+    }
+
+
+    /// <summary>
+    ///
+    /// </summary>
     public static class MFilesObjectLoggingVaultStructure
     {
-        public const string DefaultLogObjectTypeNameSingular                = "Log";
-        public const string DefaultLogObjectTypeNamePlural                  = "Logs";
-        public const string DefaultLogMessagePropDefName                    = "LogMessage";
-
-        public const string DefaultMFilesLogObjectTypeAlias                 = "OT.Serilog.MFilesObjectLogSink.Log";
-        public const string DefaultMFilesLogClassAlias                      = "CL.Serilog.MFilesObjectLogSink.Log";
-        public const string DefaultMFilesLogMessagePropertyDefinitionAlias  = "PD.Serilog.MFilesObjectLogSink.LogMessage";
-        public const string DefaultMFilesLogFileClassAlias                  = "CL.Serilog.MFilesObjectLogSink.LogFile";
-        public const string DefaultMFilesLogObjectNamePrefix                = "Log-";
-
-        public const string DefaultLogFileClassName                         = "LogFile";
-        public const string DefaultMFilesLogFileNamePrefix                  = "Log-";
-
-
+        /// <summary>Lock object for mutexing structure changings and log writing</summary>
         public static readonly object StructureChangeLock                   = new Object();
+
+
+        /// <summary>
+        /// Gets the missing logging vault structure in vault.
+        /// </summary>
+        /// <remarks>
+        /// Tests if the following aliases can be resolved: LogObjectTypeAlias, LogClassAlias, LogMessagePropDefAlias, LogFileClassAlias and returns the missing ones
+        /// </remarks>
+        /// <param name="vault">Vault to test for the logging structure</param>
+        /// <param name="structureConfig">configuration to test the vault for</param>
+        /// <returns>a List of the logging structure that is missing in the vault</returns>
+        public static List<String> GetMissingLoggingVaultStructure(this IVault vault, MFilesLoggingVaultStructureConfiguration structureConfig)
+        {
+            if (vault is null)              { throw new ArgumentNullException(nameof(vault)); }
+            if (structureConfig is null)    { throw new ArgumentNullException(nameof(structureConfig)); }
+
+            var expectedAliases = new List<String>() { structureConfig.LogObjectTypeAlias, structureConfig.LogClassAlias, structureConfig.LogMessagePropDefAlias, structureConfig.LogFileClassAlias};
+            var presentAliases  = new List<String>();
+
+            lock(StructureChangeLock)
+            {
+                if (vault.ObjectTypeOperations.GetObjectTypeIDByAlias(structureConfig.LogObjectTypeAlias) != -1)        { presentAliases.Add(structureConfig.LogObjectTypeAlias); }
+                if (vault.ClassOperations.GetObjectClassIDByAlias(structureConfig.LogClassAlias) != -1)                 { presentAliases.Add(structureConfig.LogClassAlias); }
+                if (vault.PropertyDefOperations.GetPropertyDefIDByAlias(structureConfig.LogMessagePropDefAlias) != -1)  { presentAliases.Add(structureConfig.LogMessagePropDefAlias); }
+                if (vault.ClassOperations.GetObjectClassIDByAlias(structureConfig.LogFileClassAlias) != -1)             { presentAliases.Add(structureConfig.LogFileClassAlias); }
+
+                return expectedAliases.Except(presentAliases, StringComparer.OrdinalIgnoreCase).ToList();
+            }
+        }
+
 
 
         /// <summary>
@@ -49,7 +110,7 @@ namespace Dramatic.LogToMFiles
         /// <param name="vault"></param>
         /// <param name="structureConfig"></param>
         /// <returns></returns>
-        public static bool HasLoggingVaultStructure(this IVault vault, MFilesObjectLoggingVaultStructureConfiguration structureConfig)
+        public static bool HasLoggingVaultStructure(this IVault vault, MFilesLoggingVaultStructureConfiguration structureConfig)
         {
             if (vault is null)              { throw new ArgumentNullException(nameof(vault)); }
             if (structureConfig is null)    { throw new ArgumentNullException(nameof(structureConfig)); }
@@ -75,7 +136,7 @@ namespace Dramatic.LogToMFiles
         /// </remarks>
         /// <param name="vault">Reference to the M-Files vault; make sure you're connected to the vault with full control permissions. Do NOT specify the PermanentVault.</param>
         /// <param name="structureConfig">Settings for creating Log structure in the vault.</param>
-        public static void EnsureLoggingVaultStructure(this IVault vault, MFilesObjectLoggingVaultStructureConfiguration structureConfig)
+        public static void EnsureLoggingVaultStructure(this IVault vault, MFilesLoggingVaultStructureConfiguration structureConfig)
         {
             // Add OT "Log" with CL "Log"
             // Add PD "LogMessage"
@@ -223,7 +284,7 @@ namespace Dramatic.LogToMFiles
         /// </remarks>
         /// <param name="vault">Reference to the M-Files vault; make sure you're connected to the vault with full control permissions. Do NOT specify the PermanentVault.</param>
         /// <param name="structureConfig">Settings for creating Log structure in the vault.</param>
-        public static void RemoveLogObjectsAndLoggingVaultStructure(this IVault vault, MFilesObjectLoggingVaultStructureConfiguration structureConfig)
+        public static void RemoveLogObjectsAndLoggingVaultStructure(this IVault vault, MFilesLoggingVaultStructureConfiguration structureConfig)
         {
             if (vault is null)                                          { throw new ArgumentNullException(nameof(vault)); }
             if (vault.GetType().FullName == "MetadataCacheVault_Dyn")   { throw new InvalidOperationException($"The PermanentVault reference cannot be used. It is a vault with cached structure and will yield structural lookup errors when creating the logging structure."); }
@@ -236,7 +297,7 @@ namespace Dramatic.LogToMFiles
             }
         }
 
-        private static void DestroyAllLogObjectsAndVaultStructure(IVault vault, MFilesObjectLoggingVaultStructureConfiguration structureConfig)
+        private static void DestroyAllLogObjectsAndVaultStructure(IVault vault, MFilesLoggingVaultStructureConfiguration structureConfig)
         {
             var mfilesLogObjectTypeID = vault.ObjectTypeOperations.GetObjectTypeIDByAlias(structureConfig.LogObjectTypeAlias);
             if (mfilesLogObjectTypeID == -1) { return; }
@@ -266,7 +327,7 @@ namespace Dramatic.LogToMFiles
         }
 
 
-        private static void DestroyAllLogFileObjectsAndVaultStructure(IVault vault, MFilesObjectLoggingVaultStructureConfiguration structureConfig)
+        private static void DestroyAllLogFileObjectsAndVaultStructure(IVault vault, MFilesLoggingVaultStructureConfiguration structureConfig)
         {
             var mfilesLogFileClassID = vault.ClassOperations.GetObjectClassIDByAlias(structureConfig.LogFileClassAlias);
             if (mfilesLogFileClassID == -1) { return; }

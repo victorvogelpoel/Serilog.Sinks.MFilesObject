@@ -27,7 +27,6 @@ namespace SANDBOX
 
 
             // -------------------------------------------------------------------------------------------------------
-            // CAUTION: THIS IS A PERSONAL LAB PROJECT BY VICTOR VOGELPOEL. YMMV!
 
             try
             {
@@ -38,15 +37,20 @@ namespace SANDBOX
 
 
                 // Define vault structure for logging if it isn't there: OT "Log", CL "Log" and PD "LogMessage" and aliases to find them back.
-                var structureConfig = new MFilesObjectLoggingVaultStructureConfiguration
+                var structureConfig = new MFilesLoggingVaultStructureConfiguration
                 {
-                    LogObjectTypeNameSingular   = "Log",
-                    LogObjectTypeNamePlural     = "Logs",
-                    LogMessagePropDefName       = "LogMessage",
+                    // Structure for the LogObject sink
+                    LogObjectTypeNameSingular   = DefaultMFilesLoggingVaultStructure.LogObjectTypeNameSingular,                   // "Log"
+                    LogObjectTypeNamePlural     = DefaultMFilesLoggingVaultStructure.LogObjectTypeNamePlural,                     // "Logs"
+                    LogMessagePropDefName       = DefaultMFilesLoggingVaultStructure.LogMessagePropDefName,                       // "LogMessage"
 
-                    LogObjectTypeAlias          = "OT.Serilog.MFilesObjectLogSink.Log",
-                    LogClassAlias               = "CL.Serilog.MFilesObjectLogSink.Log",
-                    LogMessagePropDefAlias      = "PD.Serilog.MFilesObjectLogSink.LogMessage"
+                    LogObjectTypeAlias          = DefaultMFilesLoggingVaultStructure.LogObjectTypeAlias,                    // "OT.Serilog.MFilesObjectLogSink.Log"
+                    LogClassAlias               = DefaultMFilesLoggingVaultStructure.LogClassAlias,                         // "CL.Serilog.MFilesObjectLogSink.Log"
+                    LogMessagePropDefAlias      = DefaultMFilesLoggingVaultStructure.LogMessagePropertyDefinitionAlias,     // "PD.Serilog.MFilesObjectLogSink.LogMessage"
+
+                    // Structure for the LogFile sink
+                    LogFileClassName            = DefaultMFilesLoggingVaultStructure.LogFileClassName,                             // "LogFile"
+                    LogFileClassAlias           = DefaultMFilesLoggingVaultStructure.LogFileClassAlias                       // "CL.Serilog.MFilesObjectLogSink.LogFile"
                 };
 
 

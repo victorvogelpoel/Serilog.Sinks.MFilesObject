@@ -5,16 +5,11 @@
 // If it doesn't, I don't know who wrote it.
 //
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Dramatic.LogToMFiles;
 using MFilesAPI;
 using Serilog.Configuration;
 using Serilog.Core;
 using Serilog.Events;
-using Serilog.Formatting;
 using Serilog.Formatting.Display;
 using Serilog.Sinks.MFilesObject;
 using Serilog.Sinks.PeriodicBatching;

@@ -4,12 +4,9 @@
 // If this works, it was written by Victor Vogelpoel (victor@victorvogelpoel.nl).
 // If it doesn't, I don't know who wrote it.
 //
-using System;
-using System.Collections.Generic;
 using System.Runtime.Serialization;
 using Dramatic.LogToMFiles;
 using MFiles.VAF.Configuration;
-using MFiles.VAF.Configuration.JsonAdaptor;
 
 namespace DemoVaultApplication
 {

@@ -154,8 +154,8 @@ namespace Dramatic.LogToMFiles
                     try
                     {
                         // Is the object checked out? (and even test a number of retries with random waits)
-                        var lastLogObjectIsStillCheckedOut = IsObjectCheckedOut(lastLogObjVer.ObjID, maxRetries: 5);
-                        if (!lastLogObjectIsStillCheckedOut)
+                        var lastLogObjectIsCheckedIn = IsObjectCheckedIn(lastLogObjVer.ObjID, maxTestRetries: 5);
+                        if (lastLogObjectIsCheckedIn)
                         {
                             // Check out the Log object and append the log message
                             checkedOutLogObjectVersion  = _vault.ObjectOperations.CheckOut(lastLogObjVer.ObjID);
@@ -241,25 +241,27 @@ namespace Dramatic.LogToMFiles
 
 
         /// <summary>
-        /// Is the object checked out? We'll wait a number of retries with random wait and the last result is returned.
+        /// Is the object checked in? If checked out, We'll wait a number of retries with random wait and return the last result.
         /// </summary>
-        /// <param name="logObjID">ID of object to test for checkout status</param>
-        /// <param name="maxRetries">Number of retries to test the checkout status</param>
-        /// <returns>true if the object is checked out, false if not</returns>
-        private bool IsObjectCheckedOut(ObjID logObjID, int maxRetries)
+        /// <param name="logObjID">ID of object to test for checked-in status</param>
+        /// <param name="maxTestRetries">Number of retries to test the checked-in status</param>
+        /// <returns>true if the object is checked-in, false if not</returns>
+        private bool IsObjectCheckedIn(ObjID logObjID, int maxTestRetries)
         {
             bool logObjectIsCheckedOut;
 
+            maxTestRetries = (maxTestRetries <= 0 ? 5 : maxTestRetries);
+
             do
             {
-                maxRetries--;
+                maxTestRetries--;
 
                 logObjectIsCheckedOut = _vault.ObjectOperations.IsObjectCheckedOut(logObjID);
-                if (maxRetries > 0 && logObjectIsCheckedOut) { Thread.Sleep(_rnd.Next(200, 1000)); }
+                if (maxTestRetries > 0 && logObjectIsCheckedOut) { Thread.Sleep(_rnd.Next(200, 1000)); }
 
-            } while (maxRetries > 0 && logObjectIsCheckedOut);
+            } while (maxTestRetries > 0 && logObjectIsCheckedOut);
 
-            return logObjectIsCheckedOut;
+            return !logObjectIsCheckedOut;
         }
     }
 

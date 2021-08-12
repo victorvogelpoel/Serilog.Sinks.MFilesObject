@@ -82,6 +82,12 @@ namespace Dramatic.LogToMFiles
 
             // return 0, 1 or more Log objects for the current date, like "Log-2021-05-12", "Log-2021-05-12 (2)". They may not be sorted on title; we'll sort later on CreatedUtc
 
+            if (searchResults.Count > 0 )
+            {
+                // Found one or more Log objects for today. First sort it on CreatedUtc
+                searchResults.Sort(new LogObjectCreatedComparer());
+            }
+
             return searchResults;
         }
 
@@ -123,9 +129,6 @@ namespace Dramatic.LogToMFiles
                 if (existingLogObjectCount > 0)
                 {
                     ObjectVersion checkedOutLogFileObjectVersion = null;
-
-                    // Found one or more Log objects for today. First sort it on CreatedUtc
-                    searchResults.Sort(new LogObjectCreatedComparer());
 
                     // Work on the last item found, which is the last Log object that was created
                     var lastLogObjVer = searchResults[existingLogObjectCount].ObjVer;

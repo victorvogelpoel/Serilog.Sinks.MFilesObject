@@ -50,7 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Interop.MFilesAPI">
-      <Version>21.6.11</Version>
+      <Version>21.8.3</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>

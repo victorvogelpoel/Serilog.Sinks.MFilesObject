@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{50772124-5AC2-4837-84BF-B8215FBACABF}</ProjectGuid>
+    <ProjectGuid>{14D46180-3116-4D6F-B9EC-0F26DFEBE71D}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>DemoVault.AddLoggingStructure</RootNamespace>
-    <AssemblyName>DemoVault.AddLoggingStructure</AssemblyName>
+    <RootNamespace>Dramatic.LogToMFiles.SANDBOX</RootNamespace>
+    <AssemblyName>Dramatic.LogToMFiles.SANDBOX</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -47,7 +47,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="DemoVaultApplication.licenseheader" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Dramatic.LogToMFiles\Dramatic.LogToMFiles.csproj">

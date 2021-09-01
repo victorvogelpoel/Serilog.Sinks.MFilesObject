@@ -6,6 +6,7 @@
 //
 using System.Runtime.Serialization;
 using Dramatic.LogToMFiles;
+using Dramatic.LogToMFiles.Infrastructure;
 using MFiles.VAF.Configuration;
 
 namespace DemoVaultApplication
@@ -47,9 +48,9 @@ namespace DemoVaultApplication
         [JsonConfEditor(
             Label           = "Log Object type",
             IsRequired      = true,
-            DefaultValue    = DefaultMFilesLoggingVaultStructure.LogObjectTypeAlias,
+            DefaultValue    = DefaultLoggingVaultStructure.LogObjectTypeAlias,
             Hidden          = true, ShowWhen = ".parent._children{.key == 'LogLevel' && .value != 'OFF' }")]
-        public MFIdentifier LogOT { get; set; } =  DefaultMFilesLoggingVaultStructure.LogObjectTypeAlias;
+        public MFIdentifier LogOT { get; set; } =  DefaultLoggingVaultStructure.LogObjectTypeAlias;
 
 
         [MFClass(Required = true, RefMember = nameof(LoggingConfiguration.LogOT))]
@@ -58,10 +59,10 @@ namespace DemoVaultApplication
         [JsonConfEditor(
             Label           = "Log class",
             IsRequired      = true,
-            DefaultValue    = DefaultMFilesLoggingVaultStructure.LogClassAlias,
+            DefaultValue    = DefaultLoggingVaultStructure.LogClassAlias,
             Hidden          = true,
             ShowWhen        = ".parent._children{.key == 'LogLevel' && .value != 'OFF' }")]
-        public MFIdentifier LogCL { get; set; } = DefaultMFilesLoggingVaultStructure.LogClassAlias;
+        public MFIdentifier LogCL { get; set; } = DefaultLoggingVaultStructure.LogClassAlias;
 
 
         [MFPropertyDef(Required = true, RefMember = nameof(LoggingConfiguration.LogCL))]
@@ -70,9 +71,9 @@ namespace DemoVaultApplication
         [JsonConfEditor(
             Label           = "LogMessage MultilineText property",
             IsRequired      = true,
-            DefaultValue    = DefaultMFilesLoggingVaultStructure.LogMessagePropertyDefinitionAlias,
+            DefaultValue    = DefaultLoggingVaultStructure.LogMessagePropertyDefinitionAlias,
             Hidden = true, ShowWhen = ".parent._children{.key == 'LogLevel' && .value != 'OFF' }")]
-        public MFIdentifier LogMessagePD { get; set; } = DefaultMFilesLoggingVaultStructure.LogMessagePropertyDefinitionAlias;
+        public MFIdentifier LogMessagePD { get; set; } = DefaultLoggingVaultStructure.LogMessagePropertyDefinitionAlias;
 
 
         [DataMember]

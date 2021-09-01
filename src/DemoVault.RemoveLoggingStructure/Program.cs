@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Dramatic.LogToMFiles;
+using Dramatic.LogToMFiles.Infrastructure;
 
 namespace DemoVault.RemoveLoggingStructure
 {
@@ -27,7 +28,7 @@ namespace DemoVault.RemoveLoggingStructure
                 Console.WriteLine("Connected and logged in to vault :-)");
 
                 // Define vault structure for logging if it isn't there: OT "Log", CL "Log" and PD "LogMessage" and aliases to find them back.
-                var structureConfig = new MFilesLoggingVaultStructureConfiguration
+                var structureConfig = new LoggingVaultStructureConfiguration
                 {
                     LogObjectTypeNameSingular   = "Log",
                     LogObjectTypeNamePlural     = "Logs",

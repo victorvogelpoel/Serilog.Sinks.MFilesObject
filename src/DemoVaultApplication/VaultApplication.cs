@@ -27,8 +27,7 @@ namespace DemoVaultApplication
     /// The entry point for this Vault Application Framework application.
     /// </summary>
     /// <remarks>Examples and further information available on the developer portal: http://developer.m-files.com/. </remarks>
-    public class VaultApplication
-        : ConfigurableVaultApplicationBase<Configuration>
+    public class VaultApplication : ConfigurableVaultApplicationBase<Configuration>
     {
         private static readonly object                                  _logBufferLockObj       = new object();
         private readonly LoggingLevelSwitch                             _loggingLevelSwitch     = new LoggingLevelSwitch(LogEventLevel.Information);
@@ -168,13 +167,14 @@ namespace DemoVaultApplication
                     var prefix = Configuration.LoggingConfiguration.LogObjectNamePrefix; // 'DemoVaultApp-Log-'
                     if (string.IsNullOrWhiteSpace(prefix)) { prefix = "DemoVaultApp-Log-"; }
 
-                    var repository = new MFilesLogObjectRepository(PermanentVault,
-                                                                   mfilesLogObjectNamePrefix:     $"[{Environment.MachineName.ToUpperInvariant()}] {prefix}",
-                                                                   mfilesLogObjectTypeAlias:      Configuration.LoggingConfiguration.LogOT.Alias,
-                                                                   mfilesLogClassAlias:           Configuration.LoggingConfiguration.LogCL.Alias,
-                                                                   mfilesLogMessagePropDefAlias:  Configuration.LoggingConfiguration.LogMessagePD.Alias);
+                    // TODO replace MFilesLogObjectRepository with RollingFileObject
+                    //var repository = new MFilesLogObjectRepository(PermanentVault,
+                    //                                               mfilesLogObjectNamePrefix:     $"[{Environment.MachineName.ToUpperInvariant()}] {prefix}",
+                    //                                               mfilesLogObjectTypeAlias:      Configuration.LoggingConfiguration.LogOT.Alias,
+                    //                                               mfilesLogClassAlias:           Configuration.LoggingConfiguration.LogCL.Alias,
+                    //                                               mfilesLogMessagePropDefAlias:  Configuration.LoggingConfiguration.LogMessagePD.Alias);
 
-                    repository.WriteLogMessage(batchedLogMessages);
+                    //repository.WriteLogMessage(batchedLogMessages);
                 }
             });
 

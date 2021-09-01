@@ -12,6 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Dramatic.LogToMFiles;
+using Dramatic.LogToMFiles.Infrastructure;
 using MFilesAPI;
 using Serilog.Events;
 using Serilog.Formatting;
@@ -21,11 +22,11 @@ namespace Serilog.Sinks.MFilesObject
 {
     public class MFilesLogObjectMessageSink : IBatchedLogEventSink
     {
-        public const int DefaultBatchPostingLimit                           = 1000;
-        public const int DefaultQueueSizeLimit                              = 100000;
-        public static readonly TimeSpan DefaultPeriod                       = TimeSpan.FromSeconds(5);
+        public const int DefaultBatchPostingLimit       = 1000;
+        public const int DefaultQueueSizeLimit          = 100000;
+        public static readonly TimeSpan DefaultPeriod   = TimeSpan.FromSeconds(5);
 
-        private readonly MFilesLogObjectRepository _mfilesLogRepository;
+        private readonly LogObjectRepository _mfilesLogRepository;
         private readonly ITextFormatter _formatter;
 
         /// <summary>
@@ -40,7 +41,7 @@ namespace Serilog.Sinks.MFilesObject
         public MFilesLogObjectMessageSink(IVault vault, string mfilesLogObjectNamePrefix, string mfilesLogObjectTypeAlias, string mfilesLogClassAlias, string mfilesLogMessagePropDefAlias, ITextFormatter formatter)
         {
             _formatter              = formatter ?? throw new ArgumentNullException(nameof(formatter));
-            _mfilesLogRepository    = new MFilesLogObjectRepository(vault, mfilesLogObjectNamePrefix, mfilesLogObjectTypeAlias, mfilesLogClassAlias, mfilesLogMessagePropDefAlias);
+            _mfilesLogRepository    = new LogObjectRepository(vault, mfilesLogObjectNamePrefix, mfilesLogObjectTypeAlias, mfilesLogClassAlias, mfilesLogMessagePropDefAlias);
         }
 
         public Task OnEmptyBatchAsync()
@@ -72,7 +73,7 @@ namespace Serilog.Sinks.MFilesObject
 
             try
             {
-                _mfilesLogRepository.WriteLogMessage(batchedMessage.ToString());
+                _mfilesLogRepository.SaveLogMessage(batchedMessage.ToString());
             }
             catch (Exception ex) when (Debugger.IsAttached)
             {

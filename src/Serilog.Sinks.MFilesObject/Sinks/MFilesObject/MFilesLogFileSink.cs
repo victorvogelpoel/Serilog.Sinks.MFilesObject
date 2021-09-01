@@ -12,6 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Dramatic.LogToMFiles;
+using Dramatic.LogToMFiles.Infrastructure;
 using MFilesAPI;
 using Serilog.Events;
 using Serilog.Formatting;
@@ -25,7 +26,7 @@ namespace Serilog.Sinks.MFilesObject
         public const int DefaultQueueSizeLimit                              = 100000;
         public static readonly TimeSpan DefaultPeriod                       = TimeSpan.FromSeconds(10);
 
-        private readonly MFilesLogFileRepository _mfilesLogRepository;
+        private readonly LogFileRepository _mfilesLogRepository;
         private readonly ITextFormatter _formatter;
 
         /// <summary>
@@ -37,7 +38,7 @@ namespace Serilog.Sinks.MFilesObject
         public MFilesLogFileSink(IVault vault, string mfilesLogFileNamePrefix, string mfilesLogFileClassAlias, ITextFormatter formatter)
         {
             _formatter              = formatter ?? throw new ArgumentNullException(nameof(formatter));
-            _mfilesLogRepository    = new MFilesLogFileRepository(vault, mfilesLogFileNamePrefix, mfilesLogFileClassAlias);
+            _mfilesLogRepository    = new LogFileRepository(vault, mfilesLogFileNamePrefix, mfilesLogFileClassAlias);
         }
 
         public Task OnEmptyBatchAsync()
@@ -69,7 +70,7 @@ namespace Serilog.Sinks.MFilesObject
 
             try
             {
-                _mfilesLogRepository.WriteLogFile(batchedMessage.ToString());
+                _mfilesLogRepository.SaveLogMessage(batchedMessage.ToString());
             }
             catch (Exception ex) when (Debugger.IsAttached)
             {

@@ -6,6 +6,7 @@
 //
 using System;
 using Dramatic.LogToMFiles;
+using Dramatic.LogToMFiles.Infrastructure;
 using MFilesAPI;
 using Serilog.Configuration;
 using Serilog.Core;
@@ -18,6 +19,7 @@ namespace Serilog
 {
     public static class MFilesObjectLoggerConfigurationExtensions
     {
+        //                                                                        "[20:10:00 INF] somemessage\r\n"
         public const string DefaultMFilesObjectOutputTemplate                   = "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}";
 
 
@@ -50,10 +52,10 @@ namespace Serilog
         public static LoggerConfiguration MFilesLogObjectMessage(
             this LoggerSinkConfiguration loggerSinkConfiguration,
             IVault vault,
-            string mfilesLogObjectNamePrefix        = DefaultMFilesLoggingVaultStructure.LogObjectNamePrefix,
-            string mfilesLogObjectTypeAlias         = DefaultMFilesLoggingVaultStructure.LogObjectTypeAlias,
-            string mfilesLogClassAlias              = DefaultMFilesLoggingVaultStructure.LogClassAlias,
-            string mfilesLogMessagePropDefAlias     = DefaultMFilesLoggingVaultStructure.LogMessagePropertyDefinitionAlias,
+            string mfilesLogObjectNamePrefix        = DefaultLoggingVaultStructure.LogObjectNamePrefix,
+            string mfilesLogObjectTypeAlias         = DefaultLoggingVaultStructure.LogObjectTypeAlias,
+            string mfilesLogClassAlias              = DefaultLoggingVaultStructure.LogClassAlias,
+            string mfilesLogMessagePropDefAlias     = DefaultLoggingVaultStructure.LogMessagePropertyDefinitionAlias,
             LogEventLevel restrictedToMinimumLevel  = LevelAlias.Minimum,
             int batchPostingLimit                   = MFilesLogObjectMessageSink.DefaultBatchPostingLimit,
             TimeSpan? period                        = null,
@@ -116,8 +118,8 @@ namespace Serilog
         public static LoggerConfiguration MFilesLogFile(
             this LoggerSinkConfiguration loggerSinkConfiguration,
             IVault vault,
-            string mfilesLogFileNamePrefix          = DefaultMFilesLoggingVaultStructure.LogFileNamePrefix,
-            string mfilesLogFileClassAlias          = DefaultMFilesLoggingVaultStructure.LogClassAlias,
+            string mfilesLogFileNamePrefix          = DefaultLoggingVaultStructure.LogFileNamePrefix,
+            string mfilesLogFileClassAlias          = DefaultLoggingVaultStructure.LogClassAlias,
             LogEventLevel restrictedToMinimumLevel  = LevelAlias.Minimum,
             int batchPostingLimit                   = MFilesLogFileSink.DefaultBatchPostingLimit,
             TimeSpan? period                        = null,

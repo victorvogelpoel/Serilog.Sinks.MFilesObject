@@ -1,80 +1,90 @@
-﻿// Program.cs
-// 18-7-2021
-// Copyright 2021 Dramatic Development - Victor Vogelpoel
-// If this works, it was written by Victor Vogelpoel (victor@victorvogelpoel.nl).
-// If it doesn't, I don't know who wrote it.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-//
-using System;
+﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using Dramatic.LogToMFiles;
+using System.Threading.Tasks;
+using Dramatic.LogToMFiles.Application;
 using Dramatic.LogToMFiles.Infrastructure;
 
-namespace DemoVault.AddLoggingStructure
+namespace Dramatic.LogToMFiles.SANDBOX
 {
-    static class Program
+    class Program
     {
         static void Main(string[] args)
         {
-
-            // -------------------------------------------------------------------------------------------------------
-
             try
             {
-                string vaultname        = "Serilog.Sinks.MFilesObject";
+                var sampleVaultName     = "Serilog.Sinks.MFilesObject";
 
-                Console.WriteLine($"Connecting to vault \"{vaultname}\" using the logged on windows user...");
                 var serverApp           = new MFilesAPI.MFilesServerApplication();
                 serverApp.Connect(MFilesAPI.MFAuthType.MFAuthTypeLoggedOnWindowsUser);
-                var vaultOnServer       = serverApp.GetOnlineVaults().GetVaultByName(vaultname); // The "Serilog.Sinks.MFilesObject" demo vault that mysteriously bears the same name as the logging solution
+                var vaultOnServer       = serverApp.GetOnlineVaults().GetVaultByName(sampleVaultName); // The "Serilog.Sinks.MFilesObject" demo vault that mysteriously bears the same name as the logging solution
+                if (vaultOnServer == null) { throw new ArgumentException($"Cannot find sample vault \"{"Serilog.Sinks.MFilesObject"}\". Is it installed on this server?"); }
+
                 var vault               = serverApp.LogInAsUserToVault(vaultOnServer.GUID);  // "{D449E438-89EE-42BB-9769-B862E9B1B140}"
 
-                Console.WriteLine("Connected and logged in to vault :-)");
 
                 // Define vault structure for logging if it isn't there: OT "Log", CL "Log" and PD "LogMessage" and aliases to find them back.
                 var structureConfig = new LoggingVaultStructureConfiguration
                 {
-                    LogObjectTypeNameSingular   = "Log",
-                    LogObjectTypeNamePlural     = "Logs",
-                    LogMessagePropDefName       = "LogMessage",
+                    // Structure for the LogObject sink
+                    LogObjectTypeNameSingular   = DefaultLoggingVaultStructure.LogObjectTypeNameSingular,             // "Log"
+                    LogObjectTypeNamePlural     = DefaultLoggingVaultStructure.LogObjectTypeNamePlural,               // "Logs"
+                    LogMessagePropDefName       = DefaultLoggingVaultStructure.LogMessagePropDefName,                 // "LogMessage"
 
-                    LogObjectTypeAlias          = "OT.Serilog.MFilesObjectLogSink.Log",
-                    LogClassAlias               = "CL.Serilog.MFilesObjectLogSink.Log",
-                    LogMessagePropDefAlias      = "PD.Serilog.MFilesObjectLogSink.LogMessage",
+                    LogObjectTypeAlias          = DefaultLoggingVaultStructure.LogObjectTypeAlias,                    // "OT.Serilog.MFilesObjectLogSink.Log"
+                    LogClassAlias               = DefaultLoggingVaultStructure.LogClassAlias,                         // "CL.Serilog.MFilesObjectLogSink.Log"
+                    LogMessagePropDefAlias      = DefaultLoggingVaultStructure.LogMessagePropertyDefinitionAlias,     // "PD.Serilog.MFilesObjectLogSink.LogMessage"
 
-                    LogFileClassName            = "LogFile",
-                    LogFileClassAlias           = "CL.Serilog.MFilesObjectLogSink.LogFile"
+                    // Structure for the LogFile sink
+                    LogFileClassName            = DefaultLoggingVaultStructure.LogFileClassName,                      // "LogFile"
+                    LogFileClassAlias           = DefaultLoggingVaultStructure.LogFileClassAlias                      // "CL.Serilog.MFilesObjectLogSink.LogFile"
                 };
 
-                Console.WriteLine("Ensuring or adding logging vault structure...");
 
-                // Ensure that the structure for Logging object and class is present in the vault (needs FULL ADMIN permissions on vault)
-                vault.EnsureLoggingVaultStructure(structureConfig);
+                // -----------------------------------------------------------------------------------------------------------------------------------------
 
-                Console.WriteLine($"Completed ensuring logging vault structure.");
+                var logVault            = new LogObjectVault(vault, structureConfig.LogObjectTypeAlias, structureConfig.LogClassAlias, structureConfig.LogMessagePropDefAlias);
+                var rollingLogObject    = new RollingLogObject(logVault, $"[{Environment.MachineName}] LogObject-");
+                rollingLogObject.SaveLogMessage($"Test message 1 {DateTime.Now:HH:mm:ss}");
+
+                var rollingObjectRepo = new LogObjectRepository(vault, $"[{Environment.MachineName}] LogObject-", structureConfig.LogObjectTypeAlias, structureConfig.LogClassAlias, structureConfig.LogMessagePropDefAlias);
+                rollingObjectRepo.SaveLogMessage($"Test message 2 {DateTime.Now:HH:mm:ss}");
+
+                // -----------------------------------------------------------------------------------------------------------------------------------------
+                var logVault2       = new LogFileVault(vault, structureConfig.LogFileClassAlias);
+                var rollingLogFile  = new RollingLogFile(logVault2, $"[{Environment.MachineName}] LogFile-");
+                rollingLogFile.SaveLogMessage($"Test message 1 {DateTime.Now:HH:mm:ss}");
+
+                var rollingFileRepo = new LogFileRepository(vault, $"[{Environment.MachineName}] LogFile-", structureConfig.LogFileClassAlias);
+                rollingFileRepo.SaveLogMessage($"Test message 2 {DateTime.Now:HH:mm:ss}");
+
 
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToDetailedString());
+
+
+                //if (ex is AggregateException aggrEx)  // AggregateException is an compound exception when something failed in a async/task function, like a Validation.
+                //{
+                //    foreach (var innerEx in aggrEx.InnerExceptions)
+                //    {
+                //        OutputException(innerEx);
+                //    }
+                //}
+                //else
+                //{
+                //    OutputException(ex);
+                //}
             }
+
+            Console.WriteLine("Hit enter to exit");
+            Console.ReadLine();
         }
     }
-
 
 
 
@@ -243,5 +253,4 @@ namespace DemoVault.AddLoggingStructure
 
         public bool OmitNullProperties { get; set; }
     }
-
 }

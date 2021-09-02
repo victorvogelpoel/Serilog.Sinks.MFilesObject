@@ -138,14 +138,13 @@ namespace Dramatic.LogToMFiles.Tests
             {
                 // ASSIGN
                 var logObjectNamePrefix             = "Log-";
-                var mfilesLogMessageCharacterLimit  = 10000;
-                var minCharsForRollover             = 15;
                 var logMessage                      = ""; // Empty
-                var date                            = DateTime.Today;
+                var logDate                         = DateTime.Today;
+                var logObjectName                   = $"{logObjectNamePrefix}{logDate:yyyy-MM-dd}";
 
                 var logVaultMock                    = new Mock<ILogObjectVault>();
                 logVaultMock.Setup(b => b.IsLogObjectStructurePresent()).Returns(true);
-                logVaultMock.Setup(b => b.SearchLogObjects(logObjectNamePrefix, date)).Returns(new List<MFilesAPI.ObjVer>());
+                logVaultMock.Setup(b => b.SearchLogObjects(logObjectName)).Returns(new List<MFilesAPI.ObjVer>());
 
                 // ACT
                 var rollingLogObject = new RollingLogObject(logVaultMock.Object, logObjectNamePrefix);
@@ -162,17 +161,16 @@ namespace Dramatic.LogToMFiles.Tests
             {
                 // ASSIGN
                 var logObjectNamePrefix             = "Log-";
-                var mfilesLogMessageCharacterLimit  = 10000;
-                var minCharsForRollover             = 15;
                 var logMessage                      = "Some message";
-                var date                            = DateTime.Today;
+                var logDate                         = DateTime.Today;
+                var logObjectName                   = $"{logObjectNamePrefix}{logDate:yyyy-MM-dd}";
 
                 var logVaultMock                    = new Mock<ILogObjectVault>();
                 logVaultMock.Setup(b => b.IsLogObjectStructurePresent()).Returns(true);
-                logVaultMock.Setup(b => b.SearchLogObjects(logObjectNamePrefix, date)).Returns(new List<MFilesAPI.ObjVer>());
+                logVaultMock.Setup(b => b.SearchLogObjects(logObjectName)).Returns(new List<MFilesAPI.ObjVer>());
 
-                var expectedLogObjectOrdinal        = 1;
                 var expectedBatchedLogMessage       = $"{logMessage}{Environment.NewLine}";
+                var expectedNewObjectName           = logObjectName;
 
                 // ACT
                 var rollingLogObject = new RollingLogObject(logVaultMock.Object, logObjectNamePrefix);
@@ -181,12 +179,14 @@ namespace Dramatic.LogToMFiles.Tests
 
                 // ASSERT
                 logVaultMock.Verify(m => m.IsLogObjectStructurePresent(), Times.Once);
-                logVaultMock.Verify(m => m.SearchLogObjects(logObjectNamePrefix, date), Times.Once);
+                logVaultMock.Verify(m => m.SearchLogObjects(logObjectName), Times.Once);
                 logVaultMock.Verify(m => m.WriteLogMessageToExistingLogObject(It.IsAny<ObjVer>(), logMessage), Times.Never);
-                logVaultMock.Verify(m => m.WriteLogMessageToNewLogObject(logObjectNamePrefix, date, expectedLogObjectOrdinal, expectedBatchedLogMessage), Times.Once);
+                logVaultMock.Verify(m => m.WriteLogMessageToNewLogObject(expectedNewObjectName, expectedBatchedLogMessage), Times.Once);
 
             }
 
+
+            // =============================================================================================================================================================
 
             [TestClass]
             public class Stubbed

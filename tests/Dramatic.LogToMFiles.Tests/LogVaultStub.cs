@@ -34,11 +34,9 @@ namespace Dramatic.LogToMFiles.Tests
             return LogObjects[logObjVer.ID - 1].LogMessage;
         }
 
-        public List<ObjVer> SearchLogObjects(string logObjectNamePrefix, DateTime logDate)
+        public List<ObjVer> SearchLogObjects(string logObjectBaseName)
         {
-            var targetNameOrTitle = $"{logObjectNamePrefix}{logDate:yyyy-MM-dd}";
-
-            return LogObjects.Where(o => o.NameOrTitle.StartsWith(targetNameOrTitle, StringComparison.Ordinal)).Select(p=>p.ObjVer).ToList();
+            return LogObjects.Where(o => o.NameOrTitle.StartsWith(logObjectBaseName, StringComparison.Ordinal)).Select(p=>p.ObjVer).ToList();
         }
 
         public bool WriteLogMessageToExistingLogObject(ObjVer logObjVer, string logMessage)
@@ -49,15 +47,11 @@ namespace Dramatic.LogToMFiles.Tests
             return true;
         }
 
-        public bool WriteLogMessageToNewLogObject(string logObjectNamePrefix, DateTime logDate, int logObjectOrdinal, string logMessage)
+        public bool WriteLogMessageToNewLogObject(string newLogObjectName, string logMessage)
         {
-            var logObjectTitle = $"{logObjectNamePrefix}{logDate:yyyy-MM-dd}";
-            // "Prefix-2021-08-23 (2)", "Prefix-2021-08-23 (3)", ....
-            if (logObjectOrdinal > 1) { logObjectTitle += $" ({logObjectOrdinal})"; }
-
             var logObjectStub = new LogObjectStub
             {
-                NameOrTitle = logObjectTitle,
+                NameOrTitle = newLogObjectName,
                 LogMessage  = logMessage,
                 ObjVer      = new ObjVerClass
                 {

@@ -59,7 +59,12 @@ namespace Dramatic.LogToMFiles.Infrastructure
         }
 
 
-        public List<ObjVer> SearchLogFileDocuments(string logObjectNamePrefix, DateTime logDate)
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="logFileBaseName"></param>
+        /// <returns></returns>
+        public List<ObjVer> SearchLogFileDocuments(string logFileBaseName)
         {
             var excludeDeletedItemSearchCondition = new SearchCondition();
             excludeDeletedItemSearchCondition.Expression.SetStatusValueExpression(MFStatusType.MFStatusTypeDeleted);
@@ -78,7 +83,7 @@ namespace Dramatic.LogToMFiles.Infrastructure
             // We want only LogFile class objects which NameOrTitle begins with the search string provided.
             titleDefSearchCondition.ConditionType = MFConditionType.MFConditionTypeStartsWith;
 
-            titleDefSearchCondition.TypedValue.SetValue(MFilesAPI.MFDataType.MFDatatypeText, $"{logObjectNamePrefix}{logDate:yyyy-MM-dd}");  // eg "Log-2021-05-12"
+            titleDefSearchCondition.TypedValue.SetValue(MFilesAPI.MFDataType.MFDatatypeText, logFileBaseName);  // eg "Log-2021-05-12"
 
             var searchConditions    = new SearchConditions
             {
@@ -188,14 +193,14 @@ namespace Dramatic.LogToMFiles.Infrastructure
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="logObjectNamePrefix"></param>
         /// <param name="logDate"></param>
         /// <param name="logObjectOrdinal"></param>
         /// <param name="logMessage"></param>
         /// <returns></returns>
-        public bool WriteLogMessageToNewLogFile(string logObjectNamePrefix, DateTime logDate, int logObjectOrdinal, string logMessage)
+        public bool WriteLogMessageToNewLogFile(string newLogFileName, string logMessage)
         {
             string logFileTempFilePath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 
@@ -204,17 +209,13 @@ namespace Dramatic.LogToMFiles.Infrastructure
                 // Write the logMessage to the temp file
                 File.WriteAllText(logFileTempFilePath, logMessage, Encoding.UTF8);
 
-                // Create a Log object title, with ordinal if needed, eg"Log-2021-05-26 (2)"
-                var logObjectTitle = $"{logObjectNamePrefix}{logDate:yyyy-MM-dd}";
-                if (logObjectOrdinal > 1) { logObjectTitle += $" ({logObjectOrdinal})"; }
-
                 // Class "LogFile"
                 var classPV = new PropertyValue { PropertyDef = (int)MFBuiltInPropertyDef.MFBuiltInPropertyDefClass };
                 classPV.Value.SetValue(MFDataType.MFDatatypeLookup, _mfilesLogFileClassID);  // "LogFile" class
 
                 // Prop "NameOrTitle"
                 var titlePV = new PropertyValue { PropertyDef = (int)MFBuiltInPropertyDef.MFBuiltInPropertyDefNameOrTitle };
-                titlePV.Value.SetValue(MFDataType.MFDatatypeText, logObjectTitle);     // eg "Log-2021-05-26", or "Log-2021-05-26 (2)"
+                titlePV.Value.SetValue(MFDataType.MFDatatypeText, newLogFileName);     // eg "Log-2021-05-26", or "Log-2021-05-26 (2)"
 
                 var propertyValues = new PropertyValues
                 {
@@ -227,7 +228,7 @@ namespace Dramatic.LogToMFiles.Infrastructure
                 var sourceFile = new SourceObjectFile
                 {
                     SourceFilePath  = logFileTempFilePath,
-                    Title           = logObjectTitle, // For single-file-documents this is ignored.
+                    Title           = newLogFileName, // For single-file-documents this is ignored.
                     Extension       = "txt"
                 };
 

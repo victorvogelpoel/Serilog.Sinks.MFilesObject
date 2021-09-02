@@ -29,7 +29,7 @@ namespace Dramatic.LogToMFiles.Application
     internal class RollingLogObject
     {
         private readonly ILogObjectVault  _logVault;
-        private readonly string     _mfilesLogObjectNamePrefix;
+        private readonly string     _logObjectNamePrefix;
         private readonly int        _mfilesLogMessageCharacterLimit = 10000;
         private readonly int        _minCharsForRollover            = 15;
 
@@ -38,8 +38,8 @@ namespace Dramatic.LogToMFiles.Application
         /// </summary>
         public RollingLogObject(ILogObjectVault logVault, string logObjectNamePrefix="Log-")
         {
-            _logVault                       = logVault ?? throw new ArgumentNullException(nameof(logVault));
-            _mfilesLogObjectNamePrefix      = (!String.IsNullOrEmpty(logObjectNamePrefix) ? logObjectNamePrefix                                 : throw new ArgumentNullException(nameof(logObjectNamePrefix)));
+            _logVault               = logVault ?? throw new ArgumentNullException(nameof(logVault));
+            _logObjectNamePrefix    = (!String.IsNullOrEmpty(logObjectNamePrefix) ? logObjectNamePrefix : throw new ArgumentNullException(nameof(logObjectNamePrefix)));
 
             if (logObjectNamePrefix.Length > 50) { throw new ArgumentOutOfRangeException(nameof(logObjectNamePrefix), "logObjectNamePrefix should be a valid string with at most 50 characters"); }
         }
@@ -70,7 +70,8 @@ namespace Dramatic.LogToMFiles.Application
             // Make sure the batched logMessage has a newline termination
             if (!logMessage.EndsWith(Environment.NewLine))  { logMessage += Environment.NewLine; }
 
-		    var foundLogObjectsForDate          = _logVault.SearchLogObjects(_mfilesLogObjectNamePrefix, logDate);
+            var logObjectName                   = $"{_logObjectNamePrefix}{logDate:yyyy-MM-dd}";
+		    var foundLogObjectsForDate          = _logVault.SearchLogObjects(logObjectName);
 		    var foundLogObjectsForDateCount     = foundLogObjectsForDate.Count;
 		    var processedBatchedLogMessageIndex = 0;
 
@@ -107,8 +108,15 @@ namespace Dramatic.LogToMFiles.Application
 			    // Get at most (maxLogObjectMessageSize - batchedLogMessage.length) characters from the logMessage...
 			    var logMessagePart = logMessage.TakeSubstringUpTotheLastNewLine(processedBatchedLogMessageIndex, Math.Min(_mfilesLogMessageCharacterLimit, logMessage.Length-processedBatchedLogMessageIndex));
 
+                foundLogObjectsForDateCount++;
+
+                // "Prefix-2021-08-23"
+                var newLogObjectName = logObjectName;
+                // "Prefix-2021-08-23", "Prefix-2021-08-23 (2)" or "Prefix-2021-08-23 (3)", ....
+                if (foundLogObjectsForDateCount > 1) { newLogObjectName += $" ({foundLogObjectsForDateCount})"; }
+
                 // The todaysLogObjectsCount will add "(2)", "(3)", ... to the new Log object title.
-			    _logVault.WriteLogMessageToNewLogObject(_mfilesLogObjectNamePrefix, logDate, ++foundLogObjectsForDateCount, logMessagePart);
+			    _logVault.WriteLogMessageToNewLogObject(newLogObjectName, logMessagePart);
 
 			    // Advance the index into the batchedLogMessage until we have written it all.
 			    processedBatchedLogMessageIndex += logMessagePart.Length;

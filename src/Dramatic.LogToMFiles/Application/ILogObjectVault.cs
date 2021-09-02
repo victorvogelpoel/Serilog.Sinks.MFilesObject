@@ -16,11 +16,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using MFilesAPI;
 
 namespace Dramatic.LogToMFiles.Application
@@ -29,11 +25,11 @@ namespace Dramatic.LogToMFiles.Application
     {
         bool IsLogObjectStructurePresent();
 
-        List<ObjVer> SearchLogObjects(string logObjectNamePrefix, DateTime logDate);
+        List<ObjVer> SearchLogObjects(string logObjectBaseName);
 
         string ReadLogMessageFromLogObject(ObjVer logObjVer);
 
         bool WriteLogMessageToExistingLogObject(ObjVer logObjVer, string logMessage);
-        bool WriteLogMessageToNewLogObject(string logObjectNamePrefix, DateTime logDate, int logObjectOrdinal, string logMessage);
+        bool WriteLogMessageToNewLogObject(string newLogObjectName, string logMessage);
     }
 }

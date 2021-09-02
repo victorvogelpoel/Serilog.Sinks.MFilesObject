@@ -26,9 +26,9 @@ namespace Dramatic.LogToMFiles.Application
     {
         bool IsLogFileStructurePresent();
 
-        List<ObjVer> SearchLogFileDocuments(string logObjectNamePrefix, DateTime logDate);
+        List<ObjVer> SearchLogFileDocuments(string logFileBaseName);
 
         bool WriteLogMessageToExistingLogFile(ObjVer logObjVer, string logMessage);
-        bool WriteLogMessageToNewLogFile(string logObjectNamePrefix, DateTime logDate, int logObjectOrdinal, string logMessage);
+        bool WriteLogMessageToNewLogFile(string newLogFileName, string logMessage);
     }
 }

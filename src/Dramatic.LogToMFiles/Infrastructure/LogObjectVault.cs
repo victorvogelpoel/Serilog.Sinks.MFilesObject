@@ -83,7 +83,12 @@ namespace Dramatic.LogToMFiles.Infrastructure
         }
 
 
-        public List<ObjVer> SearchLogObjects(string logObjectNamePrefix, DateTime logDate)
+        /// <summary>
+        /// Search the vault for logObjects that start with logObjectName
+        /// </summary>
+        /// <param name="logObjectBaseName">name of the Log object to search for</param>
+        /// <returns>A list of ObjVer of the found Log objects</returns>
+        public List<ObjVer> SearchLogObjects(string logObjectBaseName)
         {
             // Condition non-deleted objects
             var excludeDeletedItemSearchCondition = new SearchCondition();
@@ -104,7 +109,7 @@ namespace Dramatic.LogToMFiles.Infrastructure
             titleDefSearchCondition.Expression.SetPropertyValueExpression((int)MFBuiltInPropertyDef.MFBuiltInPropertyDefNameOrTitle, MFParentChildBehavior.MFParentChildBehaviorNone);
             // We want only Log objects which NameOrTitle begins with the search string provided.
             titleDefSearchCondition.ConditionType = MFConditionType.MFConditionTypeStartsWith;
-            titleDefSearchCondition.TypedValue.SetValue(MFilesAPI.MFDataType.MFDatatypeText, $"{logObjectNamePrefix}{logDate:yyyy-MM-dd}");  // eg "Log-2021-05-12"
+            titleDefSearchCondition.TypedValue.SetValue(MFilesAPI.MFDataType.MFDatatypeText, logObjectBaseName);  // eg "Log-2021-05-12"
 
             var searchConditions = new SearchConditions
             {
@@ -144,7 +149,7 @@ namespace Dramatic.LogToMFiles.Infrastructure
                 maxTestRetries--;
 
                 logObjectIsCheckedOut = _vault.ObjectOperations.IsObjectCheckedOut(logObjVer.ObjID);
-                if (maxTestRetries > 0 && logObjectIsCheckedOut) { Thread.Sleep(millisecondsTimeout: _rnd.Next(200, 1000)); }
+                if (maxTestRetries > 0 && logObjectIsCheckedOut) { Thread.Sleep(millisecondsTimeout: _rnd.Next(200, 500)); }
 
             } while (maxTestRetries > 0 && logObjectIsCheckedOut);
 
@@ -223,27 +228,18 @@ namespace Dramatic.LogToMFiles.Infrastructure
         /// <summary>
         /// Write the logMessage to a new Log object with a LogMessage property
         /// </summary>
-        /// <param name="logObjectNamePrefix">prefix</param>
-        /// <param name="logDate"></param>
-        /// <param name="logObjectOrdinal"></param>
-        /// <param name="logMessage"></param>
-        public bool WriteLogMessageToNewLogObject(string logObjectNamePrefix, DateTime logDate, int logObjectOrdinal, string logMessage)
+        /// <param name="newLogObjectName">name for the new Log object; can contain an ordinal</param>
+        /// <param name="logMessage">Log message to save to the new Log object</param>
+        public bool WriteLogMessageToNewLogObject(string newLogObjectName, string logMessage)
         {
             try
             {
-                // "Prefix-2021-08-23"
-                var logObjectTitle = $"{logObjectNamePrefix}{logDate:yyyy-MM-dd}";
-
-                // "Prefix-2021-08-23 (2)", "Prefix-2021-08-23 (3)", ....
-                if (logObjectOrdinal > 1) { logObjectTitle += $" ({logObjectOrdinal})"; }
-
-
                 // Class Log
                 var classPV = new PropertyValue { PropertyDef = (int)MFBuiltInPropertyDef.MFBuiltInPropertyDefClass };
                 classPV.Value.SetValue(MFDataType.MFDatatypeLookup, _mfilesLogClassID);  // "Log" class
 
                 var titlePV = new PropertyValue { PropertyDef = (int)MFBuiltInPropertyDef.MFBuiltInPropertyDefNameOrTitle };
-                titlePV.Value.SetValue(MFDataType.MFDatatypeText, logObjectTitle);     // eg "Log-2021-05-26", or "Log-2021-05-26 (2)"
+                titlePV.Value.SetValue(MFDataType.MFDatatypeText, newLogObjectName);     // eg "Log-2021-05-26", or "Log-2021-05-26 (2)"
 
                 var logMessagePV = new PropertyValue { PropertyDef = _mfilesLogMessagePropDefID };  // 1159 = "LogMessage" multiline text
                 logMessagePV.Value.SetValue(MFDataType.MFDatatypeMultiLineText, logMessage);

@@ -23,7 +23,7 @@ namespace Dramatic.LogToMFiles.Application
     internal class RollingLogFile
     {
         private readonly ILogFileVault _logVault;
-        private readonly string _mfilesLogObjectNamePrefix;
+        private readonly string _logObjectNamePrefix;
 
         /// <summary>
         /// Construct the RollingLogFile.
@@ -32,8 +32,8 @@ namespace Dramatic.LogToMFiles.Application
         /// <param name="logObjectNamePrefix">Prefix to use in the NameOrTitle of the Log document object, default "Log-"</param>
         public RollingLogFile(ILogFileVault logVault, string logObjectNamePrefix="Log-")
         {
-            _logVault                       = logVault ?? throw new ArgumentNullException(nameof(logVault));
-            _mfilesLogObjectNamePrefix      = (!String.IsNullOrEmpty(logObjectNamePrefix) ? logObjectNamePrefix                                 : throw new ArgumentNullException(nameof(logObjectNamePrefix)));
+            _logVault               = logVault ?? throw new ArgumentNullException(nameof(logVault));
+            _logObjectNamePrefix    = (!String.IsNullOrEmpty(logObjectNamePrefix) ? logObjectNamePrefix : throw new ArgumentNullException(nameof(logObjectNamePrefix)));
 
             if (logObjectNamePrefix.Length > 50) { throw new ArgumentOutOfRangeException(nameof(logObjectNamePrefix), "logObjectNamePrefix should be a valid string with at most 50 characters"); }
         }
@@ -47,6 +47,7 @@ namespace Dramatic.LogToMFiles.Application
         {
             SaveLogMessage(DateTime.Today, logMessage);
         }
+
 
         /// <summary>
         /// Save the log message a Log file object with the specified date in its name
@@ -66,7 +67,8 @@ namespace Dramatic.LogToMFiles.Application
 
             bool createNewLogObject         = true;
 
-            var foundLogFilesForDate        = _logVault.SearchLogFileDocuments(_mfilesLogObjectNamePrefix, logDate);
+            var logObjectName               = $"{_logObjectNamePrefix}{logDate:yyyy-MM-dd}";
+            var foundLogFilesForDate        = _logVault.SearchLogFileDocuments(logObjectName);
             var foundLogFilesForDateCount   = foundLogFilesForDate.Count;
 
             if (foundLogFilesForDateCount > 0)
@@ -79,7 +81,14 @@ namespace Dramatic.LogToMFiles.Application
 
             if (createNewLogObject)
             {
-                _logVault.WriteLogMessageToNewLogFile(_mfilesLogObjectNamePrefix, logDate, ++foundLogFilesForDateCount, logMessage);
+                foundLogFilesForDateCount++;
+
+                // "Prefix-2021-08-23"
+                var newLogFileName = logObjectName;
+                // "Prefix-2021-08-23", "Prefix-2021-08-23 (2)" or "Prefix-2021-08-23 (3)", ....
+                if (foundLogFilesForDateCount > 1) { newLogFileName += $" ({foundLogFilesForDateCount})"; }
+
+                _logVault.WriteLogMessageToNewLogFile(newLogFileName, logMessage);
             }
         }
     }

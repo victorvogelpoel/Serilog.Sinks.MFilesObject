@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using Dramatic.LogToMFiles;
+using Dramatic.LogToMFiles.Infrastructure;
 using MFiles.VAF.Common;
 using MFiles.VAF.Configuration.AdminConfigurations;
 using MFiles.VAF.Configuration.Domain;
@@ -155,6 +156,7 @@ namespace DemoVaultApplication
                         _logEventBuffer.Clear();
                     }
 
+                    // Check the Logging Configuration (see MF Admin)
                     if (null == Configuration.LoggingConfiguration ||
                         !Configuration.LoggingConfiguration.LogOT.IsResolved ||
                         !Configuration.LoggingConfiguration.LogCL.IsResolved ||
@@ -167,14 +169,22 @@ namespace DemoVaultApplication
                     var prefix = Configuration.LoggingConfiguration.LogObjectNamePrefix; // 'DemoVaultApp-Log-'
                     if (string.IsNullOrWhiteSpace(prefix)) { prefix = "DemoVaultApp-Log-"; }
 
-                    // TODO replace MFilesLogObjectRepository with RollingFileObject
-                    //var repository = new MFilesLogObjectRepository(PermanentVault,
-                    //                                               mfilesLogObjectNamePrefix:     $"[{Environment.MachineName.ToUpperInvariant()}] {prefix}",
-                    //                                               mfilesLogObjectTypeAlias:      Configuration.LoggingConfiguration.LogOT.Alias,
-                    //                                               mfilesLogClassAlias:           Configuration.LoggingConfiguration.LogCL.Alias,
-                    //                                               mfilesLogMessagePropDefAlias:  Configuration.LoggingConfiguration.LogMessagePD.Alias);
+                    // Write to today's Log object
+                    var rollingLogObjectRepository = new LogObjectRepository(PermanentVault,
+                                                            mfilesLogObjectNamePrefix: $"[{Environment.MachineName.ToUpperInvariant()}] {prefix}",     // eg, "[LTVICTOR3] DemoVaultApp-Log-"
+                                                            mfilesLogObjectTypeAlias: Configuration.LoggingConfiguration.LogOT.Alias,
+                                                            mfilesLogClassAlias: Configuration.LoggingConfiguration.LogCL.Alias,
+                                                            mfilesLogMessagePropDefAlias: Configuration.LoggingConfiguration.LogMessagePD.Alias);
 
-                    //repository.WriteLogMessage(batchedLogMessages);
+                    rollingLogObjectRepository.SaveLogMessage(batchedLogMessages);
+
+
+                    // And write to today's LogFile document as well, for the fun of it.
+                    var rollingLogFileRepository = new LogFileRepository(PermanentVault,
+                                                            mfilesLogFileNamePrefix: $"[{Environment.MachineName.ToUpperInvariant()}] {prefix}",     // eg, "[LTVICTOR3] DemoVaultApp-Log-")
+                                                            mfilesLogFileClassAlias: Configuration.LoggingConfiguration.LogFileCL.Alias);
+                    rollingLogFileRepository.SaveLogMessage(batchedLogMessages);
+
                 }
             });
 
@@ -206,21 +216,21 @@ namespace DemoVaultApplication
 
 
         // TODO: log method to be used from VBScript:
-        [VaultExtensionMethod("SampleVaultApp.LogInformation")]
+        [VaultExtensionMethod("DemoVaultApp.LogInformation")]
         private string LogInformation(EventHandlerEnvironment env)
         {
             Log.Information(env.Input);
             return $"Logged the following Information message:\r\n{env.Input}";
         }
 
-        [VaultExtensionMethod("SampleVaultApp.LogWarning")]
+        [VaultExtensionMethod("DemoVaultApp.LogWarning")]
         private string LogWarning(EventHandlerEnvironment env)
         {
             Log.Warning(env.Input);
             return $"Logged the following warning message:\r\n{env.Input}";
         }
 
-        [VaultExtensionMethod("SampleVaultApp.LogError")]
+        [VaultExtensionMethod("DemoVaultApp.LogError")]
         private string LogError(EventHandlerEnvironment env)
         {
             Log.Error(env.Input);
@@ -232,7 +242,7 @@ namespace DemoVaultApplication
         private readonly CustomDomainCommand cmdTestLogMessageMenuItem = new CustomDomainCommand
         {
             ID              = "cmdTestLogMessage",
-            Execute         = (context, operations) => operations.ShowMessage(context.Vault.ExtensionMethodOperations.ExecuteVaultExtensionMethod("SampleVaultApp.LogInformation", $"[{DateTime.Now:HH:mm:ss} INF] Testing, one, two, three. Logged with love from the vault application domain area.") + "\r\n\r\nNote that it may take 5-10 seconds to show up in the M-Files log object."),
+            Execute         = (context, operations) => operations.ShowMessage(context.Vault.ExtensionMethodOperations.ExecuteVaultExtensionMethod("DemoVaultApp.LogInformation", $"[{DateTime.Now:HH:mm:ss} INF] Testing, one, two, three. Logged with love from the vault application domain area.") + "\r\n\r\nNote that it may take 5-10 seconds to show up in the M-Files log object."),
             DisplayName     = "Logging: log a test message",
             Locations       = new List<ICommandLocation> { new DomainMenuCommandLocation(icon: "play") }
         };

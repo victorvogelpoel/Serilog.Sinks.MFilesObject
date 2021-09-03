@@ -22,13 +22,6 @@ namespace DemoVaultApplication
     [DataContract]
     public class LoggingConfiguration
     {
-        //public readonly
-
-
-
-
-
-
         [DataMember]
         [Security(ChangeBy = SecurityAttribute.UserLevel.VaultAdmin)]
         [JsonConfEditor(
@@ -37,7 +30,7 @@ namespace DemoVaultApplication
             Options         = "{selectOptions:[\"OFF\", \"INFO\", \"WARNING\", \"ERROR\"]}",
             DefaultValue    = "OFF",
             Label           = "Log level",
-            HelpText        = "Configure the minimal log level of writing events to the M-Files vault object"
+            HelpText        = "Configure the minimal log level of writing log events to the M-Files Log object: OFF, INFO, WARNING or ERROR."
             )]
         public string LogLevel { get; set; } = "OFF";
 
@@ -49,7 +42,8 @@ namespace DemoVaultApplication
             Label           = "Log Object type",
             IsRequired      = true,
             DefaultValue    = DefaultLoggingVaultStructure.LogObjectTypeAlias,
-            Hidden          = true, ShowWhen = ".parent._children{.key == 'LogLevel' && .value != 'OFF' }")]
+            Hidden          = true, ShowWhen = ".parent._children{.key == 'LogLevel' && .value != 'OFF' }",
+            HelpText        = "Alias for the Log object type, default is \"OT.Serilog.MFilesObjectLogSink.Log\"")]
         public MFIdentifier LogOT { get; set; } =  DefaultLoggingVaultStructure.LogObjectTypeAlias;
 
 
@@ -61,7 +55,8 @@ namespace DemoVaultApplication
             IsRequired      = true,
             DefaultValue    = DefaultLoggingVaultStructure.LogClassAlias,
             Hidden          = true,
-            ShowWhen        = ".parent._children{.key == 'LogLevel' && .value != 'OFF' }")]
+            ShowWhen        = ".parent._children{.key == 'LogLevel' && .value != 'OFF' }",
+            HelpText        = "Alias for the Log class, default is \"CL.Serilog.MFilesObjectLogSink.Log\"")]
         public MFIdentifier LogCL { get; set; } = DefaultLoggingVaultStructure.LogClassAlias;
 
 
@@ -72,7 +67,8 @@ namespace DemoVaultApplication
             Label           = "LogMessage MultilineText property",
             IsRequired      = true,
             DefaultValue    = DefaultLoggingVaultStructure.LogMessagePropertyDefinitionAlias,
-            Hidden = true, ShowWhen = ".parent._children{.key == 'LogLevel' && .value != 'OFF' }")]
+            Hidden = true, ShowWhen = ".parent._children{.key == 'LogLevel' && .value != 'OFF' }",
+            HelpText        = "Alias for the LogMessage property definition, default is \"PD.Serilog.MFilesObjectLogSink.LogMessage\"")]
         public MFIdentifier LogMessagePD { get; set; } = DefaultLoggingVaultStructure.LogMessagePropertyDefinitionAlias;
 
 
@@ -82,18 +78,24 @@ namespace DemoVaultApplication
             Label           = "LogObject NameOrTitle prefix",
             IsRequired      = true,
             DefaultValue    = "DemoVaultApp-Log-",
-            Hidden = true, ShowWhen = ".parent._children{.key == 'LogLevel' && .value != 'OFF' }")]
+            Hidden = true, ShowWhen = ".parent._children{.key == 'LogLevel' && .value != 'OFF' }",
+            HelpText        = "Prefix for NameOrTitle of the Log objects; default is \"DemoVaultApp-Log-\" and a sample Log object would be named \"[HOSTNAME] DemoVaultApp-Log-2021-05-26\"")]
         public string LogObjectNamePrefix { get; set; } = "DemoVaultApp-Log-";
 
 
-        //[MFClass(Required = true)]
-        //[DataMember]
-        //[Security(ChangeBy = SecurityAttribute.UserLevel.VaultAdmin)]
-        //[JsonConfEditor(Label = "Log File class", IsRequired = true, DefaultValue = MFilesObjectLoggingVaultStructure.DefaultMFilesLogFileClassAlias, Hidden = true, ShowWhen = ".parent._children{.key == 'LogLevel' && .value != 'OFF' }")]
-        //public MFIdentifier LogFileCL { get; set; } = MFilesObjectLoggingVaultStructure.DefaultMFilesLogFileClassAlias;
+        // --------------------------------------------------
+        // LogFile configuration
 
-
-
+        [MFClass(Required = true)]
+        [DataMember]
+        [Security(ChangeBy = SecurityAttribute.UserLevel.VaultAdmin)]
+        [JsonConfEditor(
+            Label           = "Log File class",
+            IsRequired      = true,
+            DefaultValue    = DefaultLoggingVaultStructure.LogFileClassAlias,
+            Hidden = true, ShowWhen = ".parent._children{.key == 'LogLevel' && .value != 'OFF' }",
+            HelpText        = "Alias for the LogFile document class , default is \"CL.Serilog.MFilesObjectLogSink.LogFile\"")]
+        public MFIdentifier LogFileCL { get; set; } = DefaultLoggingVaultStructure.LogFileClassAlias;
 
     }
 }

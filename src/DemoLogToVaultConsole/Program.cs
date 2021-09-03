@@ -10,7 +10,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading;
-using Dramatic.LogToMFiles;
 using Dramatic.LogToMFiles.Infrastructure;
 using Serilog;
 using Serilog.Core;
@@ -59,7 +58,7 @@ namespace SANDBOX
                 //vault.RemoveLogObjectsAndLoggingVaultStructure(structureConfig);
 
                 // Ensure that the structure for Logging object and class is present in the vault (needs full permissions on vault)
-                vault.EnsureLoggingVaultStructure(structureConfig);
+                //vault.EnsureLoggingVaultStructure(structureConfig);
 
 
 
@@ -90,16 +89,16 @@ namespace SANDBOX
 
                     //// Log events to an 'rolling' Log object in the vault with a MultiLineText property.
                     .WriteTo.MFilesLogObjectMessage(vault,
-                                            mfilesLogObjectNamePrefix:      "Sandbox-Log Object Demo-",
+                                            mfilesLogObjectNamePrefix:      "DemoConsole-Log-",
                                             mfilesLogObjectTypeAlias:       structureConfig.LogObjectTypeAlias,
                                             mfilesLogClassAlias:            structureConfig.LogClassAlias,
                                             mfilesLogMessagePropDefAlias:   structureConfig.LogMessagePropDefAlias,
                                             outputTemplate:                 "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
 
-                    //.WriteTo.MFilesLogFile( vault,
-                    //                        mfilesLogFileNamePrefix: "SandboxDemo-Log FILE Demo-",
-                    //                        mfilesLogFileClassAlias: structureConfig.LogFileClassAlias,
-                    //                        outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
+                    .WriteTo.MFilesLogFile(vault,
+                                            mfilesLogFileNamePrefix:        "DemoConsole-Log-",
+                                            mfilesLogFileClassAlias:        structureConfig.LogFileClassAlias,
+                                            outputTemplate:                 "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
 
 
                     // Write to colored console terminal :-)

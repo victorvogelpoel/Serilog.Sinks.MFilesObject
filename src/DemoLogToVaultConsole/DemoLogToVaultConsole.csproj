@@ -48,7 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="sandbox.licenseheader" />
+    <None Include="DemoLogToVaultConsole.licenseheader" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Interop.MFilesAPI">

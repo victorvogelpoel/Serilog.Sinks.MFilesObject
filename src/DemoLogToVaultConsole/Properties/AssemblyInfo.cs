@@ -10,11 +10,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("SANDBOX")]
-[assembly: AssemblyDescription("Console application to demonstrate Serilog Logging with Serilog.Sinks.MFilesObject")]
+[assembly: AssemblyTitle("DemoLogToVaultConsole")]
+[assembly: AssemblyDescription("Console application to demonstrate Serilog Logging to M-Files Serilog.Sinks.MFilesObject vault")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Dramatic Development - Victor Vogelpoel")]
-[assembly: AssemblyProduct("SANDBOX")]
+[assembly: AssemblyProduct("DemoLogToVaultConsole")]
 [assembly: AssemblyCopyright("Copyright © 2021 Dramatic Development - Victor Vogelpoel")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

@@ -33,6 +33,13 @@
         <ProjectReference Include="..\Dramatic.LogToMFiles\Dramatic.LogToMFiles.csproj" />
     </ItemGroup>
 
+	<Target Name="CopyGitHooks" AfterTargets="AfterBuild">
+		<ItemGroup>
+			<_GitHookFiles Include="..\..\automation\commit-msg;..\..\automation\pre-commit" />
+		</ItemGroup>
+		<Copy SourceFiles="@(_GitHookFiles)" DestinationFolder="./../../.git/hooks" />
+	</Target>
+
     <Target Name="PostBuild" AfterTargets="Pack" Condition=" '$(Configuration)' == 'Release'">
         <!--RemoveDir Directories="..\current" /-->
         <Copy SourceFiles="$(OutputPath)$(PackageId).$(PackageVersion).nupkg" DestinationFolder="..\current" />

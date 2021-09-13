@@ -202,12 +202,12 @@ namespace DemoVaultApplication
         /// <param name="vault"></param>
         protected override void UninitializeApplication(Vault vault)
         {
-            Log.Information("VaultApplication {ApplicationName} {BuildVersion} is powering down.", ApplicationDefinition.Name, _buildFileVersion);   // NOTE, structured logging with curly braces, NOT C# string intrapolation $"" with curly braces!
+            Log.Information("VaultApplication {ApplicationName} {BuildVersion} is POWERING DOWN.", ApplicationDefinition.Name, _buildFileVersion);   // NOTE, structured logging with curly braces, NOT C# string intrapolation $"" with curly braces!
 
             // IMPORTANT: flush any buffered messages
             _flushLogAction?.Invoke();
 
-            // IMPORTANT: flush all sinks
+            // IMPORTANT as well: flush all sinks
             Log.CloseAndFlush();
 
             base.UninitializeApplication(vault);
@@ -305,7 +305,7 @@ namespace DemoVaultApplication
         [EventHandler(MFEventHandlerType.MFEventHandlerBeforeCheckInChangesFinalize, ObjectType = (int)MFBuiltInObjectType.MFBuiltInObjectTypeDocument)]
         public void BeforeCheckInChangesFinalizeUpdateLogDemo(EventHandlerEnvironment env)
         {
-            using (LogContext.PushProperty("MFEventType", env.EventType.ToString()))  // Note "Enrich.FromLogContext()" in the configuration builder earlier!
+            using (LogContext.PushProperty("MFEventType", env.EventType.ToString()))         // Note "Enrich.FromLogContext()" in the LoggingConfiguration builder earlier! This will add the MFEventType value to each Log.X() request
             {
                 // Now every log event in this scope automatically has this additional property "MFEventType" from the M-Files event handler environment!
 

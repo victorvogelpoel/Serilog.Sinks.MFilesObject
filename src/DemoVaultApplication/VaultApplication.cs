@@ -13,7 +13,7 @@ using Dramatic.LogToMFiles.Infrastructure;
 using MFiles.VAF.Common;
 using MFiles.VAF.Configuration.AdminConfigurations;
 using MFiles.VAF.Configuration.Domain;
-//using MFiles.VAF.Configuration.Domain.Dashboards;
+using MFiles.VAF.Configuration.Domain.Dashboards;
 using MFiles.VAF.Configuration.Interfaces.Domain;
 using MFiles.VAF.Core;
 using MFilesAPI;
@@ -238,7 +238,7 @@ namespace DemoVaultApplication
         }
 
 
-
+        // Add a sample command to the
         private readonly CustomDomainCommand cmdTestLogMessageMenuItem = new CustomDomainCommand
         {
             ID              = "cmdTestLogMessage",
@@ -248,38 +248,77 @@ namespace DemoVaultApplication
         };
 
 
-     //   /// <summary>
-	    ///// The command which will be executed.
-	    ///// </summary>
-	    ///// <remarks>The "Execute" method will be called when the command is clicked.</remarks>
-	    //private readonly CustomDomainCommand refreshDashboardCommand = new CustomDomainCommand
-	    //{
-		   // ID = "cmdRefreshDashboard",
-		   // ConfirmMessage = "Are you sure you would like to refresh the dashboard?",
-		   // Execute = (c, o) =>
-		   // {
-			  //  o.RefreshDashboard();
-		   // }
-	    //};
+        /// <summary>
+        /// The command which will be executed.
+        /// </summary>
+        /// <remarks>The "Execute" method will be called when the command is clicked.</remarks>
+        private readonly CustomDomainCommand refreshDashboardCommand = new CustomDomainCommand
+        {
+            ID = "cmdRefreshDashboard",
+            Execute = (c, o) =>
+            {
+                o.RefreshDashboard();
+            }
+        };
 
 
 
-	    ///// <inheritdoc />
-	    //public override string GetDashboardContent(IConfigurationRequestContext context)
-	    //{
-		   // // Create the surrounding dashboard.
-		   // var dashboard = new StatusDashboard();
+        /// <inheritdoc />
+        public override string GetDashboardContent(IConfigurationRequestContext context)
+        {
+            // Reacquire the cached vault structure
+            ReinitializeMetadataStructureCache(PermanentVault);
 
-		   // // Create a panel showing when the dashboard was rendered.
-		   // var refreshPanel = new DashboardPanel();
-		   // refreshPanel.SetInnerContent( $"Dashboard generated at: {DateTime.Now.ToString( "T" )}" );
+            FormattableString loggingStructureState = $"";
 
-		   // // Add the refresh command to the panel, and the panel to the dashboard.
-		   // refreshPanel.Commands.Add( DashboardHelper.CreateDomainCommand( "Refresh", this.refreshDashboardCommand.ID ) );
-		   // dashboard.AddContent( refreshPanel );
+            if (null != Configuration && null != Configuration.LoggingConfiguration)
+            {
+                var loggingConfiguration = Configuration.LoggingConfiguration;
+                if (loggingConfiguration.LogLevel == "OFF")
+                {
+                    loggingStructureState = $"Logging to set to <b>OFF</b>";
+                }
+                else if (!loggingConfiguration.LogOT.IsResolved ||
+                    !loggingConfiguration.LogCL.IsResolved ||
+                    !loggingConfiguration.LogMessagePD.IsResolved ||
+                    !loggingConfiguration.LogFileCL.IsResolved)
+                {
+                    var missingLoggingStructureAliases = PermanentVault.GetMissingLoggingVaultStructure(loggingConfiguration.LogOT.Alias,
+                                                                                                        loggingConfiguration.LogCL.Alias,
+                                                                                                        loggingConfiguration.LogMessagePD.Alias,
+                                                                                                        loggingConfiguration.LogFileCL.Alias);
+                    if (missingLoggingStructureAliases.Count > 0)
+                    {
+                        loggingStructureState = $"Logging check: logging is configured, but some logging vault structure is MISSING from the vault. Please run \"DemoVault.AddLoggingStructure.exe\" to ensure logging structure to the vault and refresh the vaultapp (to reread structure).<br/>Current log level is {loggingConfiguration.LogLevel}";
+                    }
+                    else
+                    {
+                        loggingStructureState = $"Logging check: logging is configured and all logging vault structure is present in the vault.<br/>Current log level is {loggingConfiguration.LogLevel}. See the M-Files desktop app for Log object and/or Log File objects.";
+                    }
+                }
+            }
+            else
+            {
+                loggingStructureState = $"Logging check: logging has not yet been configured or logging vault structure is missing.<br/>Please run \"DemoVault.AddLoggingStructure.exe\" to ensure logging structure in the vault, refresh the vaultapp (to reread structure) and configure logging.";
+            }
 
-		   // return dashboard.ToString();
-	    //}
+
+            // Create the surrounding dashboard.
+            var dashboard = new StatusDashboard();
+
+            // Create a panel showing when the dashboard was rendered.
+            // Application name, version.
+            // "vault has the vault structure for logging:
+
+            var refreshPanel = new DashboardPanel();
+            refreshPanel.SetInnerContent(loggingStructureState);
+
+            // Add the refresh command to the panel, and the panel to the dashboard.
+            refreshPanel.Commands.Add(DashboardHelper.CreateDomainCommand("Refresh log check", this.refreshDashboardCommand.ID));
+            dashboard.AddContent(refreshPanel);
+
+            return dashboard.ToString();
+        }
 
 
 
@@ -289,9 +328,12 @@ namespace DemoVaultApplication
 	        return new List<CustomDomainCommand>(base.GetCommands(context))
 	        {
                 cmdTestLogMessageMenuItem,
-			    //refreshDashboardCommand
+			    refreshDashboardCommand
 	        };
         }
+
+
+
 
 
 

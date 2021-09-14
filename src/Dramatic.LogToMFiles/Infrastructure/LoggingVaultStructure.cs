@@ -93,22 +93,20 @@ namespace Dramatic.LogToMFiles.Infrastructure
         /// Tests if the following aliases can be resolved: LogObjectTypeAlias, LogClassAlias, LogMessagePropDefAlias, LogFileClassAlias and returns the missing ones
         /// </remarks>
         /// <param name="vault">Vault to test for the logging structure</param>
-        /// <param name="structureConfig">configuration to test the vault for</param>
         /// <returns>a List of the logging structure that is missing in the vault</returns>
-        public static List<String> GetMissingLoggingVaultStructure(this IVault vault, LoggingVaultStructureConfiguration structureConfig)
+        public static List<String> GetMissingLoggingVaultStructure(this IVault vault, string logObjectTypeAlias, string logClassAlias, string logMessagePropDefAlias, string logFileClassAlias)
         {
             if (vault is null)              { throw new ArgumentNullException(nameof(vault)); }
-            if (structureConfig is null)    { throw new ArgumentNullException(nameof(structureConfig)); }
 
-            var expectedAliases = new List<String>() { structureConfig.LogObjectTypeAlias, structureConfig.LogClassAlias, structureConfig.LogMessagePropDefAlias, structureConfig.LogFileClassAlias};
+            var expectedAliases = new List<String>() { logObjectTypeAlias, logClassAlias, logMessagePropDefAlias, logFileClassAlias};
             var presentAliases  = new List<String>();
 
             lock(StructureChangeLock)
             {
-                if (vault.ObjectTypeOperations.GetObjectTypeIDByAlias(structureConfig.LogObjectTypeAlias) != -1)        { presentAliases.Add(structureConfig.LogObjectTypeAlias); }
-                if (vault.ClassOperations.GetObjectClassIDByAlias(structureConfig.LogClassAlias) != -1)                 { presentAliases.Add(structureConfig.LogClassAlias); }
-                if (vault.PropertyDefOperations.GetPropertyDefIDByAlias(structureConfig.LogMessagePropDefAlias) != -1)  { presentAliases.Add(structureConfig.LogMessagePropDefAlias); }
-                if (vault.ClassOperations.GetObjectClassIDByAlias(structureConfig.LogFileClassAlias) != -1)             { presentAliases.Add(structureConfig.LogFileClassAlias); }
+                if (vault.ObjectTypeOperations.GetObjectTypeIDByAlias(logObjectTypeAlias) != -1)        { presentAliases.Add(logObjectTypeAlias); }
+                if (vault.ClassOperations.GetObjectClassIDByAlias(logClassAlias) != -1)                 { presentAliases.Add(logClassAlias); }
+                if (vault.PropertyDefOperations.GetPropertyDefIDByAlias(logMessagePropDefAlias) != -1)  { presentAliases.Add(logMessagePropDefAlias); }
+                if (vault.ClassOperations.GetObjectClassIDByAlias(logFileClassAlias) != -1)             { presentAliases.Add(logFileClassAlias); }
 
                 return expectedAliases.Except(presentAliases, StringComparer.OrdinalIgnoreCase).ToList();
             }

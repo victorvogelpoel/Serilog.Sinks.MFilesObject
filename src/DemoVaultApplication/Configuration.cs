@@ -80,7 +80,7 @@ namespace DemoVaultApplication
         [DataMember]
         [Security(ChangeBy = SecurityAttribute.UserLevel.VaultAdmin)]
         [JsonConfEditor(
-            Label           = "NameOrTitle prefix for Log Object",
+            Label           = "Prefix for name of Log Object",
             IsRequired      = true,
             DefaultValue    = "DemoVaultApp-Log-",
             Commentable     = true,

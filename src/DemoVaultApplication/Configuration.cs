@@ -15,12 +15,12 @@ namespace DemoVaultApplication
     public class Configuration
     {
         [DataMember]
+        [JsonConfEditor(NameMember = "Logging")]
         public LoggingConfiguration LoggingConfiguration { get; set; }
     }
 
 
     [DataContract]
-    [JsonConfEditor(NameMember = "Logging")]
     public class LoggingConfiguration
     {
         [DataMember]

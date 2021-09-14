@@ -41,7 +41,7 @@ namespace DemoVaultApplication
         [DataMember]
         [Security(ChangeBy = SecurityAttribute.UserLevel.VaultAdmin)]
         [JsonConfEditor(
-            Label           = "Log Object type",
+            Label           = "Log ObjectType",
             IsRequired      = true,
             DefaultValue    = DefaultLoggingVaultStructure.LogObjectTypeAlias,
             Commentable     = true,
@@ -54,7 +54,7 @@ namespace DemoVaultApplication
         [DataMember]
         [Security(ChangeBy = SecurityAttribute.UserLevel.VaultAdmin)]
         [JsonConfEditor(
-            Label           = "Log class",
+            Label           = "Log Object class",
             IsRequired      = true,
             DefaultValue    = DefaultLoggingVaultStructure.LogClassAlias,
             Commentable     = true,
@@ -80,7 +80,7 @@ namespace DemoVaultApplication
         [DataMember]
         [Security(ChangeBy = SecurityAttribute.UserLevel.VaultAdmin)]
         [JsonConfEditor(
-            Label           = "LogObject NameOrTitle prefix",
+            Label           = "NameOrTitle prefix for Log Object",
             IsRequired      = true,
             DefaultValue    = "DemoVaultApp-Log-",
             Commentable     = true,

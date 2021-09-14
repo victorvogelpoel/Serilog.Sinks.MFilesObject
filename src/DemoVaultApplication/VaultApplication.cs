@@ -173,9 +173,9 @@ namespace DemoVaultApplication
 
                     // Write to today's Log object
                     var rollingLogObjectRepository = new LogObjectRepository(PermanentVault,
-                                                            mfilesLogObjectNamePrefix: $"[{Environment.MachineName.ToUpperInvariant()}] {prefix}",     // eg, "[LTVICTOR3] DemoVaultApp-Log-"
-                                                            mfilesLogObjectTypeAlias: Configuration.LoggingConfiguration.LogOT.Alias,
-                                                            mfilesLogClassAlias: Configuration.LoggingConfiguration.LogCL.Alias,
+                                                            mfilesLogObjectNamePrefix:    $"[{Environment.MachineName.ToUpperInvariant()}] {prefix}",     // eg, "[LTVICTOR3] DemoVaultApp-Log-"
+                                                            mfilesLogObjectTypeAlias:     Configuration.LoggingConfiguration.LogOT.Alias,
+                                                            mfilesLogClassAlias:          Configuration.LoggingConfiguration.LogCL.Alias,
                                                             mfilesLogMessagePropDefAlias: Configuration.LoggingConfiguration.LogMessagePD.Alias);
 
                     rollingLogObjectRepository.SaveLogMessage(batchedLogMessages);

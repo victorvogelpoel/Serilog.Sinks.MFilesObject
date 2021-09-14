@@ -157,13 +157,15 @@ namespace DemoVaultApplication
                     }
 
                     // Check the Logging Configuration (see MF Admin)
-                    if (null == Configuration.LoggingConfiguration ||
-                        !Configuration.LoggingConfiguration.LogOT.IsResolved ||
-                        !Configuration.LoggingConfiguration.LogCL.IsResolved ||
-                        !Configuration.LoggingConfiguration.LogMessagePD.IsResolved ||
-                        String.IsNullOrWhiteSpace(Configuration.LoggingConfiguration.LogOT.Alias) ||
-                        String.IsNullOrWhiteSpace(Configuration.LoggingConfiguration.LogCL.Alias) ||
-                        String.IsNullOrWhiteSpace(Configuration.LoggingConfiguration.LogMessagePD.Alias))
+                if (null == Configuration || null == Configuration.LoggingConfiguration ||
+                    !Configuration.LoggingConfiguration.LogOT.IsResolved ||
+                    !Configuration.LoggingConfiguration.LogCL.IsResolved ||
+                    !Configuration.LoggingConfiguration.LogMessagePD.IsResolved ||
+                    !Configuration.LoggingConfiguration.LogFileCL.IsResolved ||
+                    String.IsNullOrWhiteSpace(Configuration.LoggingConfiguration.LogOT.Alias) ||
+                    String.IsNullOrWhiteSpace(Configuration.LoggingConfiguration.LogCL.Alias) ||
+                    String.IsNullOrWhiteSpace(Configuration.LoggingConfiguration.LogMessagePD.Alias) ||
+                    String.IsNullOrWhiteSpace(Configuration.LoggingConfiguration.LogFileCL.Alias))
                     { return; }
 
                     var prefix = Configuration.LoggingConfiguration.LogObjectNamePrefix; // 'DemoVaultApp-Log-'

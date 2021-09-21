@@ -4,5 +4,32 @@
         <Company>Dramatic Development</Company>
         <Copyright>Copyright (c) 2021 Dramatic Development - Victor Vogelpoel</Copyright>
         <FileVersion>$([System.DateTime]::Now.ToString("yyyy.MM.dd.HHmm"))</FileVersion>
+
+        <NeutralLanguage>en-US</NeutralLanguage>
+        <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+
+        <Product>Serilog.Sinks.MFilesObject</Product>
+        <Description>Serilog sink to write to an Log object in an M-Files Vault.</Description>
+        <PackageProjectUrl>https://github.com/victorvogelpoel/Serilog.Sinks.MFilesObject</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/victorvogelpoel/Serilog.Sinks.MFilesObject</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageIcon>serilog-sink-nuget.png</PackageIcon>
+        <PackageTags>serilog m-files</PackageTags>
+
+
     </PropertyGroup>
+
+    <PropertyGroup>
+        <VersionPrefix>1.0.0</VersionPrefix>
+        <VersionSuffix></VersionSuffix>
+        <IncludePreReleaseLabelInPackageVersion Condition="'$(IS_STABLE_BUILD)' != 'true'">true</IncludePreReleaseLabelInPackageVersion>
+        <BuildNumber Condition=" '$(BuildNumber)' == '' ">$(GITHUB_RUN_NUMBER)</BuildNumber>
+        <BuildNumber Condition=" '$(BuildNumber)' == '' ">0</BuildNumber>
+        <VersionSuffix Condition=" '$(VersionSuffix)' != '' ">$(VersionSuffix).$(BuildNumber)</VersionSuffix>
+        <RepositoryCommit Condition="'$(RepositoryCommit)' == ''">$(GITHUB_SHA)</RepositoryCommit>
+        <PackageVersion>$(VersionPrefix)</PackageVersion>
+        <!--PackageVersion Condition=" '$(IncludePreReleaseLabelInPackageVersion)' == 'true' ">$(PackageVersion)-$(VersionSuffix)</PackageVersion-->
+        <InformationalVersion Condition="'$(RepositoryCommit)' != ''">$(PackageVersion)+$(RepositoryCommit)</InformationalVersion>
+    </PropertyGroup>
+
 </Project>

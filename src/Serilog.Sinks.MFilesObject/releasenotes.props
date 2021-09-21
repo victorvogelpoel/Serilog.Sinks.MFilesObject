@@ -1,0 +1,34 @@
+<Project>
+  <PropertyGroup>
+    <PackageReleaseNotes Condition="$(VersionPrefix.StartsWith('1.0.0'))">
+First release!
+   </PackageReleaseNotes>
+    <PackageReleaseNotes>$(PackageReleaseNotes)
+
+See more details here: https://github.com/victorvogelpoel/Serilog.Sinks.MFilesObject/blob/master/CHANGELOG.md#v$(VersionPrefix)
+    </PackageReleaseNotes>
+  </PropertyGroup>
+</Project>
+
+
+
+<!--
+    <PackageReleaseNotes Condition="$(VersionPrefix.StartsWith('1.0.0'))">
+
+Docs:
+
+Other:
+
+Features:
+
+Improvements:
+
+Fixes
+
+Other:
+
+Breaking changes:
+
+   </PackageReleaseNotes>
+
+-->

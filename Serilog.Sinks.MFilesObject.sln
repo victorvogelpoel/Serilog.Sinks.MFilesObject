@@ -17,6 +17,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Actions", "Actions", "{4FD2
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{AAF937CA-6E14-4299-A3B3-5158A6CDDA59}"
 	ProjectSection(SolutionItems) = preProject
+		CHANGELOG.md = CHANGELOG.md
 		convention-COMMIT-MESSAGE.md = convention-COMMIT-MESSAGE.md
 		README.md = README.md
 	EndProjectSection

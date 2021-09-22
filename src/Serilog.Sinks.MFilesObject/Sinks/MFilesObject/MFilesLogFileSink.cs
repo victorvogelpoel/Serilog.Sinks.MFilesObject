@@ -12,7 +12,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Dramatic.LogToMFiles;
-using Dramatic.LogToMFiles.Infrastructure;
 using MFilesAPI;
 using Serilog.Events;
 using Serilog.Formatting;

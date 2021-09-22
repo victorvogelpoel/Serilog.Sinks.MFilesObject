@@ -6,7 +6,6 @@
 //
 using System;
 using Dramatic.LogToMFiles;
-using Dramatic.LogToMFiles.Infrastructure;
 using MFilesAPI;
 using Serilog.Configuration;
 using Serilog.Core;

@@ -1,7 +1,6 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FluentAssertions;
-using Dramatic.LogToMFiles.Common;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Dramatic.LogToMFiles.Tests
 {

@@ -1,18 +1,14 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
-using Dramatic.LogToMFiles.Application;
-using Dramatic.LogToMFiles.Infrastructure;
 
 namespace Dramatic.LogToMFiles.SANDBOX
 {
     class Program
     {
-        static void Main(string[] args)
+        static void Main(string[] _)
         {
             try
             {
@@ -45,19 +41,12 @@ namespace Dramatic.LogToMFiles.SANDBOX
 
 
                 // -----------------------------------------------------------------------------------------------------------------------------------------
-
-                var logVault            = new LogObjectVault(vault, structureConfig.LogObjectTypeAlias, structureConfig.LogClassAlias, structureConfig.LogMessagePropDefAlias);
-                var rollingLogObject    = new RollingLogObject(logVault, $"[{Environment.MachineName}] LogObject-");
-                rollingLogObject.SaveLogMessage($"Test message 1 {DateTime.Now:HH:mm:ss}");
-
+                // Repo to write a message to a Log Object LogMessage property
                 var rollingObjectRepo = new LogObjectRepository(vault, $"[{Environment.MachineName}] LogObject-", structureConfig.LogObjectTypeAlias, structureConfig.LogClassAlias, structureConfig.LogMessagePropDefAlias);
                 rollingObjectRepo.SaveLogMessage($"Test message 2 {DateTime.Now:HH:mm:ss}");
 
                 // -----------------------------------------------------------------------------------------------------------------------------------------
-                var logVault2       = new LogFileVault(vault, structureConfig.LogFileClassAlias);
-                var rollingLogFile  = new RollingLogFile(logVault2, $"[{Environment.MachineName}] LogFile-");
-                rollingLogFile.SaveLogMessage($"Test message 1 {DateTime.Now:HH:mm:ss}");
-
+                // Repo to write a message to a Log File txt document object
                 var rollingFileRepo = new LogFileRepository(vault, $"[{Environment.MachineName}] LogFile-", structureConfig.LogFileClassAlias);
                 rollingFileRepo.SaveLogMessage($"Test message 2 {DateTime.Now:HH:mm:ss}");
 
@@ -66,19 +55,6 @@ namespace Dramatic.LogToMFiles.SANDBOX
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToDetailedString());
-
-
-                //if (ex is AggregateException aggrEx)  // AggregateException is an compound exception when something failed in a async/task function, like a Validation.
-                //{
-                //    foreach (var innerEx in aggrEx.InnerExceptions)
-                //    {
-                //        OutputException(innerEx);
-                //    }
-                //}
-                //else
-                //{
-                //    OutputException(ex);
-                //}
             }
 
             Console.WriteLine("Hit enter to exit");

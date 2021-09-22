@@ -18,7 +18,7 @@
 //
 using System;
 
-namespace Dramatic.LogToMFiles.Application
+namespace Dramatic.LogToMFiles
 {
     internal class RollingLogFile
     {

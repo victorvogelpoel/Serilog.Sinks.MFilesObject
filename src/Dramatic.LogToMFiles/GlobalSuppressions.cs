@@ -24,9 +24,9 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[assembly: SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>", Scope = "member", Target = "~M:Dramatic.LogToMFiles.Infrastructure.LogObjectVault.WriteLogMessageToExistingLogObject(MFilesAPI.ObjVer,System.String)~System.Boolean")]
-[assembly: SuppressMessage("Security", "SCS0005:Weak random generator", Justification = "<Pending>", Scope = "member", Target = "~M:Dramatic.LogToMFiles.Infrastructure.LogObjectVault.IsObjectCheckedIn(MFilesAPI.ObjVer)~System.Boolean")]
-[assembly: SuppressMessage("Security", "SCS0005:Weak random generator", Justification = "<Pending>", Scope = "member", Target = "~M:Dramatic.LogToMFiles.Infrastructure.LogFileVault.IsObjectCheckedIn(MFilesAPI.ObjVer)~System.Boolean")]
-[assembly: SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>", Scope = "member", Target = "~M:Dramatic.LogToMFiles.Infrastructure.LogFileVault.WriteLogMessageToExistingLogFile(MFilesAPI.ObjVer,System.String)~System.Boolean")]
-[assembly: SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>", Scope = "member", Target = "~M:Dramatic.LogToMFiles.Infrastructure.LogObjectVault.WriteLogMessageToNewLogObject(System.String,System.String)~System.Boolean")]
-[assembly: SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>", Scope = "member", Target = "~M:Dramatic.LogToMFiles.Infrastructure.LogFileVault.WriteLogMessageToNewLogFile(System.String,System.String)~System.Boolean")]
+[assembly: SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>", Scope = "member", Target = "~M:Dramatic.LogToMFiles.LogObjectVault.WriteLogMessageToExistingLogObject(MFilesAPI.ObjVer,System.String)~System.Boolean")]
+[assembly: SuppressMessage("Security", "SCS0005:Weak random generator", Justification = "<Pending>", Scope = "member", Target = "~M:Dramatic.LogToMFiles.LogObjectVault.IsObjectCheckedIn(MFilesAPI.ObjVer)~System.Boolean")]
+[assembly: SuppressMessage("Security", "SCS0005:Weak random generator", Justification = "<Pending>", Scope = "member", Target = "~M:Dramatic.LogToMFiles.LogFileVault.IsObjectCheckedIn(MFilesAPI.ObjVer)~System.Boolean")]
+[assembly: SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>", Scope = "member", Target = "~M:Dramatic.LogToMFiles.LogFileVault.WriteLogMessageToExistingLogFile(MFilesAPI.ObjVer,System.String)~System.Boolean")]
+[assembly: SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>", Scope = "member", Target = "~M:Dramatic.LogToMFiles.LogObjectVault.WriteLogMessageToNewLogObject(System.String,System.String)~System.Boolean")]
+[assembly: SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>", Scope = "member", Target = "~M:Dramatic.LogToMFiles.LogFileVault.WriteLogMessageToNewLogFile(System.String,System.String)~System.Boolean")]

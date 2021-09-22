@@ -17,9 +17,8 @@
 // limitations under the License.
 //
 using System;
-using Dramatic.LogToMFiles.Common;
 
-namespace Dramatic.LogToMFiles.Application
+namespace Dramatic.LogToMFiles
 {
     /// <summary>
     /// Writing Log message to a rolling Log object with LogMessage property.

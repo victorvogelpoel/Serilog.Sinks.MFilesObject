@@ -10,7 +10,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading;
-using Dramatic.LogToMFiles.Infrastructure;
+using Dramatic.LogToMFiles;
 using Serilog;
 using Serilog.Core;
 using Serilog.Events;

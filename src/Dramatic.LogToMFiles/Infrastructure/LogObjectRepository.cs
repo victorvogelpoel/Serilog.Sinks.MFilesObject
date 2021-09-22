@@ -17,10 +17,9 @@
 // limitations under the License.
 //
 using System;
-using Dramatic.LogToMFiles.Application;
 using MFilesAPI;
 
-namespace Dramatic.LogToMFiles.Infrastructure
+namespace Dramatic.LogToMFiles
 {
     /// <summary>
     /// Repository for writing to a Log object (objectType 'Log', class 'Log', PropertyDef multi-line text 'Logmessage')

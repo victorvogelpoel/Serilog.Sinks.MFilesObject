@@ -19,7 +19,7 @@
 using System.Collections.Generic;
 using MFilesAPI;
 
-namespace Dramatic.LogToMFiles.Application
+namespace Dramatic.LogToMFiles
 {
     public interface ILogObjectVault
     {

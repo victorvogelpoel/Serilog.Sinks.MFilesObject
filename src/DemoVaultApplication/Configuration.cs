@@ -6,7 +6,6 @@
 //
 using System.Runtime.Serialization;
 using Dramatic.LogToMFiles;
-using Dramatic.LogToMFiles.Infrastructure;
 using MFiles.VAF.Configuration;
 
 namespace DemoVaultApplication

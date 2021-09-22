@@ -21,10 +21,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading;
-using Dramatic.LogToMFiles.Application;
 using MFilesAPI;
 
-namespace Dramatic.LogToMFiles.Infrastructure
+namespace Dramatic.LogToMFiles
 {
     public class LogFileVault : ILogFileVault
     {

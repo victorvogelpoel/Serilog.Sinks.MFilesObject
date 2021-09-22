@@ -18,7 +18,7 @@
 //
 using System;
 
-namespace Dramatic.LogToMFiles.Common
+namespace Dramatic.LogToMFiles
 {
     /// <summary>
     /// A String extension to take a number of lines that fit the characters limit.

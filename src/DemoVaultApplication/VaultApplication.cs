@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using Dramatic.LogToMFiles;
-using Dramatic.LogToMFiles.Infrastructure;
 using MFiles.VAF.Common;
 using MFiles.VAF.Configuration.AdminConfigurations;
 using MFiles.VAF.Configuration.Domain;

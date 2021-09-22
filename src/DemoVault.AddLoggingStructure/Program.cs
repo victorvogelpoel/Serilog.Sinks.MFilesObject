@@ -22,7 +22,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using Dramatic.LogToMFiles;
-using Dramatic.LogToMFiles.Infrastructure;
 
 namespace DemoVault.AddLoggingStructure
 {

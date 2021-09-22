@@ -21,7 +21,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MFilesAPI;
 
-namespace Dramatic.LogToMFiles.Infrastructure
+namespace Dramatic.LogToMFiles
 {
     /// <summary>Default names and aliases for the logging vault structure</summary>
     public static class DefaultLoggingVaultStructure

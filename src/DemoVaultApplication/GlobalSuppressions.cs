@@ -6,3 +6,6 @@
 using System.Diagnostics.CodeAnalysis;
 
 [assembly: SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "<Pending>", Scope = "member", Target = "~M:DemoVaultApplication.VaultApplication.BeforeCheckInChangesFinalizeUpdateLogDemo(MFiles.VAF.Common.EventHandlerEnvironment)")]
+[assembly: SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>", Scope = "member", Target = "~M:DemoVaultApplication.VaultApplication.LogInformation(MFiles.VAF.Common.EventHandlerEnvironment)~System.String")]
+[assembly: SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>", Scope = "member", Target = "~M:DemoVaultApplication.VaultApplication.LogWarning(MFiles.VAF.Common.EventHandlerEnvironment)~System.String")]
+[assembly: SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>", Scope = "member", Target = "~M:DemoVaultApplication.VaultApplication.LogError(MFiles.VAF.Common.EventHandlerEnvironment)~System.String")]

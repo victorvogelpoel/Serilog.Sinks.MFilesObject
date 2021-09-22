@@ -8,15 +8,6 @@
         <NeutralLanguage>en-US</NeutralLanguage>
         <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 
-        <Product>Serilog.Sinks.MFilesObject</Product>
-        <Description>Serilog sink to write to an Log object in an M-Files Vault.</Description>
-        <PackageProjectUrl>https://github.com/victorvogelpoel/Serilog.Sinks.MFilesObject</PackageProjectUrl>
-        <RepositoryUrl>https://github.com/victorvogelpoel/Serilog.Sinks.MFilesObject</RepositoryUrl>
-        <RepositoryType>git</RepositoryType>
-        <PackageIcon>serilog-sink-nuget.png</PackageIcon>
-        <PackageTags>serilog m-files</PackageTags>
-
-
     </PropertyGroup>
 
     <PropertyGroup>

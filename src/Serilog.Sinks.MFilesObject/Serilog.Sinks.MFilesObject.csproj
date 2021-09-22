@@ -7,6 +7,14 @@
         <PackageId>Serilog.Sinks.MFilesObject</PackageId>
         <Title>Serilog.Sinks.MFilesObject</Title>
 
+        <Product>Serilog.Sinks.MFilesObject</Product>
+        <Description>Serilog sink to write to a Log object in an M-Files Vault.</Description>
+        <PackageProjectUrl>https://github.com/victorvogelpoel/Serilog.Sinks.MFilesObject</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/victorvogelpoel/Serilog.Sinks.MFilesObject</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageIcon>serilog-sink-nuget.png</PackageIcon>
+        <PackageTags>serilog m-files</PackageTags>
+        <SignAssembly>true</SignAssembly>
         <AssemblyOriginatorKeyFile>Serilog.Sinks.MFilesObject.snk</AssemblyOriginatorKeyFile>
     </PropertyGroup>
 

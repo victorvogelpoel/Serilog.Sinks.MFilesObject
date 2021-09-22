@@ -16,11 +16,11 @@
         <PackageTags>serilog m-files</PackageTags>
         <SignAssembly>true</SignAssembly>
         <AssemblyOriginatorKeyFile>Serilog.Sinks.MFilesObject.snk</AssemblyOriginatorKeyFile>
+
     </PropertyGroup>
 
 
-    <Import Project="$(MSBuildProjectDirectory)/releasenotes.props"
-        Condition="Exists('$(MSBuildProjectDirectory)/releasenotes.props')" />
+    <Import Project="$(MSBuildProjectDirectory)/releasenotes.props" Condition="Exists('$(MSBuildProjectDirectory)/releasenotes.props')" />
 
 
     <ItemGroup>
@@ -30,6 +30,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <None Include="..\..\Directory.Build.props" Link="Directory.Build.props" />
         <None Include="serilog-sink-nuget.png">
             <Pack>True</Pack>
             <PackagePath></PackagePath>

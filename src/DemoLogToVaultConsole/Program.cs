@@ -20,12 +20,8 @@ namespace SANDBOX
 {
     class Program
     {
-        static void Main(string[] args)
+        static void Main(string[] _)
         {
-            // Test();
-
-
-
             // -------------------------------------------------------------------------------------------------------
 
             try
@@ -52,22 +48,6 @@ namespace SANDBOX
                     LogFileClassName            = DefaultLoggingVaultStructure.LogFileClassName,                             // "LogFile"
                     LogFileClassAlias           = DefaultLoggingVaultStructure.LogFileClassAlias                       // "CL.Serilog.MFilesObjectLogSink.LogFile"
                 };
-
-
-
-                //vault.RemoveLogObjectsAndLoggingVaultStructure(structureConfig);
-
-                // Ensure that the structure for Logging object and class is present in the vault (needs full permissions on vault)
-                //vault.EnsureLoggingVaultStructure(structureConfig);
-
-
-
-
-                // ----------------------------------------------------------------------------
-                //// Do a test with MFilesLogRepository
-                //MFilesLogRepositoryTest(vault, "SANDBOX-Serilog.Sinks.MFilesObject Demo-Log-", structureConfig);
-                //return;
-
 
 
                 // -------------------------------------------------------------------------------------------------------
@@ -146,19 +126,6 @@ namespace SANDBOX
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToDetailedString());
-
-
-                //if (ex is AggregateException aggrEx)  // AggregateException is an compound exception when something failed in a async/task function, like a Validation.
-                //{
-                //    foreach (var innerEx in aggrEx.InnerExceptions)
-                //    {
-                //        OutputException(innerEx);
-                //    }
-                //}
-                //else
-                //{
-                //    OutputException(ex);
-                //}
             }
 
             Console.WriteLine("Hit enter to exit");
@@ -192,13 +159,13 @@ namespace SANDBOX
 
 
 
-        private static StringBuilder _logEventBuffer = new StringBuilder();
+        private static readonly StringBuilder _logEventBuffer = new StringBuilder();
         private static void BufferAllLogEvents(string formattedLogMessage)
         {
             _logEventBuffer.AppendLine(formattedLogMessage.TrimEnd(Environment.NewLine.ToCharArray()));
         }
 
-        private static StringBuilder _errorLogEventBuffer = new StringBuilder();
+        private static readonly StringBuilder _errorLogEventBuffer = new StringBuilder();
         private static void BufferErrorEvents(string formattedLogMessage)
         {
             _errorLogEventBuffer.AppendLine(formattedLogMessage.TrimEnd(Environment.NewLine.ToCharArray()));

@@ -132,8 +132,8 @@ This can help to link important information together that relates to your change
 
 # Sample prefixes:
 
-- build(deps): update test framework
-- feat(logtovault)
+- build(deps):                 -> update library dependencies (nugets etc) - no other changes to production code
+- feat(logtovault)             -> add or updating a user feature
 - feat
 - docs
 - style: remove trailing whitespace

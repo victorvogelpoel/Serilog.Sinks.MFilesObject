@@ -22,9 +22,9 @@ namespace Serilog.Sinks.MFilesObject
 {
     public class MFilesLogFileSink : IBatchedLogEventSink
     {
-        public const int DefaultBatchPostingLimit                           = 1000;
-        public const int DefaultQueueSizeLimit                              = 100000;
-        public static readonly TimeSpan DefaultPeriod                       = TimeSpan.FromSeconds(10);
+        public const int DefaultBatchPostingLimit       = 1000;
+        public const int DefaultQueueSizeLimit          = 100000;
+        public static readonly TimeSpan DefaultPeriod   = TimeSpan.FromSeconds(10);
 
         private readonly LogFileRepository _mfilesLogRepository;
         private readonly ITextFormatter _formatter;

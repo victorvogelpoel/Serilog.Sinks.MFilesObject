@@ -111,8 +111,6 @@ namespace Dramatic.LogToMFiles.Tests
             {
                 // ASSIGN
                 var logObjectNamePrefix             = "Log-";
-                var mfilesLogMessageCharacterLimit  = 10000;
-                var minCharsForRollover             = 15;
                 var logMessage                      = "Some message";
 
                 var logVaultMock                    = new Mock<ILogObjectVault>();
@@ -232,7 +230,7 @@ namespace Dramatic.LogToMFiles.Tests
                     var expectedObject1NameOrTitle      = $"{logObjectNamePrefix}{DateTime.Today:yyyy-MM-dd}";
                     var expectedObject1LogMessage       = logLine.RepeatWithLineCounter(96); // 96 repeats are stored in the first LogObject
                     var expectedObject2NameOrTitle      = $"{logObjectNamePrefix}{DateTime.Today:yyyy-MM-dd} (2)";
-                    var expectedObject2LogMessage       = logLine.RepeatWithLineCounter(4, lineCounter: 97);;
+                    var expectedObject2LogMessage       = logLine.RepeatWithLineCounter(4, lineCounter: 97);
 
                     // ACT
                     var rollingLogObject = new RollingLogObject(logVaultStub, logObjectNamePrefix);

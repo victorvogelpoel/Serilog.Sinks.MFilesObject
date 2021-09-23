@@ -40,6 +40,13 @@ namespace Serilog.Sinks.MFilesObject
             _formatter              = formatter ?? throw new ArgumentNullException(nameof(formatter));
         }
 
+        internal MFilesLogFileSink(ILogMessageRepository logObjectRepository, ITextFormatter formatter)
+        {
+            _mfilesLogRepository    = logObjectRepository   ?? throw new ArgumentNullException(nameof(logObjectRepository));
+            _formatter              = formatter             ?? throw new ArgumentNullException(nameof(formatter));
+        }
+
+
         public Task OnEmptyBatchAsync()
         {
             return Task.FromResult(0);

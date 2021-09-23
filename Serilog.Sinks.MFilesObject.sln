@@ -41,6 +41,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dramatic.LogToMFiles.SANDBO
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DemoLogToVaultConsole", "src\DemoLogToVaultConsole\DemoLogToVaultConsole.csproj", "{CB2165C1-74A7-4B92-9899-11E7CB79976B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Serilog.Sinks.MFilesObject.Tests", "tests\Serilog.Sinks.MFilesObject.Tests\Serilog.Sinks.MFilesObject.Tests.csproj", "{E9075875-FD1A-4EF9-BF49-DEF12231FFCD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -96,6 +98,12 @@ Global
 		{CB2165C1-74A7-4B92-9899-11E7CB79976B}.DebugWithoutDeployment|Any CPU.Build.0 = Debug|Any CPU
 		{CB2165C1-74A7-4B92-9899-11E7CB79976B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CB2165C1-74A7-4B92-9899-11E7CB79976B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E9075875-FD1A-4EF9-BF49-DEF12231FFCD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E9075875-FD1A-4EF9-BF49-DEF12231FFCD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E9075875-FD1A-4EF9-BF49-DEF12231FFCD}.DebugWithoutDeployment|Any CPU.ActiveCfg = Debug|Any CPU
+		{E9075875-FD1A-4EF9-BF49-DEF12231FFCD}.DebugWithoutDeployment|Any CPU.Build.0 = Debug|Any CPU
+		{E9075875-FD1A-4EF9-BF49-DEF12231FFCD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E9075875-FD1A-4EF9-BF49-DEF12231FFCD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -106,6 +114,7 @@ Global
 		{7D575DDE-8DCB-41F3-8AF8-1006833FC105} = {7A5AA5D3-3671-4852-8525-0B02749E2EDD}
 		{5AB08449-E5C1-46EC-BC91-5DB6950729F0} = {21F4EC16-792D-46DD-893A-0ACC163259D1}
 		{CB2165C1-74A7-4B92-9899-11E7CB79976B} = {7A5AA5D3-3671-4852-8525-0B02749E2EDD}
+		{E9075875-FD1A-4EF9-BF49-DEF12231FFCD} = {21F4EC16-792D-46DD-893A-0ACC163259D1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {61C132ED-A2E0-4433-94B8-52EE2C5144AF}

@@ -74,19 +74,20 @@ namespace DemoVaultApplication
                 .CreateLogger();
 
 
-            // *WARNING* UNFORTUNATELY, the MFilesObjectlogSink CANNOT be created directly in a vault application like below.
-            // WE DON'T CONTROL THE VAULT REFERENCE LIFECYCLE (as we do in the SANDBOX console application) and it will invalidate
-            // soon after starting the vault application, yielding a "COM object that has been separated from its underlying RCW cannot be used."
-            // when we should try and emit a LogEvent.
-            // Hence in a vault application, we use DelegatingTextSink that collects the log messages and a vault application background job that
-            // flushes the collected messages after 5 seconds via an Action().
+            // *WARNING* UNFORTUNATELY, the MFilesObjectlogSink CANNOT be used directly in a vault application like below.
+            // Unfortunately, we have to use the DelegatingTextSink above to collect log events and a a vault application
+            // background job that flushes the collected messages after 5 seconds via an Action() to LogObjectRepository that
+            // uses the PermanentVault reference.
             //
-                //.WriteTo.MFilesLogObjectMessage(PermanentVault,         // DO NOT USE in a Vault Application; However, you can use it where YOU control the vault reference, eq in a console application
-                //                                mfilesLogObjectNamePrefix:  $"[{Environment.MachineName.ToUpperInvariant()}] {Configuration?.LoggingConfiguration?.LogObjectNamePrefix}",
-                //                                mfilesLogObjectTypeAlias:      Configuration?.LoggingConfiguration?.LogOT.Alias,
-                //                                mfilesLogClassAlias:           Configuration?.LoggingConfiguration?.LogCL.Alias,
-                //                                mfilesLogMessagePropDefAlias:  Configuration?.LoggingConfiguration?.LogMessagePD.Alias,
-                //                                outputTemplate:                "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
+            // I could not find any other way to log to an M-Files object with a vault reference using a Serilog sink.
+
+            // SO, DON'T do this:
+            //.WriteTo.MFilesLogObjectMessage(PermanentVault,         // DO NOT USE in a Vault Application; However, you can use it where YOU control the vault reference, eq in a console application
+            //                                mfilesLogObjectNamePrefix:  $"[{Environment.MachineName.ToUpperInvariant()}] {Configuration?.LoggingConfiguration?.LogObjectNamePrefix}",
+            //                                mfilesLogObjectTypeAlias:      Configuration?.LoggingConfiguration?.LogOT.Alias,
+            //                                mfilesLogClassAlias:           Configuration?.LoggingConfiguration?.LogCL.Alias,
+            //                                mfilesLogMessagePropDefAlias:  Configuration?.LoggingConfiguration?.LogMessagePD.Alias,
+            //                                outputTemplate:                "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
         }
 
 
@@ -183,7 +184,7 @@ namespace DemoVaultApplication
                     rollingLogObjectRepository.SaveLogMessage(batchedLogMessages);
 
 
-                    // AND write to today's "LogFile" document object as well, for the fun of it.
+                    // AND write to todays "LogFile" document object as well, *for the fun of it*.
                     var rollingLogFileRepository = new LogFileRepository(PermanentVault,
                                                             mfilesLogFileNamePrefix: $"[{Environment.MachineName.ToUpperInvariant()}] {prefix}",     // eg, "[LTVICTOR3] DemoVaultApp-Log-")
                                                             mfilesLogFileClassAlias: Configuration.LoggingConfiguration.LogFileCL.Alias);
@@ -218,6 +219,8 @@ namespace DemoVaultApplication
         }
 
 
+        // -----------------------------------------------------------------------------------------------------------------------------------
+        // Proving the Serilog sink can also be used from a vault extension method.
 
         [VaultExtensionMethod("DemoVaultApp.LogInformation")]
         private string LogInformation(EventHandlerEnvironment env)
@@ -241,6 +244,8 @@ namespace DemoVaultApplication
         }
 
 
+        // -----------------------------------------------------------------------------------------------------------------------------------
+        // Proving the Serilog sink can also be used from an MF Admin domain menu command.
         // Add a sample command to the MF Admin configuration domain area of this vault application, where you can right click and trigger this command.
         private readonly CustomDomainCommand cmdTestLogMessageMenuItem = new CustomDomainCommand
         {
@@ -265,7 +270,8 @@ namespace DemoVaultApplication
         };
 
 
-
+        // -----------------------------------------------------------------------------------------------------------------------------------
+        // Showing Log level and logging vault structure status in the Configuration dashboard in MF Admin
         /// <inheritdoc />
         public override string GetDashboardContent(IConfigurationRequestContext context)
         {
@@ -322,8 +328,6 @@ namespace DemoVaultApplication
 
             return dashboard.ToString();
         }
-
-
 
 
         public override IEnumerable<CustomDomainCommand> GetCommands(IConfigurationRequestContext context)

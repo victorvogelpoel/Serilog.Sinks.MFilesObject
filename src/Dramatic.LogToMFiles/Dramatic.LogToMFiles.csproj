@@ -45,6 +45,7 @@
     <Compile Include="Application\RollingLogFile.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Application\ILogObjectVault.cs" />
+    <Compile Include="Application\ILogMessageRepository.cs" />
     <Compile Include="Infrastructure\LogFileVault.cs" />
     <Compile Include="Infrastructure\LogObjectVault.cs" />
     <Compile Include="Infrastructure\LogFileRepository.cs" />

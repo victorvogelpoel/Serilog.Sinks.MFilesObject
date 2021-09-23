@@ -24,7 +24,7 @@ namespace Dramatic.LogToMFiles
     /// <summary>
     /// Repository for writing to a Log object (objectType 'Log', class 'Log', PropertyDef multi-line text 'Logmessage')
     /// </summary>
-    public class LogObjectRepository
+    public class LogObjectRepository : ILogMessageRepository
     {
         private readonly RollingLogObject _rollingLogObject;
 
@@ -50,7 +50,6 @@ namespace Dramatic.LogToMFiles
             var logVault        = new LogObjectVault(vault, mfilesLogObjectTypeAlias, mfilesLogClassAlias, mfilesLogMessagePropDefAlias);
             _rollingLogObject   = new RollingLogObject(logVault, mfilesLogObjectNamePrefix);
         }
-
 
         /// <summary>
         /// Save the log message to a rolling M-Files Log object

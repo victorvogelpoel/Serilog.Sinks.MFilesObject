@@ -24,7 +24,7 @@ namespace Dramatic.LogToMFiles
     /// <summary>
     /// Repository for writing to a Log File object (objectType 'Document', class 'Log')
     /// </summary>
-    public class LogFileRepository
+    public class LogFileRepository : ILogMessageRepository
     {
         private readonly RollingLogFile _rollingFile;
 

@@ -75,14 +75,15 @@ namespace DemoVaultApplication
 
 
             // *WARNING* UNFORTUNATELY, the MFilesObjectlogSink CANNOT be used directly in a vault application like below.
-            // Unfortunately, we have to use the DelegatingTextSink above to collect log events and a a vault application
+            // Unfortunately, we have to use the DelegatingTextSink above to collect log events and a vault application
             // background job that flushes the collected messages after 5 seconds via an Action() to LogObjectRepository that
-            // uses the PermanentVault reference.
+            // uses the PermanentVault reference...
             //
-            // I could not find any other way to log to an M-Files object with a vault reference using a Serilog sink.
-
+            // I nor Craig could not find any other way to log to an M-Files object with a vault reference using a Serilog sink
+            // in a vault application.
+            //
             // SO, DON'T do this:
-            //.WriteTo.MFilesLogObjectMessage(PermanentVault,         // DO NOT USE in a Vault Application; However, you can use it where YOU control the vault reference, eq in a console application
+            //.WriteTo.MFilesLogObjectMessage(PermanentVault,         // DO NOT USE in a Vault Application
             //                                mfilesLogObjectNamePrefix:  $"[{Environment.MachineName.ToUpperInvariant()}] {Configuration?.LoggingConfiguration?.LogObjectNamePrefix}",
             //                                mfilesLogObjectTypeAlias:      Configuration?.LoggingConfiguration?.LogOT.Alias,
             //                                mfilesLogClassAlias:           Configuration?.LoggingConfiguration?.LogCL.Alias,

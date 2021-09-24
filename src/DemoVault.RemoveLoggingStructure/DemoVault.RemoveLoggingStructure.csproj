@@ -48,6 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="DemoVault.RemoveLoggingStructure.licenseheader" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Dramatic.LogToMFiles\Dramatic.LogToMFiles.csproj">

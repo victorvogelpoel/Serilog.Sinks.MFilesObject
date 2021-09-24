@@ -77,6 +77,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Dramatic.LogToMFiles.snk" />
+    <None Include="Dramatic.LogToMFiles.Tests.licenseheader" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

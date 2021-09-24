@@ -70,6 +70,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Serilog.Sinks.MFilesObject.snk" />
+    <None Include="Serilog.Sinks.MFilesObject.Tests.licenseheader" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Dramatic.LogToMFiles\Dramatic.LogToMFiles.csproj">

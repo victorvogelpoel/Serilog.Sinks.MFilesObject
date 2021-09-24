@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using Dramatic.LogToMFiles;
 using MFiles.VAF.Common;
 using MFiles.VAF.Configuration.AdminConfigurations;
@@ -61,46 +62,65 @@ namespace DemoVaultApplication
         {
             base.InitializeApplication(vault);
 
-            // Configure logging
-            ConfigureLogging(Configuration?.LoggingConfiguration?.LogLevel ?? "OFF");
+            // Initialize the logging level for the serilog logger
+            _loggingLevelSwitch.MinimumLevel = GetLoggingLevelFor(Configuration?.LoggingConfiguration?.LogLevel ?? "OFF");
 
-            Log.Information("VaultApplication {ApplicationName} {BuildVersion} has been initialized", ApplicationDefinition.Name, _buildFileVersion);   // NOTE, structured logging with curly braces, NOT C# string intrapolation $"" with curly braces!
+            // DO NOT LOG FROM InitializeApplication. Installing the vault app will take ages and fail ....
         }
 
 
         /// <summary>
-        /// Build a Serilog structured logger from the configured log level
+        /// Build a Serilog logger with the supplied vault reference
         /// </summary>
-        /// <param name="logLevelString"></param>
-        private void ConfigureLogging(string logLevelString)
+        /// <param name="vault"></param>
+        /// <returns></returns>
+        private ILogger LoggerWith(IVault vault)
         {
-            _loggingLevelSwitch.MinimumLevel = GetLoggingLevelFor(logLevelString);
+            var prefix = Configuration?.LoggingConfiguration?.LogObjectNamePrefix ?? DefaultLoggingVaultStructure.LogObjectNamePrefix;
+            if (string.IsNullOrWhiteSpace(prefix)) { prefix = "DemoVaultApp-Log-"; }
 
-            // ------------------------------------------------------------------------------------------------------------------------------------
-            // Build a Serilog logger with MFilesObjectLogSink.
-            // Note to Log.CloseAndFlush() in the UninitializeApplication()!
-            Log.Logger = new LoggerConfiguration()
+            var logger = new LoggerConfiguration()
                 .MinimumLevel.ControlledBy(_loggingLevelSwitch)
-                // Using a delegate to buffer log messages that are flushed later with a background job
-                .WriteTo.DelegatingTextSink(w => WriteToVaultApplicationBuffer(w), outputTemplate:"[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
+
+                .WriteTo.MFilesLogObjectMessage(vault,
+                                            mfilesLogObjectNamePrefix:      $"[{Environment.MachineName.ToUpperInvariant()}] {prefix}",
+                                            mfilesLogObjectTypeAlias:       Configuration?.LoggingConfiguration?.LogOT?.Alias           ?? DefaultLoggingVaultStructure.LogObjectTypeAlias,
+                                            mfilesLogClassAlias:            Configuration?.LoggingConfiguration?.LogCL?.Alias           ?? DefaultLoggingVaultStructure.LogClassAlias,
+                                            mfilesLogMessagePropDefAlias:   Configuration?.LoggingConfiguration?.LogMessagePD?.Alias    ?? DefaultLoggingVaultStructure.LogMessagePropertyDefinitionAlias,
+                                            outputTemplate:                 "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
+
+                // AND build an MFiles LogFile sink, for the fun of it
+                .WriteTo.MFilesLogFile(vault,
+                                            mfilesLogFileNamePrefix:        $"[{Environment.MachineName.ToUpperInvariant()}] {prefix}",
+                                            mfilesLogFileClassAlias:        Configuration?.LoggingConfiguration?.LogFileCL?.Alias       ?? DefaultLoggingVaultStructure.LogFileClassAlias,
+                                            outputTemplate:                 "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
                 .CreateLogger();
 
+            return logger;
+        }
 
-            // *WARNING* UNFORTUNATELY, the MFilesObjectlogSink CANNOT be used directly in a vault application like below.
-            // Unfortunately, we have to use the DelegatingTextSink above to collect log events and a vault application
-            // background job that flushes the collected messages after 5 seconds via an Action() to LogObjectRepository that
-            // uses the PermanentVault reference...
-            //
-            // I nor Craig could not find any other way to log to an M-Files object with a vault reference using a Serilog sink
-            // in a vault application.
-            //
-            // SO, DON'T do this:
-            //.WriteTo.MFilesLogObjectMessage(PermanentVault,         // DO NOT USE in a Vault Application
-            //                                mfilesLogObjectNamePrefix:  $"[{Environment.MachineName.ToUpperInvariant()}] {Configuration?.LoggingConfiguration?.LogObjectNamePrefix}",
-            //                                mfilesLogObjectTypeAlias:      Configuration?.LoggingConfiguration?.LogOT.Alias,
-            //                                mfilesLogClassAlias:           Configuration?.LoggingConfiguration?.LogCL.Alias,
-            //                                mfilesLogMessagePropDefAlias:  Configuration?.LoggingConfiguration?.LogMessagePD.Alias,
-            //                                outputTemplate:                "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
+
+
+        // Create a lazy initialized logger with the Permanent Vault
+        private static readonly object _loggerObject = new object();
+        private ILogger _loggerInstance = null;
+        private ILogger Log
+        {
+            get
+            {
+                if (_loggerInstance == null)
+                {
+                    lock(_loggerObject)
+                    {
+                        if (_loggerInstance == null)
+                        {
+                            _loggerInstance = LoggerWith(PermanentVault);
+                        }
+                    }
+                }
+
+                return _loggerInstance;
+            }
         }
 
 
@@ -141,80 +161,8 @@ namespace DemoVaultApplication
         }
 
 
-        /// <summary>
-        /// Buffer log events. Note that the backgroundoperation will flush these messages to a Log object later, and will use the PermanentVault is a valid vault reference.
-        /// </summary>
-        /// <param name="formattedLogMessage"></param>
-        private void WriteToVaultApplicationBuffer(string formattedLogMessage)
-        {
-            lock(_logBufferLockObj)
-            {
-                _logEventBuffer.AppendLine(formattedLogMessage.TrimEnd(Environment.NewLine.ToCharArray()));
-            }
-        }
 
-
-        /// <summary>
-        /// Start the Vault Application
-        /// </summary>
-        protected override void StartApplication()
-        {
-            // Define the delegate action for the flushing to the M-Files Log Object and/or Log File document object
-            _flushLogAction = new Action(() =>
-            {
-                if (_logEventBuffer.Length > 0)
-                {
-                    string batchedLogMessages;
-
-                    lock(_logBufferLockObj)
-                    {
-                        batchedLogMessages = _logEventBuffer.ToString();
-                        _logEventBuffer.Clear();
-                    }
-
-                    // Check the Logging Configuration (see MF Admin)
-                    if (null == Configuration || null == Configuration.LoggingConfiguration ||
-                    !Configuration.LoggingConfiguration.LogOT.IsResolved ||
-                    !Configuration.LoggingConfiguration.LogCL.IsResolved ||
-                    !Configuration.LoggingConfiguration.LogMessagePD.IsResolved ||
-                    !Configuration.LoggingConfiguration.LogFileCL.IsResolved ||
-                    String.IsNullOrWhiteSpace(Configuration.LoggingConfiguration.LogOT.Alias) ||
-                    String.IsNullOrWhiteSpace(Configuration.LoggingConfiguration.LogCL.Alias) ||
-                    String.IsNullOrWhiteSpace(Configuration.LoggingConfiguration.LogMessagePD.Alias) ||
-                    String.IsNullOrWhiteSpace(Configuration.LoggingConfiguration.LogFileCL.Alias))
-                    { return; }
-
-                    var prefix = Configuration.LoggingConfiguration.LogObjectNamePrefix; // 'DemoVaultApp-Log-'
-                    if (string.IsNullOrWhiteSpace(prefix)) { prefix = "DemoVaultApp-Log-"; }
-
-                    // Write to today's "Log" object
-                    var rollingLogObjectRepository = new LogObjectRepository(PermanentVault,
-                                                            mfilesLogObjectNamePrefix:    $"[{Environment.MachineName.ToUpperInvariant()}] {prefix}",     // eg, "[LTVICTOR3] DemoVaultApp-Log-"
-                                                            mfilesLogObjectTypeAlias:     Configuration.LoggingConfiguration.LogOT.Alias,
-                                                            mfilesLogClassAlias:          Configuration.LoggingConfiguration.LogCL.Alias,
-                                                            mfilesLogMessagePropDefAlias: Configuration.LoggingConfiguration.LogMessagePD.Alias);
-
-                    rollingLogObjectRepository.SaveLogMessage(batchedLogMessages);
-
-
-                    // AND write to todays "LogFile" document object as well, *for the fun of it*.
-                    var rollingLogFileRepository = new LogFileRepository(PermanentVault,
-                                                            mfilesLogFileNamePrefix: $"[{Environment.MachineName.ToUpperInvariant()}] {prefix}",     // eg, "[LTVICTOR3] DemoVaultApp-Log-")
-                                                            mfilesLogFileClassAlias: Configuration.LoggingConfiguration.LogFileCL.Alias);
-                    rollingLogFileRepository.SaveLogMessage(batchedLogMessages);
-
-                }
-            });
-
-#pragma warning disable CS0618 // Type or member is obsolete
-            this.BackgroundOperations.StartRecurringBackgroundOperation("Periodic Log-to-MFilesObject operation", TimeSpan.FromSeconds(5), _flushLogAction);
-#pragma warning restore CS0618 // Type or member is obsolete
-
-            base.StartApplication();
-        }
-
-
-        /// <summary>
+         /// <summary>
         /// Power down the vault application. At least, flush the logging sinks.
         /// </summary>
         /// <param name="vault"></param>
@@ -222,11 +170,8 @@ namespace DemoVaultApplication
         {
             Log.Information("VaultApplication {ApplicationName} {BuildVersion} is POWERING DOWN.", ApplicationDefinition.Name, _buildFileVersion);   // NOTE, structured logging with curly braces, NOT C# string intrapolation $"" with curly braces!
 
-            // IMPORTANT: flush any buffered messages
-            _flushLogAction?.Invoke();
-
-            // IMPORTANT as well: flush all sinks
-            Log.CloseAndFlush();
+            // IMPORTANT: CloseAndFlush all sinks - this will flush any batched sinks emit the log events to the vault.
+            (this.Log as IDisposable)?.Dispose();
 
             base.UninitializeApplication(vault);
         }
@@ -238,21 +183,21 @@ namespace DemoVaultApplication
         [VaultExtensionMethod("DemoVaultApp.LogInformation")]
         private string LogInformation(EventHandlerEnvironment env)
         {
-            Log.Information(env.Input);
+            this.Log.Information(env.Input);
             return $"Logged the following Information message:\r\n{env.Input}";
         }
 
         [VaultExtensionMethod("DemoVaultApp.LogWarning")]
         private string LogWarning(EventHandlerEnvironment env)
         {
-            Log.Warning(env.Input);
+            this.Log.Warning(env.Input);
             return $"Logged the following warning message:\r\n{env.Input}";
         }
 
         [VaultExtensionMethod("DemoVaultApp.LogError")]
         private string LogError(EventHandlerEnvironment env)
         {
-            Log.Error(env.Input);
+            this.Log.Error(env.Input);
             return $"Logged the following error message:\r\n{env.Input}";
         }
 
@@ -361,6 +306,17 @@ namespace DemoVaultApplication
         // The business use case events
 
         /// <summary>
+        /// Check if the event is for a document object that has the configured Log File Class
+        /// </summary>
+        /// <param name="env">EventHandlerEnvironment for the event</param>
+        /// <returns>false if the event is NOT for a document of the configured log file class, true if it is.</returns>
+        private bool EventIsForLogFileDocument(EventHandlerEnvironment env)
+        {
+            return env.ObjVerEx.HasClass(Configuration?.LoggingConfiguration?.LogFileCL ?? DefaultLoggingVaultStructure.LogFileClassAlias);
+        }
+
+
+        /// <summary>
         /// Sample event handler that logs check ins.
         /// </summary>
         /// <param name="env"></param>
@@ -370,21 +326,15 @@ namespace DemoVaultApplication
             // Appending log events to the a Log File document will trigger this event again, so we need to block logging about *that* object.
             if (EventIsForLogFileDocument(env)) { return; }
 
+
             // Just log about the document object change
-            Log.Information("User {User} has checked in document {DisplayID} at {TimeStamp}", env.CurrentUserID, env.DisplayID, DateTime.Now);
+            // Note that this statement logs with a logger that uses the PermanetVault reference
+            this.Log.Information("User {User} has checked in document {DisplayID} at {TimeStamp}", env.CurrentUserID, env.DisplayID, DateTime.Now);
+
+            // And in 5-10 seconds, logger this message will be visible in the M-Files Desktop app as an Log object and Log document file.
+
 
             // ... do other stuff ?
-        }
-
-
-        /// <summary>
-        /// Check if the event is for a document object that has the configured Log File Class
-        /// </summary>
-        /// <param name="env">EventHandlerEnvironment for the event</param>
-        /// <returns>false if the event is NOT for a document of the configured log file class, true if it is.</returns>
-        private bool EventIsForLogFileDocument(EventHandlerEnvironment env)
-        {
-            return env.ObjVerEx.HasClass(Configuration?.LoggingConfiguration?.LogFileCL ?? DefaultLoggingVaultStructure.LogFileClassAlias);
         }
     }
 }

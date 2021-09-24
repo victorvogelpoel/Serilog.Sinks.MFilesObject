@@ -256,12 +256,16 @@ namespace DemoVaultApplication
                                                                                                         loggingConfiguration.LogFileCL.Alias);
                     if (missingLoggingStructureAliases.Count > 0)
                     {
-                        loggingStructureState = $"Logging check: logging is configured, but some logging vault structure is MISSING from the vault. Please run \"DemoVault.AddLoggingStructure.exe\" to ensure logging structure to the vault and refresh the vaultapp (to reread structure).<br/>Current log level is {loggingConfiguration.LogLevel}";
+                        loggingStructureState = $"Logging check: logging is configured, but some logging vault structure is MISSING from the vault. Please run \"DemoVault.AddLoggingStructure.exe\" to ensure logging structure to the vault and refresh the vaultapp (to reread structure).<br/>Current log level is {loggingConfiguration.LogLevel}.";
                     }
                     else
                     {
                         loggingStructureState = $"Logging check: logging is configured and all logging vault structure is present in the vault.<br/>Current log level is {loggingConfiguration.LogLevel}. See the M-Files desktop app for Log object and/or Log File objects.";
                     }
+                }
+                else
+                {
+                    loggingStructureState = $"Logging check: logging is configured and logging vault structure is present!<br/>Current log level is {loggingConfiguration.LogLevel}.";
                 }
             }
             else

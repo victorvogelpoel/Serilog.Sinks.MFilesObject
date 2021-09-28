@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-if ! head -1 "$1" | grep -qE "^(build|chore|ci|docs|feat|fix|perf|refactor|resource|revert|style|test)(\(.+?\))?: .{1,}$"; then
+if ! head -1 "$1" | grep -qE "^(build|chore|ci|docs|feat|fix|perf|refactor|resource|revert|style|test|merge)(\(.+?\))?: .{1,}$"; then
     echo "Aborting commit. Your commit message header does not adhere to the convention." >&2
     echo "<type>(<scope>): <short summary>" >&2
     echo "<BLANK LINE>" >&2

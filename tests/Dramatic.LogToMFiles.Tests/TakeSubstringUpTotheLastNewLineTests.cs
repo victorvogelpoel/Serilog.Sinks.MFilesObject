@@ -18,6 +18,7 @@
 //
 using System;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Dramatic.LogToMFiles.Tests
@@ -37,9 +38,11 @@ namespace Dramatic.LogToMFiles.Tests
             var result = sut.TakeSubstringUpTotheLastNewLine(index, maxCharactersToTake);
 
             // ASSERT
-
-            result.Should().NotBeNullOrEmpty();
-            result.Should().Be(expectedResult);
+            using (new AssertionScope())
+            {
+                result.Should().NotBeNullOrEmpty();
+                result.Should().Be(expectedResult);
+            }
         }
 
 

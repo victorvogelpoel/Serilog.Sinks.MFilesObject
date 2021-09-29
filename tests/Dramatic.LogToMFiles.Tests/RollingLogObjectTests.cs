@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using MFilesAPI;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -230,10 +231,13 @@ namespace Dramatic.LogToMFiles.Tests
                     rollingLogObject.SaveLogMessage(logMessage);
 
                     // ASSERT
-                    logVaultStub.LogObjects.Should().NotBeNull();
-                    logVaultStub.LogObjects.Count.Should().Be(1);
-                    logVaultStub.LogObjects[0].NameOrTitle.Should().Be(expectedObjectNameOrTitle);
-                    logVaultStub.LogObjects[0].LogMessage.Should().Be(expectedObjectLogMessage);
+                    using (new AssertionScope())
+                    {
+                        logVaultStub.LogObjects.Should().NotBeNull();
+                        logVaultStub.LogObjects.Count.Should().Be(1);
+                        logVaultStub.LogObjects[0].NameOrTitle.Should().Be(expectedObjectNameOrTitle);
+                        logVaultStub.LogObjects[0].LogMessage.Should().Be(expectedObjectLogMessage);
+                    }
                 }
 
 
@@ -255,13 +259,15 @@ namespace Dramatic.LogToMFiles.Tests
                     rollingLogObject.SaveLogMessage(logMessage);
 
                     // ASSERT
-                    logVaultStub.LogObjects.Should().NotBeNull();
-                    logVaultStub.LogObjects.Count.Should().Be(2);
-                    logVaultStub.LogObjects[0].NameOrTitle.Should().Be(expectedObject1NameOrTitle);
-                    logVaultStub.LogObjects[0].LogMessage.Should().Be(expectedObject1LogMessage);
-                    logVaultStub.LogObjects[1].NameOrTitle.Should().Be(expectedObject2NameOrTitle);
-                    logVaultStub.LogObjects[1].LogMessage.Should().Be(expectedObject2LogMessage);
-
+                    using (new AssertionScope())
+                    {
+                        logVaultStub.LogObjects.Should().NotBeNull();
+                        logVaultStub.LogObjects.Count.Should().Be(2);
+                        logVaultStub.LogObjects[0].NameOrTitle.Should().Be(expectedObject1NameOrTitle);
+                        logVaultStub.LogObjects[0].LogMessage.Should().Be(expectedObject1LogMessage);
+                        logVaultStub.LogObjects[1].NameOrTitle.Should().Be(expectedObject2NameOrTitle);
+                        logVaultStub.LogObjects[1].LogMessage.Should().Be(expectedObject2LogMessage);
+                    }
                 }
 
                 [TestMethod]
@@ -289,17 +295,19 @@ namespace Dramatic.LogToMFiles.Tests
                     rollingLogObject.SaveLogMessage(logMessage);
 
                     // ASSERT
-                    logVaultStub.LogObjects.Should().NotBeNull();
-                    logVaultStub.LogObjects.Count.Should().Be(2);
+                    using (new AssertionScope())
+                    {
+                        logVaultStub.LogObjects.Should().NotBeNull();
+                        logVaultStub.LogObjects.Count.Should().Be(2);
 
-                    // Assert the previous day logobject as unchanged
-                    logVaultStub.LogObjects[0].NameOrTitle.Should().Be(existingPreviousObjectName);
-                    logVaultStub.LogObjects[0].LogMessage.Should().Be(existingPreviousLogMessage);
+                        // Assert the previous day logobject as unchanged
+                        logVaultStub.LogObjects[0].NameOrTitle.Should().Be(existingPreviousObjectName);
+                        logVaultStub.LogObjects[0].LogMessage.Should().Be(existingPreviousLogMessage);
 
-                    // assert the newly created Todays LogObject
-                    logVaultStub.LogObjects[1].NameOrTitle.Should().Be(expectedTodaysObjectNameOrTitle);
-                    logVaultStub.LogObjects[1].LogMessage.Should().Be(expectedTodaysObjectLogMessage);
-
+                        // assert the newly created Todays LogObject
+                        logVaultStub.LogObjects[1].NameOrTitle.Should().Be(expectedTodaysObjectNameOrTitle);
+                        logVaultStub.LogObjects[1].LogMessage.Should().Be(expectedTodaysObjectLogMessage);
+                    }
                 }
 
                 [TestMethod]
@@ -324,10 +332,13 @@ namespace Dramatic.LogToMFiles.Tests
                     rollingLogObject.SaveLogMessage(logMessage);
 
                     // ASSERT
-                    logVaultStub.LogObjects.Should().NotBeNull();
-                    logVaultStub.LogObjects.Count.Should().Be(1);
-                    logVaultStub.LogObjects[0].NameOrTitle.Should().Be(expectedObjectNameOrTitle);
-                    logVaultStub.LogObjects[0].LogMessage.Should().Be(expectedObjectLogMessage);
+                    using (new AssertionScope())
+                    {
+                        logVaultStub.LogObjects.Should().NotBeNull();
+                        logVaultStub.LogObjects.Count.Should().Be(1);
+                        logVaultStub.LogObjects[0].NameOrTitle.Should().Be(expectedObjectNameOrTitle);
+                        logVaultStub.LogObjects[0].LogMessage.Should().Be(expectedObjectLogMessage);
+                    }
                 }
 
 
@@ -356,12 +367,15 @@ namespace Dramatic.LogToMFiles.Tests
                     rollingLogObject.SaveLogMessage(logMessage);
 
                     // ASSERT
-                    logVaultStub.LogObjects.Should().NotBeNull();
-                    logVaultStub.LogObjects.Count.Should().Be(2);
-                    logVaultStub.LogObjects[0].NameOrTitle.Should().Be(expectedObject1NameOrTitle);
-                    logVaultStub.LogObjects[0].LogMessage.Should().Be(expectedObject1LogMessage);
-                    logVaultStub.LogObjects[1].NameOrTitle.Should().Be(expectedObject2NameOrTitle);
-                    logVaultStub.LogObjects[1].LogMessage.Should().Be(expectedObject2LogMessage);
+                    using (new AssertionScope())
+                    {
+                        logVaultStub.LogObjects.Should().NotBeNull();
+                        logVaultStub.LogObjects.Count.Should().Be(2);
+                        logVaultStub.LogObjects[0].NameOrTitle.Should().Be(expectedObject1NameOrTitle);
+                        logVaultStub.LogObjects[0].LogMessage.Should().Be(expectedObject1LogMessage);
+                        logVaultStub.LogObjects[1].NameOrTitle.Should().Be(expectedObject2NameOrTitle);
+                        logVaultStub.LogObjects[1].LogMessage.Should().Be(expectedObject2LogMessage);
+                    }
                 }
 
 
@@ -392,12 +406,15 @@ namespace Dramatic.LogToMFiles.Tests
                     rollingLogObject.SaveLogMessage(logMessage);
 
                     // ASSERT
-                    logVaultStub.LogObjects.Should().NotBeNull();
-                    logVaultStub.LogObjects.Count.Should().Be(2);
-                    logVaultStub.LogObjects[0].NameOrTitle.Should().Be(expectedObject1NameOrTitle);
-                    logVaultStub.LogObjects[0].LogMessage.Should().Be(expectedObject1LogMessage);
-                    logVaultStub.LogObjects[1].NameOrTitle.Should().Be(expectedObject2NameOrTitle);
-                    logVaultStub.LogObjects[1].LogMessage.Should().Be(expectedObject2LogMessage);
+                    using (new AssertionScope())
+                    {
+                        logVaultStub.LogObjects.Should().NotBeNull();
+                        logVaultStub.LogObjects.Count.Should().Be(2);
+                        logVaultStub.LogObjects[0].NameOrTitle.Should().Be(expectedObject1NameOrTitle);
+                        logVaultStub.LogObjects[0].LogMessage.Should().Be(expectedObject1LogMessage);
+                        logVaultStub.LogObjects[1].NameOrTitle.Should().Be(expectedObject2NameOrTitle);
+                        logVaultStub.LogObjects[1].LogMessage.Should().Be(expectedObject2LogMessage);
+                    }
                 }
             }
         }

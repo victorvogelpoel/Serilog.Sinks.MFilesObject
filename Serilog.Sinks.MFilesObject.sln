@@ -24,6 +24,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentat
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{F51A2C4D-4A5F-4F4F-A0BC-1692642DEB69}"
 	ProjectSection(SolutionItems) = preProject
+		Default.Build.props = Default.Build.props
 		Directory.Build.props = Directory.Build.props
 	EndProjectSection
 EndProject

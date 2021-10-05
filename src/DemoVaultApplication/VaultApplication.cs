@@ -231,7 +231,7 @@ namespace DemoVaultApplication
             // Reacquire the cached vault structure
             ReinitializeMetadataStructureCache(PermanentVault);
 
-            FormattableString loggingStructureState = $"";
+            FormattableString loggingStructureState;
 
             if (null != Configuration && null != Configuration.LoggingConfiguration)
             {

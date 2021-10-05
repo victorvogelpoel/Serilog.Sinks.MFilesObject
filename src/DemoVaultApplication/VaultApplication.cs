@@ -42,13 +42,8 @@ namespace DemoVaultApplication
     /// <remarks>Examples and further information available on the developer portal: http://developer.m-files.com/. </remarks>
     public class VaultApplication : ConfigurableVaultApplicationBase<Configuration>
     {
-        private static readonly object                                  _logBufferLockObj       = new object();
         private readonly LoggingLevelSwitch                             _loggingLevelSwitch     = new LoggingLevelSwitch(LogEventLevel.Information);
         private readonly string                                         _buildFileVersion       = ((AssemblyFileVersionAttribute)Attribute.GetCustomAttribute(Assembly.GetExecutingAssembly(), typeof(AssemblyFileVersionAttribute), false)).Version;
-
-        private Action                                                  _flushLogAction;
-        private readonly StringBuilder                                  _logEventBuffer         = new StringBuilder();
-
 
         // ===========================================================================================================================================================
         // Logging configuration and settings

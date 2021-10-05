@@ -73,12 +73,6 @@ namespace SANDBOX
                     .Enrich.FromLogContext()
                     .MinimumLevel.ControlledBy(loggingLevelSwitch)
 
-                    // Sample DelegatingTextSink to buffer formatted log events, all log levels
-                    .WriteTo.DelegatingTextSink(w => BufferAllLogEvents(w), outputTemplate:"[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
-
-                    // Sample DelegatingTextSink to buffer formatted ERROR log events (ONLY ERROR level or above).
-                    .WriteTo.DelegatingTextSink(w => BufferErrorEvents(w), outputTemplate:"[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}", restrictedToMinimumLevel: LogEventLevel.Error)
-
                     //// Log events to an 'rolling' Log object in the vault with a MultiLineText property.
                     .WriteTo.MFilesLogObjectMessage(vault,
                                             mfilesLogObjectNamePrefix:      "DemoConsole-Log-",
@@ -107,7 +101,7 @@ namespace SANDBOX
 
                 // -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
                 // Now log messages
-                // With above configuration, each Log.xxxx() statement will log to the delegating sinks AND and M-Files Log object, AND to the console.
+                // With above configuration, each Log.xxxx() statement will log to M-Files Log object and Log File, AND to the console.
                 // Note that the Log messages do NOT appear immediately in the vault as a Log object, but are collected and pushed every 5 secs.
 
                 Log.Information("This adds this log message to a Log object in the vault with the name \"LoggingFromSandboxDemo-Log-{Today}\"", DateTime.Today.ToString("yyyy-MM-dd"));
@@ -120,16 +114,7 @@ namespace SANDBOX
 
                 // NOTE: in M-Files vault desktop application, navigate to objects of class "Log"
 
-                Console.WriteLine("-----------------------------------------------------------------------------------------");
-                Console.WriteLine("This is what the AllLogEvents DelegatingTextSink buffered:");
-                Console.WriteLine(_logEventBuffer.ToString());
-                Console.WriteLine("");
-                Console.WriteLine("And this is what the ErrorEvents DelegatingTextSink buffered (should be ONLY errors):");
-                Console.WriteLine(_errorLogEventBuffer.ToString());
-
                 Thread.Sleep(6000);
-
-
 
                 // IMPORTANT to flush out the batched messages to the vault, at the end of the application, otherwise messages within the last 5 seconds would not end up in the vault!
                 Log.CloseAndFlush();
@@ -169,19 +154,6 @@ namespace SANDBOX
 
         //}
 
-
-
-        private static readonly StringBuilder _logEventBuffer = new StringBuilder();
-        private static void BufferAllLogEvents(string formattedLogMessage)
-        {
-            _logEventBuffer.AppendLine(formattedLogMessage.TrimEnd(Environment.NewLine.ToCharArray()));
-        }
-
-        private static readonly StringBuilder _errorLogEventBuffer = new StringBuilder();
-        private static void BufferErrorEvents(string formattedLogMessage)
-        {
-            _errorLogEventBuffer.AppendLine(formattedLogMessage.TrimEnd(Environment.NewLine.ToCharArray()));
-        }
 
         private static void OutputException(Exception ex)
         {

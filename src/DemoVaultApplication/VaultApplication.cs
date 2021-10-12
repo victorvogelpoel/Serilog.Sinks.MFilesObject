@@ -231,41 +231,38 @@ namespace DemoVaultApplication
             // Reacquire the cached vault structure
             ReinitializeMetadataStructureCache(PermanentVault);
 
-            FormattableString loggingStructureState;
+            // NOTE: there is a lot of repeating text in the FormattableStrings below.
+            // The strings use "<br/>" for moving to the next line and it seems a DashboardPanel
+            // renders "<br/>" as TEXT instead of an HTML newline break if the string is in a
+            // FormattableString ARGUMENT instead of the formattable string... Go figure.
+
+            FormattableString loggingState = $"";
 
             if (null != Configuration && null != Configuration.LoggingConfiguration)
             {
-                var loggingConfiguration = Configuration.LoggingConfiguration;
-                if (loggingConfiguration.LogLevel == "OFF")
+                var loggingConfiguration            = Configuration.LoggingConfiguration;
+                var loggingConfigurationIsResolved  = loggingConfiguration.LogOT.IsResolved &&
+                                                      loggingConfiguration.LogCL.IsResolved &&
+                                                      loggingConfiguration.LogMessagePD.IsResolved &&
+                                                      loggingConfiguration.LogFileCL.IsResolved;
+
+
+
+                if (loggingConfigurationIsResolved && loggingConfiguration.LogLevel != "OFF")
                 {
-                    loggingStructureState = $"Logging to set to <b>OFF</b>";
+                    loggingState = $"{ApplicationDefinition.Name} version {ApplicationDefinition.Version} (build {_buildFileVersion})<br/>{ApplicationDefinition.Description}<br/><br/>LOGGING CHECK:<br/>- log level is {loggingConfiguration.LogLevel}.<br/>- logging structure (objectType, classes, propertyDef) is {(loggingConfigurationIsResolved ? "all present in the vault." : "MISSING or incomplete. Please run \"DemoVault.AddLoggingStructure.exe\" to ensure logging structure to the vault and refresh the vaultapp (to reread structure).")}<br/><br/>Checking in a document would be logged via this sample vault application event handler and you would see a log message appear in todays Log object and Log file document. Open the M-Files desktop app to display todays Log object and Log File document.";
                 }
-                else if (!loggingConfiguration.LogOT.IsResolved ||
-                    !loggingConfiguration.LogCL.IsResolved ||
-                    !loggingConfiguration.LogMessagePD.IsResolved ||
-                    !loggingConfiguration.LogFileCL.IsResolved)
+                else if (!loggingConfigurationIsResolved)
                 {
-                    var missingLoggingStructureAliases = PermanentVault.GetMissingLoggingVaultStructure(loggingConfiguration.LogOT.Alias,
-                                                                                                        loggingConfiguration.LogCL.Alias,
-                                                                                                        loggingConfiguration.LogMessagePD.Alias,
-                                                                                                        loggingConfiguration.LogFileCL.Alias);
-                    if (missingLoggingStructureAliases.Count > 0)
-                    {
-                        loggingStructureState = $"Logging check: logging is configured, but some logging vault structure is MISSING from the vault. Please run \"DemoVault.AddLoggingStructure.exe\" to ensure logging structure to the vault and refresh the vaultapp (to reread structure).<br/>Current log level is {loggingConfiguration.LogLevel}.";
-                    }
-                    else
-                    {
-                        loggingStructureState = $"Logging check: logging is configured and all logging vault structure is present in the vault.<br/>Current log level is {loggingConfiguration.LogLevel}. See the M-Files desktop app for Log object and/or Log File objects.";
-                    }
+                    var missingLoggingStructureAliases = PermanentVault.GetMissingLoggingVaultStructure(loggingConfiguration.LogOT.Alias, loggingConfiguration.LogCL.Alias, loggingConfiguration.LogMessagePD.Alias, loggingConfiguration.LogFileCL.Alias);
+
+                    loggingState = $"{ApplicationDefinition.Name} version {ApplicationDefinition.Version} (build {_buildFileVersion})<br/>{ApplicationDefinition.Description}<br/><br/>LOGGING CHECK:<br/>- log level is {loggingConfiguration.LogLevel}.<br/>- logging structure (objectType, classes, propertyDef) is {(loggingConfigurationIsResolved ? "all present in the vault." : "MISSING or incomplete. Please run \"DemoVault.AddLoggingStructure.exe\" to ensure logging structure to the vault and refresh the vaultapp (to reread structure).")}<br/>- Missing logging structure aliases are: {(String.Join(", ", missingLoggingStructureAliases))}";
                 }
-                else
-                {
-                    loggingStructureState = $"Logging check: logging is configured and logging vault structure is present!<br/>Current log level is {loggingConfiguration.LogLevel}.";
-                }
+
             }
             else
             {
-                loggingStructureState = $"Logging check: logging has not yet been configured or logging vault structure is missing.<br/>Please run \"DemoVault.AddLoggingStructure.exe\" to ensure logging structure in the vault, refresh the vaultapp (to reread structure) and configure logging.";
+                loggingState = $"{ApplicationDefinition.Name} version {ApplicationDefinition.Version} (build {_buildFileVersion})<br/>{ApplicationDefinition.Description}<br/><br/>LOGGING CHECK:<br/>- Could not find configuration for logging in this sample vault application; please configure logging first.";
             }
 
 
@@ -277,7 +274,7 @@ namespace DemoVaultApplication
             // "vault has the vault structure for logging:
 
             var refreshPanel = new DashboardPanel();
-            refreshPanel.SetInnerContent(loggingStructureState);
+            refreshPanel.SetInnerContent(loggingState);
 
             // Add the refresh command to the panel, and the panel to the dashboard.
             refreshPanel.Commands.Add(DashboardHelper.CreateDomainCommand("Refresh log check", this.refreshDashboardCommand.ID));

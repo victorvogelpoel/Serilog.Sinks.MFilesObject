@@ -53,6 +53,7 @@
     <Compile Include="Configuration.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\FileVersionInfo.cs" />
     <Compile Include="VaultApplication.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -129,4 +130,15 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <PropertyGroup>
+    <FileVersionYear>$([System.DateTime]::Now.ToString("yyyy"))</FileVersionYear>
+    <FileVersionMonth>$([System.DateTime]::Now.ToString("MM"))</FileVersionMonth>
+    <FileVersionDate>$([System.DateTime]::Now.ToString("dd"))</FileVersionDate>
+    <FileVersionTime>$([System.DateTime]::Now.ToString("HHmm"))</FileVersionTime>
+    <AssemblyFileVersionAttribute>[assembly:System.Reflection.AssemblyFileVersion("$(FileVersionYear).$(FileVersionMonth).$(FileVersionDate).$(FileVersionTime)")]</AssemblyFileVersionAttribute>
+  </PropertyGroup>
+  <Target Name="BeforeBuild">
+    <WriteLinesToFile File="Properties\FileVersionInfo.cs" Lines="$(AssemblyFileVersionAttribute)" Overwrite="true">
+    </WriteLinesToFile>
+  </Target>
 </Project>

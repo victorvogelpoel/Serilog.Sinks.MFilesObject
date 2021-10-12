@@ -258,6 +258,10 @@ namespace DemoVaultApplication
 
                     loggingState = $"{ApplicationDefinition.Name} version {ApplicationDefinition.Version} (build {_buildFileVersion})<br/>{ApplicationDefinition.Description}<br/><br/>LOGGING CHECK:<br/>- log level is {loggingConfiguration.LogLevel}.<br/>- logging structure (objectType, classes, propertyDef) is {(loggingConfigurationIsResolved ? "all present in the vault." : "MISSING or incomplete. Please run \"DemoVault.AddLoggingStructure.exe\" to ensure logging structure to the vault and refresh the vaultapp (to reread structure).")}<br/>- Missing logging structure aliases are: {(String.Join(", ", missingLoggingStructureAliases))}";
                 }
+                else
+                {
+                    loggingState = $"{ApplicationDefinition.Name} version {ApplicationDefinition.Version} (build {_buildFileVersion})<br/>{ApplicationDefinition.Description}<br/><br/>LOGGING CHECK:<br/>- log level is {loggingConfiguration.LogLevel}.<br/>- logging structure (objectType, classes, propertyDef) is {(loggingConfigurationIsResolved ? "all present in the vault." : "MISSING or incomplete. Please run \"DemoVault.AddLoggingStructure.exe\" to ensure logging structure to the vault and refresh the vaultapp (to reread structure).")}";
+                }
 
             }
             else

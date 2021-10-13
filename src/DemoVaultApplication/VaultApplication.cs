@@ -246,7 +246,7 @@ namespace DemoVaultApplication
             // renders "<br/>" as TEXT instead of an HTML newline break if the string is in a
             // FormattableString ARGUMENT instead of the formattable string... Go figure.
 
-            FormattableString loggingState = $"";
+            FormattableString loggingState;
 
             if (null != Configuration && null != Configuration.LoggingConfiguration)
             {

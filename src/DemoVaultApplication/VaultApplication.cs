@@ -228,6 +228,14 @@ namespace DemoVaultApplication
         /// <inheritdoc />
         public override string GetDashboardContent(IConfigurationRequestContext context)
         {
+            var dashboard = new StatusDashboard();
+
+            var baseContent = base.GetDashboardContent(context);
+            if (!string.IsNullOrWhiteSpace(baseContent))
+            {
+				dashboard.AddContent(new DashboardCustomContent(baseContent));
+            }
+
             // Reacquire the cached vault structure
             ReinitializeMetadataStructureCache(PermanentVault);
 
@@ -250,32 +258,25 @@ namespace DemoVaultApplication
 
                 if (loggingConfigurationIsResolved && loggingConfiguration.LogLevel != "OFF")
                 {
-                    loggingState = $"{ApplicationDefinition.Name} version {ApplicationDefinition.Version} (build {_buildFileVersion})<br/>{ApplicationDefinition.Description}<br/><br/>LOGGING CHECK:<br/>- log level is {loggingConfiguration.LogLevel}.<br/>- logging structure (objectType, classes, propertyDef) is {(loggingConfigurationIsResolved ? "all present in the vault." : "MISSING or incomplete. Please run \"DemoVault.AddLoggingStructure.exe\" to ensure logging structure to the vault and refresh the vaultapp (to reread structure).")}<br/><br/>Checking in a document would be logged via this sample vault application event handler and you would see a log message appear in todays Log object and Log file document. Open the M-Files desktop app to display todays Log object and Log File document.";
+                    loggingState = $"LOGGING CHECK:<br/>- log level is {loggingConfiguration.LogLevel}.<br/>- logging structure (objectType, classes, propertyDef) is {(loggingConfigurationIsResolved ? "all present in the vault." : "MISSING or incomplete. Please run \"DemoVault.AddLoggingStructure.exe\" to ensure logging structure to the vault and refresh the vaultapp (to reread structure).")}<br/><br/>Checking in a document would be logged via this sample vault application event handler and you would see a log message appear in todays Log object and Log file document. Open the M-Files desktop app to display todays Log object and Log File document.";
                 }
                 else if (!loggingConfigurationIsResolved)
                 {
                     var missingLoggingStructureAliases = PermanentVault.GetMissingLoggingVaultStructure(loggingConfiguration.LogOT.Alias, loggingConfiguration.LogCL.Alias, loggingConfiguration.LogMessagePD.Alias, loggingConfiguration.LogFileCL.Alias);
 
-                    loggingState = $"{ApplicationDefinition.Name} version {ApplicationDefinition.Version} (build {_buildFileVersion})<br/>{ApplicationDefinition.Description}<br/><br/>LOGGING CHECK:<br/>- log level is {loggingConfiguration.LogLevel}.<br/>- logging structure (objectType, classes, propertyDef) is {(loggingConfigurationIsResolved ? "all present in the vault." : "MISSING or incomplete. Please run \"DemoVault.AddLoggingStructure.exe\" to ensure logging structure to the vault and refresh the vaultapp (to reread structure).")}<br/>- Missing logging structure aliases are: {(String.Join(", ", missingLoggingStructureAliases))}";
+                    loggingState = $"LOGGING CHECK:<br/>- log level is {loggingConfiguration.LogLevel}.<br/>- logging structure (objectType, classes, propertyDef) is {(loggingConfigurationIsResolved ? "all present in the vault." : "MISSING or incomplete. Please run \"DemoVault.AddLoggingStructure.exe\" to ensure logging structure to the vault and refresh the vaultapp (to reread structure).")}<br/>- Missing logging structure aliases are: {(String.Join(", ", missingLoggingStructureAliases))}";
                 }
                 else
                 {
-                    loggingState = $"{ApplicationDefinition.Name} version {ApplicationDefinition.Version} (build {_buildFileVersion})<br/>{ApplicationDefinition.Description}<br/><br/>LOGGING CHECK:<br/>- log level is {loggingConfiguration.LogLevel}.<br/>- logging structure (objectType, classes, propertyDef) is {(loggingConfigurationIsResolved ? "all present in the vault." : "MISSING or incomplete. Please run \"DemoVault.AddLoggingStructure.exe\" to ensure logging structure to the vault and refresh the vaultapp (to reread structure).")}";
+                    loggingState = $"LOGGING CHECK:<br/>- log level is {loggingConfiguration.LogLevel}.<br/>- logging structure (objectType, classes, propertyDef) is {(loggingConfigurationIsResolved ? "all present in the vault." : "MISSING or incomplete. Please run \"DemoVault.AddLoggingStructure.exe\" to ensure logging structure to the vault and refresh the vaultapp (to reread structure).")}";
                 }
-
             }
             else
             {
-                loggingState = $"{ApplicationDefinition.Name} version {ApplicationDefinition.Version} (build {_buildFileVersion})<br/>{ApplicationDefinition.Description}<br/><br/>LOGGING CHECK:<br/>- Could not find configuration for logging in this sample vault application; please configure logging first.";
+                loggingState = $"LOGGING CHECK:<br/>- Could not find configuration for logging in this sample vault application; please configure logging first.";
             }
 
 
-            // Create the surrounding dashboard.
-            var dashboard = new StatusDashboard();
-
-            // Create a panel showing when the dashboard was rendered.
-            // Application name, version.
-            // "vault has the vault structure for logging:
 
             var refreshPanel = new DashboardPanel();
             refreshPanel.SetInnerContent(loggingState);

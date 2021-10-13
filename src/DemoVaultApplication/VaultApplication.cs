@@ -163,10 +163,12 @@ namespace DemoVaultApplication
         /// <param name="vault"></param>
         protected override void UninitializeApplication(Vault vault)
         {
-            Log.Information("VaultApplication {ApplicationName} {BuildVersion} is POWERING DOWN.", ApplicationDefinition.Name, _buildFileVersion);   // NOTE, structured logging with curly braces, NOT C# string intrapolation $"" with curly braces!
+            Log.Information("VaultApplication {ApplicationName} {BuildVersion} is POWERING DOWN.", ApplicationDefinition.Name, _buildFileVersion);
 
             // IMPORTANT: CloseAndFlush all sinks - this will flush any batched sinks emit the log events to the vault.
             (this.Log as IDisposable)?.Dispose();
+
+            Thread.Sleep(2500);
 
             base.UninitializeApplication(vault);
         }

@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   push:
     branches: [ release, prerelease ]
-    paths: ["current/**"]
+    paths: ["current-release/**"]
 
 jobs:
   publish-nupkg:

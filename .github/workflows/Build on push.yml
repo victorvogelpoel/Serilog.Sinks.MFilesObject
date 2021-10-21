@@ -3,7 +3,7 @@ name: Build Serilog.Sinks.MFilesObject
 on:
   workflow_dispatch:
   push:
-    branches: [ master, main, develop, release/*, feature/* ]
+    branches: [ master, main, develop, release/*, prerelease/*, feature/* ]
     paths: ["src/**"]
 
 jobs:

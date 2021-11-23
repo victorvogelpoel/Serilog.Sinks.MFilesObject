@@ -17,6 +17,7 @@
         <SignAssembly>true</SignAssembly>
         <AssemblyOriginatorKeyFile>Serilog.Sinks.MFilesObject.snk</AssemblyOriginatorKeyFile>
 
+        <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
     </PropertyGroup>
 
 
@@ -38,7 +39,10 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Dramatic.LogToMFiles\Dramatic.LogToMFiles.csproj" />
+        <ProjectReference Include="..\Dramatic.LogToMFiles\Dramatic.LogToMFiles.csproj">
+            <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+            <IncludeAssets>Dramatic.LogToMFiles.dll</IncludeAssets>
+        </ProjectReference>
     </ItemGroup>
 
     <ItemGroup>
@@ -53,6 +57,12 @@
 		</ItemGroup>
 		<Copy SourceFiles="@(_GitHookFiles)" DestinationFolder="./../../.git/hooks" />
 	</Target>
+
+    <Target DependsOnTargets="ResolveReferences" Name="CopyProjectReferencesToPackage">
+        <ItemGroup>
+            <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths->WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))" />
+        </ItemGroup>
+    </Target>
 
     <Target Name="PostBuild" AfterTargets="Pack" Condition=" '$(Configuration)' == 'Release'">
         <RemoveDir Directories="..\..\current-release" />

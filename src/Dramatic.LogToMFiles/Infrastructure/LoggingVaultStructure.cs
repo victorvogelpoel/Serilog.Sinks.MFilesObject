@@ -162,6 +162,10 @@ namespace Dramatic.LogToMFiles
                 var logFileClassID      = vault.ClassOperations.GetObjectClassIDByAlias(structureConfig.LogFileClassAlias);
 
 
+
+                //var defaultAccessControlList = new AccessControlList();
+
+
                 // Add Log ObjectType if it doesn't exist
                 if (logObjectTypeID == -1)
                 {
@@ -180,6 +184,9 @@ namespace Dramatic.LogToMFiles
                         OwnerType                       = 0,
                         Translatable                    = false,
                         //Icon                            =
+                        // AccessControlList               =  // TODO: initialize accesscontrollist to either admins only or for all to see?
+                        //                                          "All internal and external users" - Permissions "See the name of this object type" / "All internal users - Permissions "See the name of this object type" & "Create objects of this type"
+                        //                                       or "All admins - Permissions "See the name of this object type" & "Create objects of this type"
                     };
 
                     var objTypeAdmin = new ObjTypeAdmin()
@@ -212,7 +219,9 @@ namespace Dramatic.LogToMFiles
                         AutomaticValueType              = MFAutomaticValueType.MFAutomaticValueTypeNone,
                         ValidationType                  = MFValidationType.MFValidationTypeNone,
                         UpdateType                      = MFUpdateType.MFUpdateTypeNormal,
-                        AccessControlList               = new AccessControlList(),
+                        AccessControlList               = new AccessControlList(),  // TODO: initialize accesscontrollist to either admins only or for all to see?
+                        //                                          "All internal and external users" - Permissions "See the name of this object type" / "All internal users - Permissions "See the name of this object type" & "Create objects of this type"
+                        //                                       or "All admins - Permissions "See the name of this object type" & "Create objects of this type"
                     };
 
                     var propDefAdmin = new PropertyDefAdmin()

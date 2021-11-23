@@ -19,6 +19,9 @@ jobs:
 
     - name: Setup NuGet
       uses: NuGet/setup-nuget@v1.0.5
+      
+    - name: Set timezone on Windows to Central Europe Standard Time
+      run: tzutil /s "Central Europe Standard Time"
 
     - name: Restore NuGet packages
       run: nuget restore Serilog.Sinks.MFilesObject.sln

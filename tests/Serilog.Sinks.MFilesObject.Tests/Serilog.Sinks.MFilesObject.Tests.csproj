@@ -73,10 +73,6 @@
     <None Include="Serilog.Sinks.MFilesObject.Tests.licenseheader" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Dramatic.LogToMFiles\Dramatic.LogToMFiles.csproj">
-      <Project>{4608499a-7a98-46ef-b5f2-5cfb1d298495}</Project>
-      <Name>Dramatic.LogToMFiles</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\src\Serilog.Sinks.MFilesObject\Serilog.Sinks.MFilesObject.csproj">
       <Project>{50019bf2-d13f-4b84-8db5-6b635e498f23}</Project>
       <Name>Serilog.Sinks.MFilesObject</Name>

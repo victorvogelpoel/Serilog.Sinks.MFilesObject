@@ -175,21 +175,21 @@ namespace DemoVaultApplication
         // -----------------------------------------------------------------------------------------------------------------------------------
         // Proving the Serilog sink can also be used from a vault extension method.
 
-        [VaultExtensionMethod("DemoVaultApp.LogInformation")]
+        [VaultExtensionMethod("DemoVaultApp.LogInformation", RequiredVaultAccess = MFVaultAccess.MFVaultAccessCreateDocs)]
         private string LogInformation(EventHandlerEnvironment env)
         {
             this.Log.Information(env.Input);
             return $"Logged the following Information message:\r\n{env.Input}";
         }
 
-        [VaultExtensionMethod("DemoVaultApp.LogWarning")]
+        [VaultExtensionMethod("DemoVaultApp.LogWarning", RequiredVaultAccess = MFVaultAccess.MFVaultAccessCreateDocs)]
         private string LogWarning(EventHandlerEnvironment env)
         {
             this.Log.Warning(env.Input);
             return $"Logged the following warning message:\r\n{env.Input}";
         }
 
-        [VaultExtensionMethod("DemoVaultApp.LogError")]
+        [VaultExtensionMethod("DemoVaultApp.LogError", RequiredVaultAccess = MFVaultAccess.MFVaultAccessCreateDocs)]
         private string LogError(EventHandlerEnvironment env)
         {
             this.Log.Error(env.Input);

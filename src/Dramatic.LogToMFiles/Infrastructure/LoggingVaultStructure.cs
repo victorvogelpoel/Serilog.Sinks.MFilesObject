@@ -157,18 +157,42 @@ namespace Dramatic.LogToMFiles
 
             lock(StructureChangeLock)
             {
-                var logObjectTypeID     = vault.ObjectTypeOperations.GetObjectTypeIDByAlias(structureConfig.LogObjectTypeAlias);
-                var logMessagePropDefID = vault.PropertyDefOperations.GetPropertyDefIDByAlias(structureConfig.LogMessagePropDefAlias);
-                var logFileClassID      = vault.ClassOperations.GetObjectClassIDByAlias(structureConfig.LogFileClassAlias);
+                var logObjectTypeID                     = vault.ObjectTypeOperations.GetObjectTypeIDByAlias(structureConfig.LogObjectTypeAlias);
+                var logMessagePropDefID                 = vault.PropertyDefOperations.GetPropertyDefIDByAlias(structureConfig.LogMessagePropDefAlias);
+                var logFileClassID                      = vault.ClassOperations.GetObjectClassIDByAlias(structureConfig.LogFileClassAlias);
 
-
-
-                //var defaultAccessControlList = new AccessControlList();
-
+                var allInternalUsersGroupID            = 1;
+                var allInternalAndExternalUsersGroupID = 2;
 
                 // Add Log ObjectType if it doesn't exist
                 if (logObjectTypeID == -1)
                 {
+                    // Construct an access list for the ObjectType
+                    var ace = new AccessControlEntryContainer();
+
+                    // "All internal and external users"
+                    var acek = new AccessControlEntryKey();
+                    acek.SetUserOrGroupID(allInternalAndExternalUsersGroupID, IsGroup:true);
+                    var aced = new AccessControlEntryData
+                    {
+                        ReadPermission = MFPermission.MFPermissionAllow
+                    };
+                    ace.Add(acek, aced);
+
+                    // "All internal users"
+                    acek = new AccessControlEntryKey();
+                    acek.SetUserOrGroupID(allInternalUsersGroupID, IsGroup:true);
+                    aced = new AccessControlEntryData
+                    {
+                        ReadPermission = MFPermission.MFPermissionAllow,
+                        EditPermission = MFPermission.MFPermissionAllow
+                    };
+                    ace.Add(acek, aced);
+
+                    // Bind the entries container to the access control list.
+                    var acl = new AccessControlList();
+                    acl.CustomComponent.AccessControlEntries = ace;
+
                     ObjType objType = new ObjType()
                     {
                         NameSingular                    = structureConfig.LogObjectTypeNameSingular,
@@ -183,10 +207,8 @@ namespace Dramatic.LogToMFiles
                         HasOwnerType                    = false,
                         OwnerType                       = 0,
                         Translatable                    = false,
+                        AccessControlList               = acl
                         //Icon                            =
-                        // AccessControlList               =  // TODO: initialize accesscontrollist to either admins only or for all to see?
-                        //                                          "All internal and external users" - Permissions "See the name of this object type" / "All internal users - Permissions "See the name of this object type" & "Create objects of this type"
-                        //                                       or "All admins - Permissions "See the name of this object type" & "Create objects of this type"
                     };
 
                     var objTypeAdmin = new ObjTypeAdmin()
@@ -202,6 +224,23 @@ namespace Dramatic.LogToMFiles
                 // Add LogMessage propertyDef if it doesn't exist
                 if (logMessagePropDefID == -1)
                 {
+                    // Construct an access list for the PropertyDef
+                    var ace = new AccessControlEntryContainer();
+
+                    var acek = new AccessControlEntryKey();
+                    acek.SetUserOrGroupID(allInternalAndExternalUsersGroupID, IsGroup:true);
+                    var aced = new AccessControlEntryData
+                    {
+                        ReadPermission = MFPermission.MFPermissionAllow,
+                        EditPermission = MFPermission.MFPermissionAllow
+                    };
+                    ace.Add(acek, aced);
+
+                    // Bind the entries container to the access control list.
+                    var acl = new AccessControlList();
+                    acl.CustomComponent.AccessControlEntries = ace;
+
+
                     var propDef = new PropertyDef
                     {
                         Name                            = structureConfig.LogMessagePropDefName,
@@ -219,9 +258,7 @@ namespace Dramatic.LogToMFiles
                         AutomaticValueType              = MFAutomaticValueType.MFAutomaticValueTypeNone,
                         ValidationType                  = MFValidationType.MFValidationTypeNone,
                         UpdateType                      = MFUpdateType.MFUpdateTypeNormal,
-                        AccessControlList               = new AccessControlList(),  // TODO: initialize accesscontrollist to either admins only or for all to see?
-                        //                                          "All internal and external users" - Permissions "See the name of this object type" / "All internal users - Permissions "See the name of this object type" & "Create objects of this type"
-                        //                                       or "All admins - Permissions "See the name of this object type" & "Create objects of this type"
+                        AccessControlList               = acl
                     };
 
                     var propDefAdmin = new PropertyDefAdmin()

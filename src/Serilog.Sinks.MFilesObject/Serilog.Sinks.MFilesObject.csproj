@@ -8,12 +8,18 @@
         <Title>Serilog.Sinks.MFilesObject</Title>
 
         <Product>Serilog.Sinks.MFilesObject</Product>
-        <Description>Serilog sink to write to a Log object in an M-Files Vault.</Description>
+        <Description>Serilog.Sinks.MFilesObject is a Serilog sink that uses the M-Files COM API to emit event messages to a "rolling" Log object or Log file in an M-Files vault.
+
+ Use Serilog structured logging in your M-Files console, integration and vault application solutions and see the logging appear as an Log object in the vault. Just open the M-Files desktop app and inspect the logging of your application.
+
+"M-Files is the intelligent document management system. With M-Files, organizations organize all their documents and information so that they can easily find, manage and secure them. M-Files is the smartest DMS you’ve ever seen."
+
+</Description>
         <PackageProjectUrl>https://github.com/victorvogelpoel/Serilog.Sinks.MFilesObject</PackageProjectUrl>
         <RepositoryUrl>https://github.com/victorvogelpoel/Serilog.Sinks.MFilesObject</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageIcon>serilog-sink-nuget.png</PackageIcon>
-        <PackageTags>serilog m-files</PackageTags>
+        <PackageTags>serilog m-files mfiles m-files-comapi</PackageTags>
         <SignAssembly>true</SignAssembly>
         <AssemblyOriginatorKeyFile>Serilog.Sinks.MFilesObject.snk</AssemblyOriginatorKeyFile>
     </PropertyGroup>

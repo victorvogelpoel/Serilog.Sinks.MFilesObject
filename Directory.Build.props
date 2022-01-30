@@ -2,7 +2,7 @@
     <PropertyGroup>
         <Authors>Victor Vogelpoel &amp; contributers</Authors>
         <Company>Dramatic Development</Company>
-        <Copyright>Copyright (c) 2021 Dramatic Development - Victor Vogelpoel</Copyright>
+        <Copyright>Copyright (c) 2022 Dramatic Development - Victor Vogelpoel</Copyright>
         <FileVersion>$([System.DateTime]::Now.ToString("yyyy.MM.dd.HHmm"))</FileVersion>
 
         <NeutralLanguage>en-US</NeutralLanguage>

@@ -1,6 +1,6 @@
 ﻿// ILogMessageRepository.cs
-// 24-11-2021
-// Copyright 2021 Dramatic Development - Victor Vogelpoel
+// 30-1-2022
+// Copyright 2022 Dramatic Development - Victor Vogelpoel
 // If this works, it was written by Victor Vogelpoel (victor@victorvogelpoel.nl).
 // If it doesn't, I don't know who wrote it.
 //

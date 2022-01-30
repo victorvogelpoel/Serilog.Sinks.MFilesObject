@@ -17,4 +17,4 @@ jobs:
       with:
         dotnet-version: 3.1.101
     - name: Push packages to registry
-      run: dotnet nuget push current/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+      run: dotnet nuget push current-release/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate

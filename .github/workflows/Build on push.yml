@@ -3,7 +3,7 @@ name: Build Serilog.Sinks.MFilesObject
 on:
   workflow_dispatch:
   push:
-    branches: [ master, main, develop, release/*, feature/* ]
+    branches: [ master, main, develop, release/*, prerelease/*, feature/* ]
     paths: ["src/**"]
 
 jobs:
@@ -19,6 +19,9 @@ jobs:
 
     - name: Setup NuGet
       uses: NuGet/setup-nuget@v1.0.5
+
+    - name: Set timezone on Windows to Central Europe Standard Time
+      run: tzutil /s "Central Europe Standard Time"
 
     - name: Restore NuGet packages
       run: nuget restore Serilog.Sinks.MFilesObject.sln

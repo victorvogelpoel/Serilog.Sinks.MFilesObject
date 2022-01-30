@@ -2,8 +2,8 @@ name: Publish current to nuget
 on:
   workflow_dispatch:
   push:
-    branches: [ release ]
-    paths: ["current/**"]
+    branches: [ release, prerelease ]
+    paths: ["current-release/**"]
 
 jobs:
   publish-nupkg:

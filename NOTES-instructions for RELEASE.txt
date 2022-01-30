@@ -1,0 +1,6 @@
+
+
+
+- Add release notes to CHANGELOG.MD
+- Add release notes to src\Serilog.Sinks.MFilesObject\releasenotes.props
+

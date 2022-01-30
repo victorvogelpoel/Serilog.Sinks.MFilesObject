@@ -6,23 +6,36 @@
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <PackageId>Serilog.Sinks.MFilesObject</PackageId>
         <Title>Serilog.Sinks.MFilesObject</Title>
+
         <Product>Serilog.Sinks.MFilesObject</Product>
-        <Description>Serilog sink to write to an Log object in an M-Files Vault.</Description>
-        <RepositoryUrl>https://github.com/victorvogelpoel/Serilog.Sinks.MFilesObject</RepositoryUrl>
-        <PackageIcon>serilog-sink-nuget.png</PackageIcon>
-        <PackageTags>serilog m-files</PackageTags>
-        <RepositoryType>git</RepositoryType>
-        <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+        <Description>Serilog.Sinks.MFilesObject is a Serilog sink that uses the M-Files COM API to emit event messages to a "rolling" Log object or Log file in an M-Files vault.
+
+ Use Serilog structured logging in your M-Files console, integration and vault application solutions and see the logging appear as an Log object in the vault. Just open the M-Files desktop app and inspect the logging of your application.
+
+"M-Files is the intelligent document management system. With M-Files, organizations organize all their documents and information so that they can easily find, manage and secure them. M-Files is the smartest DMS you’ve ever seen."
+
+</Description>
         <PackageProjectUrl>https://github.com/victorvogelpoel/Serilog.Sinks.MFilesObject</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/victorvogelpoel/Serilog.Sinks.MFilesObject</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageIcon>serilog-sink-nuget.png</PackageIcon>
+        <PackageTags>serilog m-files mfiles m-files-comapi</PackageTags>
+        <SignAssembly>true</SignAssembly>
+        <AssemblyOriginatorKeyFile>Serilog.Sinks.MFilesObject.snk</AssemblyOriginatorKeyFile>
     </PropertyGroup>
 
+
+    <Import Project="$(MSBuildProjectDirectory)/releasenotes.props" Condition="Exists('$(MSBuildProjectDirectory)/releasenotes.props')" />
+
+
     <ItemGroup>
-        <PackageReference Include="Interop.MFilesAPI" Version="21.6.8" />
+        <PackageReference Include="Interop.MFilesAPI" Version="21.11.3" />
         <PackageReference Include="Serilog" Version="2.10.0" />
-        <PackageReference Include="Serilog.Sinks.PeriodicBatching" Version="2.3.0" />
+        <PackageReference Include="Serilog.Sinks.PeriodicBatching" Version="2.3.1" />
     </ItemGroup>
 
     <ItemGroup>
+        <None Include="..\..\Directory.Build.props" Link="Directory.Build.props" />
         <None Include="serilog-sink-nuget.png">
             <Pack>True</Pack>
             <PackagePath></PackagePath>
@@ -30,12 +43,41 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Dramatic.LogToMFiles\Dramatic.LogToMFiles.csproj" />
+        <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+            <_Parameter1>$(AssemblyName).Tests, PublicKey=0024000004800000940000000602000000240000525341310004000001000100252e699e8478b8ed7fd113d9eab8164e376b4811a779ff82b7fcec30e396f12ae754d4ec5121e6e15b5f9e92d0a34cfda93e1ab9c7186f769e7eb0c8fef1fa3898e2935082353d28e77a700246a6ba10828f412ead6ef3ba7100830abfb31a84c6e54f06badd81fc44effc303552b2080e9df2b0be27c47e5ca4a7b5fb4ba3b5</_Parameter1>
+        </AssemblyAttribute>
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Include="..\Dramatic.LogToMFiles\Application\ILogFileVault.cs" Link="Dramatic\LogToMFiles\Application\ILogFileVault.cs" />
+      <Compile Include="..\Dramatic.LogToMFiles\Application\ILogMessageRepository.cs" Link="Dramatic\LogToMFiles\Application\ILogMessageRepository.cs" />
+      <Compile Include="..\Dramatic.LogToMFiles\Application\ILogObjectVault.cs" Link="Dramatic\LogToMFiles\Application\ILogObjectVault.cs" />
+      <Compile Include="..\Dramatic.LogToMFiles\Application\RollingLogFile.cs" Link="Dramatic\LogToMFiles\Application\RollingLogFile.cs" />
+      <Compile Include="..\Dramatic.LogToMFiles\Application\RollingLogObject.cs" Link="Dramatic\LogToMFiles\Application\RollingLogObject.cs" />
+      <Compile Include="..\Dramatic.LogToMFiles\Common\StringExtensions.cs" Link="Dramatic\LogToMFiles\Common\StringExtensions.cs" />
+      <Compile Include="..\Dramatic.LogToMFiles\Infrastructure\LogFileRepository.cs" Link="Dramatic\LogToMFiles\Infrastructure\LogFileRepository.cs" />
+      <Compile Include="..\Dramatic.LogToMFiles\Infrastructure\LogFileVault.cs" Link="Dramatic\LogToMFiles\Infrastructure\LogFileVault.cs" />
+      <Compile Include="..\Dramatic.LogToMFiles\Infrastructure\LoggingVaultStructure.cs" Link="Dramatic\LogToMFiles\Infrastructure\LoggingVaultStructure.cs" />
+      <Compile Include="..\Dramatic.LogToMFiles\Infrastructure\LogObjectRepository.cs" Link="Dramatic\LogToMFiles\Infrastructure\LogObjectRepository.cs" />
+      <Compile Include="..\Dramatic.LogToMFiles\Infrastructure\LogObjectVault.cs" Link="Dramatic\LogToMFiles\Infrastructure\LogObjectVault.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Dramatic\LogToMFiles\Application\" />
+      <Folder Include="Dramatic\LogToMFiles\Common\" />
+      <Folder Include="Dramatic\LogToMFiles\Infrastructure\" />
+    </ItemGroup>
+
+	<Target Name="CopyGitHooks" AfterTargets="AfterBuild">
+		<ItemGroup>
+			<_GitHookFiles Include="..\..\automation\commit-msg;..\..\automation\pre-commit" />
+		</ItemGroup>
+		<Copy SourceFiles="@(_GitHookFiles)" DestinationFolder="./../../.git/hooks" />
+	</Target>
+
     <Target Name="PostBuild" AfterTargets="Pack" Condition=" '$(Configuration)' == 'Release'">
-        <!--RemoveDir Directories="..\current" /-->
-        <Copy SourceFiles="$(OutputPath)$(PackageId).$(PackageVersion).nupkg" DestinationFolder="..\current" />
+        <RemoveDir Directories="..\..\current-release" />
+        <Copy SourceFiles="$(OutputPath)$(PackageId).$(PackageVersion).nupkg" DestinationFolder="..\..\current-release" />
     </Target>
 
 </Project>

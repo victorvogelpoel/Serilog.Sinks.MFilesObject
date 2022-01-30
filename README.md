@@ -10,6 +10,8 @@ You can find the NuGet package here: See https://www.nuget.org/packages/Serilog.
 
 [![Build](https://github.com/victorvogelpoel/Serilog.Sinks.MFilesObject/actions/workflows/Build%20on%20push.yml/badge.svg)](https://github.com/victorvogelpoel/Serilog.Sinks.MFilesObject/actions/workflows/Build%20on%20push.yml)
 
+[![GitHub Actions Build History](https://buildstats.info/github/chart/victorvogelpoel/Serilog.Sinks.MFilesObject?showStats=false)](https://github.com/victorvogelpoel/Serilog.Sinks.MFilesObject/actions)
+
 ## Contents<!-- omit in toc -->
 - [Why would you use Serilog.Sinks.MFilesObject?](#why-would-you-use-serilogsinksmfilesobject)
 - [Features](#features)

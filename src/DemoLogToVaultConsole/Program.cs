@@ -104,7 +104,7 @@ namespace SANDBOX
                 // With above configuration, each Log.xxxx() statement will log to M-Files Log object and Log File, AND to the console.
                 // Note that the Log messages do NOT appear immediately in the vault as a Log object, but are collected and pushed every 5 secs.
 
-                Log.Information("This adds this log message to a Log object in the vault with the name \"LoggingFromSandboxDemo-Log-{Today}\"", DateTime.Today.ToString("yyyy-MM-dd"));
+                Log.Information("This adds this log message to a Log object in the vault with the name \"DemoConsole-Log-{Today}\"", DateTime.Today.ToString("yyyy-MM-dd"));
 
                 Log.Information("This adds another info message to the {LogOT} object", structureConfig.LogObjectTypeNameSingular);     // NOTE, structured logging, NOT C# string intrapolation!
 

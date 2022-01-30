@@ -1,6 +1,6 @@
 # Changelog
 
-`Serilog.Sinks.MFilesObject` is a Serilog structured logging sink to emit event messages to a "rolling" Log object or Log file in an M-Files vault.
+`Serilog.Sinks.MFilesObject` is a Serilog structured logging sink that uses the M-Files COM API to emit event messages to a "rolling" Log object or Log file in an M-Files vault.
 
 *"M-Files is the intelligent document management system. With M-Files, organizations organize all their documents and information so that they can easily find, manage and secure them. M-Files is the smartest DMS you’ve ever seen."*
 
@@ -10,7 +10,7 @@ Use Serilog structured logging in your M-Files console, integration and vault ap
 
 ### Features
 
-Use Serilog structured logging in your M-Files console, integration and vault application solutions and see the logging appear as a Log object or Log file in the vault. 
+Use Serilog structured logging in your M-Files console, integration and vault application solutions with M-Files COM API and see the structured logging appear as a Log object or Log file in the vault. 
 
 This release features two sinks:
 
@@ -21,11 +21,15 @@ Both sinks work with batching, where new log messages are appended every 10 seco
 
 #### Log object
 
-The log object is 'rolling': the sinks creates a new Log object in the vault for the current day, eg "Log 2021-09-22". When the multi-line text property reaches its limit of 10000 characters, the sink creates a new Log object for today with an ordinal between braces, eg "Log 2021-09-15 (2)".
+The log object is 'rolling': the sinks creates a new Log object in the vault for the current day, eg "Log 2022-01-27". When the multi-line text property reaches its limit of 10000 characters, the sink creates a new Log object for today with an ordinal between braces, eg "Log 2022-01-27 (2)".
 
 #### Log file
 
-The log file is 'rolling' as well, where the sink creates a Log text file document for the current day, eg eg "Log 2021-09-22.txt".
+The log file is 'rolling' as well, where the sink creates a Log text file document for the current day, eg "Log 2022-01-27.txt".
+
+### Requirements
+
+These sinks require a M-Files COM API installation, which is installed with the M-Files Desktop app.
 
 
 <!--
@@ -40,7 +44,5 @@ The log file is 'rolling' as well, where the sink creates a Log text file docume
 ### Other
 
 ### Breaking changes
-
-
 
 -->

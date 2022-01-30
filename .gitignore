@@ -445,3 +445,7 @@ $RECYCLE.BIN/
 *.msi
 
 TEMP/
+src.RESEARCH/COMAPI.Extensions.Community/
+src.RESEARCH/serilog/
+src.RESEARCH/serilog-sinks-console/
+src.RESEARCH/VAF.Extensions.Community/

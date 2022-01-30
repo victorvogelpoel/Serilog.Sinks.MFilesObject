@@ -1,0 +1,47 @@
+<Project>
+  <PropertyGroup>
+    <PackageReleaseNotes Condition="$(VersionPrefix.StartsWith('1.0.0'))">
+v1.0.0. First release! January 2022
+
+`Serilog.Sinks.MFilesObject` is a Serilog structured logging sink that uses the M-Files COM API to emit event messages to a "rolling" Log object or Log file in an M-Files vault.         Use Serilog structured logging in your M-Files console, integration and vault application solutions and see the logging appear as an Log object in the vault. Just open the M-Files desktop app and inspect the logging of your solution.
+
+*"M-Files is the intelligent document management system. With M-Files, organizations organize all their documents and information so that they can easily find, manage and secure them. M-Files is the smartest DMS you’ve ever seen."*
+
+This release features two sinks:
+
+* MFilesLogObjectMessageSink: Log to a M-Files Log object with a multi-line text property.
+* MFilesLogFileSink: Log to an M-Files Log File.
+
+Both sinks work with batching, where new log messages are appended every 10 seconds, to prevent overly stress on the vault.
+The log object is 'rolling': the sinks creates a new Log object in the vault for the current day, eg "Log 2022-01-27". When the multi-line text property reaches its limit of 10000 characters, the sink creates a new Log object for today with an ordinal between braces, eg "Log 2022-01-27 (2)".
+The log file is 'rolling' as well, where the sink creates a Log text file document for the current day, eg "Log 2022-01-27.txt".
+    </PackageReleaseNotes>
+    <PackageReleaseNotes>$(PackageReleaseNotes)
+
+See more details here: https://github.com/victorvogelpoel/Serilog.Sinks.MFilesObject/blob/master/CHANGELOG.md#v$(VersionPrefix)
+    </PackageReleaseNotes>
+  </PropertyGroup>
+</Project>
+
+
+
+<!--
+    <PackageReleaseNotes Condition="$(VersionPrefix.StartsWith('1.0.0'))">
+
+Docs:
+
+Other:
+
+Features:
+
+Improvements:
+
+Fixes
+
+Other:
+
+Breaking changes:
+
+   </PackageReleaseNotes>
+
+-->

@@ -1,6 +1,6 @@
 # Serilog.Sinks.MFilesObject<!-- omit in toc -->
 
-`Serilog.Sinks.MFilesObject` is a Serilog structured logging sink that emits event messages to a "rolling" Log object or Log file in an M-Files vault using M-Files COM API.
+`Serilog.Sinks.MFilesObject` is a Serilog sink that logs messages to an M-Files vault; M-Files is a document management/intelligent information system and the logged event messages can be viewed as a daily Log object or Log file using the M-Files desktop app. Use Serilog structured logging in your M-Files console, integration or vault application solutions and see the logging appear as an object in the vault.
 
 *"M-Files is the intelligent document management system. With M-Files, organizations organize all their documents and information so that they can easily find, manage and secure them. M-Files is the smartest DMS you’ve ever seen."*
 

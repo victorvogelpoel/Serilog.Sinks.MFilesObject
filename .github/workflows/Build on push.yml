@@ -18,7 +18,7 @@ jobs:
       uses: microsoft/setup-msbuild@v1.0.2
 
     - name: Setup NuGet
-      uses: NuGet/setup-nuget@v1.0.6
+      uses: NuGet/setup-nuget@v1.0.7
 
     - name: Set timezone on Windows to Central Europe Standard Time
       run: tzutil /s "Central Europe Standard Time"
